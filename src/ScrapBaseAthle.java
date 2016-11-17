@@ -333,55 +333,26 @@ public class ScrapBaseAthle {
 	            
 	        }
 	        
-	        //épreuves
+        // épreuves
         Elements elsEpreuves = doc.select("div#imgelement_1").parents().get(2).select("td");
 	        
-	        for ( int ind = 1 ; ind < elsEpreuves.size(); ind++ ){
+        for (int ind = 1; ind < elsEpreuves.size(); ind++) {
+	            
+            int nbTd = elsEpreuves.get(ind).select("td").size();
+            if (nbTd > 1) {
+
+                System.out.println("lg : " + nbTd);
+
+            } else {
+                System.out.println(elsEpreuves.get(ind).select("td").text());
+            }
+	            
 	            
         }
 
-            // if ( elsEpreuves.get( ind ).select("") )
-	            
-	            //td 1 -> heure
-	            //td 2 -> nom epreuve
-	            //td3  -> categorie
-	            //td4  -> distance
-	            //td5  -> label
-	            
-	        }
-	        
-	        
-	                
-	         //doc.select("tr:contains(Organisateur)").select( "tr:[style=font-weight:normal;text-align:left;width:90%]" )
-	        
-	        
-	        
-	        
-	        
-	        
-	        
-	        
-	        
-	        
-	        //[style~=background:url]
-	        
-	        
-	        
-//	        Elements els = doc.select("td");
-//	        for ( Element el : els){
-//	        	String text = el.text().replace("\u00a0","").trim();
-//	        	if ( !text.equals("")  ){
-//	        		System.out.println( text );
-//	        		
-//	        	}
-//	        }
-	        
-	        
-	        
-	        
 	        System.out.println("fin");
 
-	    }
+    }
 
 	   
 	   
