@@ -334,11 +334,13 @@ public class ScrapBaseAthle {
 	        }
 	        
 	        //épreuves
-	        Elements elsEpreuves = doc.select("div#imgelement_1").parents().select("tbody")
+        Elements elsEpreuves = doc.select("div#imgelement_1").parents().get(2).select("td");
 	        
 	        for ( int ind = 1 ; ind < elsEpreuves.size(); ind++ ){
 	            
-	            if ( elsEpreuves.get( ind  ).select("")  )
+        }
+
+            // if ( elsEpreuves.get( ind ).select("") )
 	            
 	            //td 1 -> heure
 	            //td 2 -> nom epreuve
