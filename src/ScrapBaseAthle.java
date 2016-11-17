@@ -5,9 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -79,7 +78,7 @@ public class ScrapBaseAthle {
 //			if ( res.contains("&nbsp;") ){
 //				res = "";
 //			}
-//			if ( res.contains("Label R�gional") ){
+//			if ( res.contains("Label R�gional") ){
 //				res = "R";
 //			}
 //			if ( res.contains("Label International") ){
@@ -272,7 +271,7 @@ public class ScrapBaseAthle {
 	            return;
 	        }
 	        
-	        //title
+	        //general info
 	        String title    = doc.select("[style~=background:url]").get(0).ownText();
 	        String subtitle = doc.select("[style~=color:#000; font-size:15px]").text();
 	        String date     = doc.select("[style~=color:#A00014]").text();
@@ -287,6 +286,77 @@ public class ScrapBaseAthle {
 	        		listInfosSup.add( el.text() );
 	        	}
 	        }
+	        
+	        boolean hasResultats = false ;
+	        
+	        Elements elEp = doc.select("td:contains(Epreuves et Résultats)");
+	        hasResultats = ( elEp != null && elEp.size() > 0 ); 
+	        
+	        List<String> listOrg = new ArrayList<>();
+	        
+	        //organisation 
+	        String organisation = null ;
+	        Elements elsOrg = doc.select("table.linedRed").select("tr");
+	        int indOrg = 0 ;
+
+	        
+	        String propOrg = "";
+	        String propVal = "";
+	        boolean contactTechniqueOK = false;
+	        
+	        //TODO: rewrite with ind
+	        for ( Element elOrg : elsOrg ){
+
+	            // on démarre au premier el du tab
+	            if ( indOrg <= 0 ){
+	                indOrg ++;
+	                continue;
+	            }
+	            
+	            if ( elOrg.select("td").size() >= 2 ){
+	                    if ( ! cleanText(elOrg.select("td").get(0).text() ).equals("") ){
+	                        propOrg = cleanText(elOrg.select("td").get(0).text());
+	                    }
+        	            propVal = cleanText(elOrg.select("td").get(2).text());
+        	            
+        	            if ( propOrg.equals("Contact Technique") ){
+        	                contactTechniqueOK = true;
+        	            }
+        	            
+        	            if ( contactTechniqueOK && !propOrg.equals("Contact Technique") ){
+        	                break;
+        	            }
+        	            
+        	            listOrg.add( propOrg+";"+ propVal);
+	            }
+	            
+	            
+	        }
+	        
+	        //épreuves
+	        Elements elsEpreuves = doc.select("div#imgelement_1").parents().select("tbody")
+	        
+	        for ( int ind = 1 ; ind < elsEpreuves.size(); ind++ ){
+	            
+	            if ( elsEpreuves.get( ind  ).select("")  )
+	            
+	            //td 1 -> heure
+	            //td 2 -> nom epreuve
+	            //td3  -> categorie
+	            //td4  -> distance
+	            //td5  -> label
+	            
+	        }
+	        
+	        
+	                
+	         //doc.select("tr:contains(Organisateur)").select( "tr:[style=font-weight:normal;text-align:left;width:90%]" )
+	        
+	        
+	        
+	        
+	        
+	        
 	        
 	        
 	        
@@ -311,6 +381,14 @@ public class ScrapBaseAthle {
 
 	    }
 
+	   
+	   
+	   
+	   public static String cleanText(String s) {
+	       s = s.replace("\u00a0","").trim();
+	       return s;
+	    }
+	   
 	    // gets IDS de chaque page + print dans fichier
 	    private static void getIds(int ind) throws IOException {
 
