@@ -15,7 +15,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class StartProcess {
+public class ProcessStart {
 
     // http://www.commentcamarche.net/forum/affich-2658844-connection-a-mysql-via-java
 
