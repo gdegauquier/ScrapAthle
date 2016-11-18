@@ -289,7 +289,7 @@ public class ScrapBaseAthle {
 	        
 	        boolean hasResultats = false ;
 	        
-	        Elements elEp = doc.select("td:contains(Epreuves et RÃ©sultats)");
+	        Elements elEp = doc.select("td:contains(Epreuves et Résultats)");
 	        hasResultats = ( elEp != null && elEp.size() > 0 ); 
 	        
 	        List<String> listOrg = new ArrayList<>();
@@ -341,14 +341,37 @@ public class ScrapBaseAthle {
             int nbTd = elsEpreuves.get(ind).select("td").size();
             if (nbTd > 1) {
 
-                System.out.println("lg : " + nbTd);
+                //System.out.println("lg : " + nbTd);
 
             } else {
-                System.out.println(elsEpreuves.get(ind).select("td").text());
+            	String text = cleanText(elsEpreuves.get(ind).select("td").text());
+            	if ( text.equals("") ){
+            		text = cleanText(elsEpreuves.get(ind).select("td").select("img").attr("title"));
+            	}
+            	
+                if ( !text.equals("") ){
+                	System.out.println( text );
+                }
             }
 	            
-	            
         }
+        
+        Elements elsContacts = doc.select("td:contains(Inscrite au calendrier par)").select("tr");
+        
+        for (int ind = 0; ind < elsContacts.size(); ind++) {
+	            
+        	System.out.println(elsContacts.get(ind).select("td").get(0).text());
+        	System.out.println(elsContacts.get(ind).select("td").get(2).ownText());
+        	System.out.println(elsContacts.get(ind).select("td").get(2).select("a").attr("href"));
+        	
+        	
+        	
+
+        }
+	            
+    
+        
+        
 
 	        System.out.println("fin");
 
