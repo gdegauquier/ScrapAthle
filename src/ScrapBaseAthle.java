@@ -17,6 +17,8 @@ import org.jsoup.select.Elements;
 
 public class ScrapBaseAthle {
 
+    // http://www.commentcamarche.net/forum/affich-2658844-connection-a-mysql-via-java
+
     // static int indexEl = 0 ;
     // static int ind = 0 ;
     //
