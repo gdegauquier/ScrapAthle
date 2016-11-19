@@ -1,5 +1,6 @@
 package com.oprun.database;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.mysql.jdbc.Statement;
@@ -25,6 +26,22 @@ public class QueryBuilderTempHash {
 		} catch (SQLException e) {
 			System.out.println("DELETE temp_hash KO : " + e);
 		}
+	}
+
+	public static ResultSet get() {
+
+		ResultSet result = null;
+		try {
+			Statement query = (Statement) HelperDatabase.getConnection().createStatement();
+			result = query.executeQuery("SELECT * FROM TEMP_HASH LIMIT 50"); // à
+																				// retirer
+																				// quand
+																				// process
+																				// OK
+		} catch (SQLException e) {
+			System.out.println("get() temp_hash KO : " + e);
+		}
+		return result;
 	}
 
 }

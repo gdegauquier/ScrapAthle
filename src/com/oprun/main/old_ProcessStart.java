@@ -1,34 +1,13 @@
 package com.oprun.main;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.sql.SQLException;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import com.oprun.database.QueryBuilderTempHash;
 
 public class old_ProcessStart {
 
 	// http://www.commentcamarche.net/forum/affich-2658844-connection-a-mysql-via-java
 
 	public static void main(String args[]) throws IOException, SQLException {
-
-		// scan de chaque page : pour recup IDS
-
-		QueryBuilderTempHash.deleteAll();
-
-		for (int ind = 0; ind <= 100; ind++) {
-			insertIdHash(ind);
-		}
-
-		System.out.println("fin main");
-		return;
 
 		// lecture des IDS du fichier
 		/*
@@ -162,52 +141,6 @@ public class old_ProcessStart {
 		 * 
 		 * 
 		 */
-
-	}
-
-	// gets IDS de chaque page + print dans fichier
-	private static void insertIdHash(int ind) throws IOException {
-
-		System.out.println("page" + ind);
-		String url = "http://bases.athle.com/asp.net/liste.aspx?frmpostback=true&frmbase=calendrier&frmmode=1&frmespace=0&frmsaison=2016&frmposition="
-				+ ind;
-
-		Document doc;
-		try {
-			doc = Jsoup.connect(url).get();
-		} catch (IOException e) {
-			System.out.println("Page " + ind + " : parsing KO." + e);
-			return;
-		}
-
-		Elements links = doc.select("a[href]"); // a with href
-
-		for (Element link : links) {
-			String linkId = link.attributes().get("href");
-
-			if (linkId.contains("bddThrowCompet")) {
-				String keyToFind = "javascript:bddThrowCompet('";
-				int posBegin = linkId.indexOf(keyToFind);
-				int length = keyToFind.length();
-				int posEnd = linkId.indexOf("', 0)");
-
-				linkId = linkId.substring(posBegin + length, posEnd);
-
-				QueryBuilderTempHash.insert(linkId);
-
-			}
-		}
-
-	}
-
-	private static void writeIntoFile(String file, String line) {
-
-		try {
-
-			Files.write(Paths.get("C:\\temp\\" + file), line.getBytes(), StandardOpenOption.APPEND);
-		} catch (IOException e) {
-			System.out.println("line " + line + " : print file KO.");
-		}
 
 	}
 
