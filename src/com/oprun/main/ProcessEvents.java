@@ -154,8 +154,7 @@ public class ProcessEvents {
 	}
 	
 	private static int parseEventSubtitle(String subTitle){
-		
-		
+
 		//VALBERG (C-A / 006)
 		//Hong Kong (REPUBLIQUE POPULAIRE DE CHINE)
 		
@@ -172,7 +171,7 @@ public class ProcessEvents {
 		
 		String country = subTitle.substring( subTitle.indexOf("(")+1, subTitle.indexOf(")") ).trim();
 		String town = subTitle.substring(0, subTitle.indexOf("(")).trim() ;
-        String district = "";
+                String district = "";
 		String codeDepartment = "";
 		
 		if ( slash ) {
