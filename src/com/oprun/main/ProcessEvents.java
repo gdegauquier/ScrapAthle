@@ -21,6 +21,7 @@ import com.oprun.database.QueryBuilderLevel;
 import com.oprun.database.QueryBuilderTempHash;
 import com.oprun.database.QueryBuilderTown;
 import com.oprun.database.QueryBuilderType;
+import com.oprun.helper.HelperText;
 
 public class ProcessEvents {
 
@@ -70,19 +71,68 @@ public class ProcessEvents {
 		//subtitle
 		String subtitle = doc.select("[style~=color:#000; font-size:15px]").text(); 
 		//date
-	        String date     = doc.select("[style~=color:#A00014]").text(); 
-	        //level
-	        String level    = doc.select("td:contains(Niveau : )").get(0).getElementsByTag("b").text(); 
-	        Integer idLevel = 0 ;
-	        
-	        //types
-                String type = doc.select("td:contains(Type : )").get(0).getElementsByTag("b").text();
+        String date     = doc.select("[style~=color:#A00014]").text(); 
+        //level
+        String level    = doc.select("td:contains(Niveau : )").get(0).getElementsByTag("b").text(); 
+        Integer idLevel = 0 ;
+        
+        //types
+        String type = doc.select("td:contains(Type : )").get(0).getElementsByTag("b").text();
 
-	        if ( QueryBuilderLevel.countByLabel( level ) == 0 ){
-	            QueryBuilderLevel.insert( level );
-	        }
-	        ResultSet rsLevel = QueryBuilderLevel.getByLabel(level);
-                idLevel = rsLevel.getInt("ID");
+        if ( QueryBuilderLevel.countByLabel( level ) == 0 ){
+            QueryBuilderLevel.insert( level );
+        }
+        ResultSet rsLevel = QueryBuilderLevel.getByLabel(level);
+        idLevel = rsLevel.getInt("ID");
+        
+        //orga
+		String propOrg = "";
+		String propVal = "";
+		boolean contactTechniqueOK = false;
+
+		List<String> listOrg = new ArrayList<>();
+		// organisation
+		String organisation = null;
+		Elements elsOrg = doc.select("td:contains(Adresse :)").select("tr");
+		int indOrg = 0;
+
+		// TODO: rewrite with ind
+		for (Element elOrg : elsOrg) {
+
+			// on démarre au premier el du tab
+			if (indOrg <= 0) {
+				indOrg++;
+				continue;
+			}
+
+			if (elOrg.select("td").size() >= 2) {
+				if (!HelperText.clean(elOrg.select("td").get(0).text()).equals("")) {
+					propOrg = HelperText.clean(elOrg.select("td").get(0).text());
+				}
+				propVal = HelperText.clean(elOrg.select("td").get(2).text());
+
+				if (propOrg.equals("Contact Technique")) {
+					contactTechniqueOK = true;
+				}
+
+				if (contactTechniqueOK && !propOrg.equals("Contact Technique")) {
+					break;
+				}
+				
+				if ( propOrg.equals("Services")){
+					for ( Element el : elOrg.select("td").get(2).select("img") ){
+						listOrg.add(propOrg+";"+el.attr("title"));
+					}
+				}else{
+					listOrg.add(propOrg + ";" + propVal);
+				}
+				
+				
+			}
+
+		}
+        
+        
 	        
 		Map<String, String> event = new HashMap<>();
 		event.put("id_hash", hashId);
@@ -199,10 +249,10 @@ public class ProcessEvents {
 			idCountry = 0;
 		}
 		
-            // region existe ?
-            if (!district.equals("") && QueryBuilderDistrict.countByCode(district) == 0) {
-                QueryBuilderDistrict.insert(district, null, idCountry);
-            }
+        // region existe ?
+        if (!district.equals("") && QueryBuilderDistrict.countByCode(district) == 0) {
+            QueryBuilderDistrict.insert(district, null, idCountry);
+        }
 
 		//code postal existe ?
 		if ( !codeDepartment.equals("") && QueryBuilderDepartment.countByCode(codeDepartment) == 0 ){
