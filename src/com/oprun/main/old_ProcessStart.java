@@ -33,13 +33,29 @@ public class old_ProcessStart {
 		 * } catch (IndexOutOfBoundsException e) {
 		 * System.out.println("hash id KO : " + hashId); continue; }
 		 * 
+		 * 
+		 * 
 		 * String subtitle =
-		 * doc.select("[style~=color:#000; font-size:15px]").text(); String date
-		 * = doc.select("[style~=color:#A00014]").text(); String code =
+		 * doc.select("[style~=color:#000; font-size:15px]").text(); 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * OK
+		 * 
+                 String code =
 		 * doc.select("td:contains(Code : )").get(0).getElementsByTag("b").text(
-		 * ); String niveau =
+		 * ); 
+		 * 
+		 * OK
+		 * 
+		 * String niveau =
 		 * doc.select("td:contains(Niveau : )").get(0).getElementsByTag("b").
-		 * text(); String type =
+		 * text(); 
+		 * 
+		 * 
+		 * String type =
 		 * doc.select("td:contains(Type : )").get(0).getElementsByTag("b").text(
 		 * );
 		 * 
