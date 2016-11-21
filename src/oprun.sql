@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Client :  127.0.0.1
--- Généré le :  Dim 20 Novembre 2016 à 21:28
--- Version du serveur :  10.1.13-MariaDB
--- Version de PHP :  5.6.21
+-- Généré le :  Lun 21 Novembre 2016 à 17:52
+-- Version du serveur :  10.1.16-MariaDB
+-- Version de PHP :  5.6.24
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -37,16 +37,16 @@ CREATE TABLE `country` (
 --
 
 INSERT INTO `country` (`id`, `code`, `label`) VALUES
-(1, 'FR', 'FRANCE'),
-(10, NULL, 'REPUBLIQUE POPULAIRE DE CHINE'),
-(11, NULL, 'SUISSE'),
-(12, NULL, 'ALLEMAGNE'),
-(13, NULL, 'BELGIQUE'),
-(14, NULL, 'IRLANDE'),
-(15, NULL, 'ITALIE'),
-(16, NULL, 'FINLANDE'),
-(17, NULL, 'ETATS UNIS d’AMERIQUE'),
-(18, NULL, 'ISRAEL');
+(19, NULL, 'REPUBLIQUE POPULAIRE DE CHINE'),
+(20, NULL, 'France'),
+(21, NULL, 'SUISSE'),
+(22, NULL, 'ALLEMAGNE'),
+(23, NULL, 'BELGIQUE'),
+(24, NULL, 'IRLANDE'),
+(25, NULL, 'ITALIE'),
+(26, NULL, 'FINLANDE'),
+(27, NULL, 'ETATS UNIS d’AMERIQUE'),
+(28, NULL, 'ISRAEL');
 
 -- --------------------------------------------------------
 
@@ -65,33 +65,33 @@ CREATE TABLE `department` (
 --
 
 INSERT INTO `department` (`code`, `label`, `code_district`) VALUES
-('006', NULL, '0'),
-('013', NULL, '0'),
-('014', NULL, '0'),
-('017', NULL, '0'),
-('019', NULL, '0'),
-('022', NULL, '0'),
-('024', NULL, '0'),
-('027', NULL, '0'),
-('030', NULL, '0'),
-('033', NULL, '0'),
-('042', NULL, '0'),
-('044', NULL, '0'),
-('050', NULL, '0'),
-('051', NULL, '0'),
-('057', NULL, '0'),
-('059', NULL, '0'),
-('061', NULL, '0'),
-('063', NULL, '0'),
-('067', NULL, '0'),
-('069', NULL, '0'),
-('078', NULL, '0'),
-('080', NULL, '0'),
-('081', NULL, '0'),
-('086', NULL, '0'),
-('088', NULL, '0'),
-('092', NULL, '0'),
-('095', NULL, '0');
+('006', NULL, 'C-A'),
+('013', NULL, 'PRO'),
+('014', NULL, 'B-N'),
+('017', NULL, 'POI'),
+('019', NULL, 'LIM'),
+('022', NULL, 'BRE'),
+('024', NULL, 'AQU'),
+('027', NULL, 'H-N'),
+('030', NULL, 'LAN'),
+('033', NULL, 'AQU'),
+('042', NULL, 'R-A'),
+('044', NULL, 'P-L'),
+('050', NULL, 'B-N'),
+('051', NULL, 'CHA'),
+('057', NULL, 'LOR'),
+('059', NULL, 'NPC'),
+('061', NULL, 'B-N'),
+('063', NULL, 'AUV'),
+('067', NULL, 'ALS'),
+('069', NULL, 'R-A'),
+('078', NULL, 'I-F'),
+('080', NULL, 'PIC'),
+('081', NULL, 'PYR'),
+('086', NULL, 'POI'),
+('088', NULL, 'LOR'),
+('092', NULL, 'I-F'),
+('095', NULL, 'I-F');
 
 -- --------------------------------------------------------
 
@@ -101,9 +101,35 @@ INSERT INTO `department` (`code`, `label`, `code_district`) VALUES
 
 CREATE TABLE `district` (
   `code` varchar(10) NOT NULL,
-  `label` varchar(50) NOT NULL,
+  `label` varchar(50) DEFAULT NULL,
   `id_country` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `district`
+--
+
+INSERT INTO `district` (`code`, `label`, `id_country`) VALUES
+('ALS', NULL, 20),
+('AQU', NULL, 20),
+('AUV', NULL, 20),
+('B-N', NULL, 20),
+('BRE', NULL, 20),
+('C-A', NULL, 20),
+('CEN', NULL, 20),
+('CHA', NULL, 20),
+('H-N', NULL, 20),
+('I-F', NULL, 20),
+('LAN', NULL, 20),
+('LIM', NULL, 20),
+('LOR', NULL, 20),
+('NPC', NULL, 20),
+('P-L', NULL, 20),
+('PIC', NULL, 20),
+('POI', NULL, 20),
+('PRO', NULL, 20),
+('PYR', NULL, 20),
+('R-A', NULL, 20);
 
 -- --------------------------------------------------------
 
@@ -118,7 +144,7 @@ CREATE TABLE `event` (
   `date_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted` int(11) NOT NULL,
   `date_event` date NOT NULL DEFAULT '0000-00-00',
-  `id_level` int(11) NOT NULL,
+  `id_level` int(11) DEFAULT NULL,
   `sub_title` varchar(50) NOT NULL,
   `id_town` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -128,56 +154,56 @@ CREATE TABLE `event` (
 --
 
 INSERT INTO `event` (`id`, `id_hash`, `title`, `date_update`, `deleted`, `date_event`, `id_level`, `sub_title`, `id_town`) VALUES
-(387, '717852893828796852863843273855839828', 'Ultra trail Tai Mo Shan (HKG)', '2016-11-20 20:08:24', 0, '2018-12-05', 0, 'Hong Kong (REPUBLIQUE POPULAIRE DE CHINE)', 1),
-(388, '223852199831565843433834742831517831', 'SNOW TRAIL DU NOUVEL AN', '2016-11-20 20:08:24', 0, '2018-12-05', 0, 'VALBERG (C-A / 006)', 2),
-(389, '364852860831457831643837723834300843', 'Marathon du Nouvel an (Sui)', '2016-11-20 20:08:25', 0, '2018-12-05', 0, 'Zurich (SUISSE)', 3),
-(390, '569852320831377849416849411840994837', 'Animation jeunes secteur Nord', '2016-11-20 20:08:26', 0, '2018-12-05', 0, 'LA WANTZENAU (ALS / 067)', 4),
-(391, '828852571831362840297852235831401846', 'Championnats Regionaux d''Epreuves Combinées', '2016-11-20 20:08:27', 0, '2018-12-05', 0, 'NANTES (P-L / 044)', 5),
-(392, '808852228831795840917840931852268843', 'Meeting Sprint/haies', '2016-11-20 20:08:27', 0, '2018-12-05', 0, 'OBERNAI (ALS / 067)', 6),
-(393, '991852758831506840544852628831901840', 'Championnats Regionaux MASTERS (Veterans)', '2016-11-20 20:08:28', 0, '2018-12-05', 0, 'NANTES (P-L / 044)', 5),
-(394, '444852250831295831954846837840253849', 'Kid''s athlé secteur Nord', '2016-11-20 20:08:28', 0, '2018-12-05', 0, 'LA WANTZENAU (ALS / 067)', 4),
-(395, '481852954831413831589849271837751834', 'Triathlon PO/BE/MI Caudry', '2016-11-20 20:08:29', 0, '2018-12-05', 0, 'CAUDRY (NPC / 059)', 7),
-(396, '243852959831889831296843902828393852', 'Meeting à Offenbourg (ALL)', '2016-11-20 20:08:29', 0, '2018-12-05', 0, 'OFFENBOURG (ALLEMAGNE)', 8),
-(397, '443852630834971831812834812828738834', 'Corrida de Sainte Ménehould', '2016-11-20 20:08:30', 0, '2018-12-05', 0, 'SAINTE MENEHOULD (CHA / 051)', 9),
-(398, '191852207831466831535843451831447855', 'Compétition à Gand (Bel)', '2016-11-20 20:08:30', 0, '2018-12-05', 0, 'GAND (BELGIQUE)', 10),
-(399, '401852701831695855220834760834248831', 'Meeting Sauts au CREPS', '2016-11-20 20:08:31', 0, '2018-12-05', 0, 'STRASBOURG (ALS / 067)', 11),
-(400, '448852746831975828617849148837296849', 'Compétition à Nenagh (irl)', '2016-11-20 20:08:31', 0, '2018-12-05', 0, 'NENAGH (IRLANDE)', 12),
-(401, '300852944831556831202846952831958843', 'Lancers Longs et Courses piste', '2016-11-20 20:08:32', 0, '2018-12-05', 0, 'NICE (C-A / 006)', 13),
-(402, '653852873831150849940837874849812834', 'Course des 3 Collines', '2016-11-20 20:08:33', 0, '2018-12-05', 0, 'Saint-Gervasy (LAN / 030)', 14),
-(403, '119852606831510831513846440834303855', 'La Fuvelaine 25éme édition', '2016-11-20 20:08:34', 0, '2018-12-05', 0, 'Fuveau (PRO / 013)', 15),
-(404, '553852794831951840244840253852751849', 'DETOX RELAIS', '2016-11-20 20:08:34', 0, '2018-12-05', 0, 'SAINT GERVAIS (AQU / 033)', 16),
-(405, '146852466831272849167852910855441840', 'FOULEES ESCOVIENNES', '2016-11-20 20:08:35', 0, '2018-12-05', 0, 'ECOUIS (H-N / 027)', 17),
-(406, '818852293831131840177840155849801843', 'Corrida des rois', '2016-11-20 20:08:35', 0, '2018-12-05', 0, 'SEILHAC (LIM / 019)', 18),
-(407, '512852662831122843150852918840839846', '13ème CORRIDA DE L''EPIPHANIE', '2016-11-20 20:08:36', 0, '2018-12-05', 0, 'LESCURE D''ALBIGEOIS (PYR / 081)', 19),
-(408, '686852470831960840620831310843646828', 'Départementaux sauts verticaux CD50', '2016-11-20 20:08:36', 0, '2018-12-05', 0, 'GRANVILLE (B-N / 050)', 20),
-(409, '954852649831756840970852978837511852', 'Challenge Pouchet', '2016-11-20 20:08:37', 0, '2018-12-05', 0, 'VAL DE REUIL (H-N / 027)', 21),
-(410, '358852844831373846672834442855323855', 'JOURNEE CJES NIVEAU 2 JEAN BOUIN', '2016-11-20 20:08:37', 0, '2018-12-05', 0, 'LILLE (NPC / 059)', 22),
-(411, '973852225831739843668855108855338837', 'Meeting n°2 réservé Rhône et Ain', '2016-11-20 20:08:38', 0, '2018-12-05', 0, 'LYON (R-A / 069)', 23),
-(412, '543852909831473840190834744834658855', '3ème Journée CJESV EN SALLE + REG FFSU', '2016-11-20 20:08:39', 0, '2018-12-05', 0, 'NICE (C-A / 006)', 13),
-(413, '464852341831609840687855301837518849', '7e Meeting des Hauts de Seine', '2016-11-20 20:08:39', 0, '2018-12-05', 0, 'EAUBONNE (I-F / 092)', 24),
-(414, '621852249831766840555834941852245843', 'Départementaux de lancers longs', '2016-11-20 20:08:40', 0, '2018-12-05', 0, 'LA ROCHELLE (POI / 017)', 25),
-(415, '429852300831795831284828363840626837', 'GALOUPADENN des TIMOUNS', '2016-11-20 20:08:40', 0, '2018-12-05', 0, 'Guingamp (BRE / 022)', 26),
-(416, '806852184831658831430840206849740849', 'Tecno Globe Marathon', '2016-11-20 20:08:40', 0, '2018-12-05', 0, 'Cernay La Ville (I-F / 078)', 27),
-(417, '324852140834113831813831291849510837', 'Sibérienne d''Eppeville', '2016-11-20 20:08:41', 0, '2018-12-05', 0, 'EPPEVILLE (PIC / 080)', 28),
-(418, '688852589831817843607834912834459840', 'Challenge des jeunes', '2016-11-20 20:08:41', 0, '2018-12-05', 0, 'MONTBRISON (R-A / 042)', 29),
-(419, '524852915831262834201834607843448831', 'championnat régional UGSEL Ca/Ju', '2016-11-20 20:08:42', 0, '2018-12-05', 0, 'VAL DE REUIL (CEN / 027)', 21),
-(420, '547852593828941852554843379852238855', 'Trail La Corsa Della Bora (ITA)', '2016-11-20 20:08:42', 0, '2018-12-05', 0, 'Muggia (ITALIE)', 30),
-(421, '485852760831917840579837111852526834', 'UNSS-Cht_Académie-MI-Collèges_Lycées-en_salle', '2016-11-20 20:08:43', 0, '2018-12-05', 0, 'METZ (LOR / 057)', 31),
-(422, '748852366831668837524846433855880855', 'Acad en salle UNSS Lycées', '2016-11-20 20:08:43', 0, '2018-12-05', 0, 'MONDEVILLE (B-N / 014)', 32),
-(423, '109852340831780831258831139840836846', 'Championnats académiques UNSS Salle 2016', '2016-11-20 20:08:44', 0, '2018-12-05', 0, 'BORDEAUX (AQU / 033)', 33),
-(424, '336852257831417840481831881834166843', 'Championnats d''Académie', '2016-11-20 20:08:44', 0, '2018-12-05', 0, 'VOUNEUIL SOUS BIARD (POI / 086)', 34),
-(425, '921852251831899828742852492843300831', 'Compétition à Rovaniemi (fin)', '2016-11-20 20:08:45', 0, '2018-12-05', 0, 'ROVANIEMI (FINLANDE)', 35),
-(426, '469852299831571840293828493855264831', 'ACADEMIE UNSS', '2016-11-20 20:08:46', 0, '2018-12-05', 0, 'LILLE (NPC / 059)', 22),
-(427, '582852910831582843997855277855439834', 'Soirée n°2 Comité Rhône-Métropole Lyon', '2016-11-20 20:08:46', 0, '2018-12-05', 0, 'LYON (R-A / 069)', 23),
-(428, '705852662831674852414846968849853843', '2e soirée du 95 Cdfas-Eaubonne', '2016-11-20 20:08:46', 0, '2018-12-05', 0, 'Eaubonne (I-F / 095)', 24),
-(429, '655852169831199834328852964831804846', 'Animation jeunes secteur Centre', '2016-11-20 20:08:47', 0, '2018-12-05', 0, 'STRASBOURG (ALS / 067)', 11),
-(430, '992852379831958843416831755840548855', 'LA MONTAGNE PERCEE', '2016-11-20 20:08:47', 0, '2018-12-05', 0, 'Orcines (AUV / 063)', 36),
-(431, '555852194837942843310855469846595840', 'Compétition à Baton Rouge (usa)', '2016-11-20 20:08:48', 0, '2018-12-05', 0, 'BATON ROUGE (ETATS UNIS d’AMERIQUE)', 37),
-(432, '948852473831163831186837183834559837', 'Marathon de Tiberiade (Isr)', '2016-11-20 20:08:48', 0, '2018-12-05', 0, 'Tiberiade (ISRAEL)', 38),
-(433, '424852128831171840697837204831716846', 'MEETING', '2016-11-20 20:08:49', 0, '2018-12-05', 0, 'EPINAL (LOR / 088)', 39),
-(434, '400852576831353831367831525837373855', 'Compétition à Gand (bel)', '2016-11-20 20:08:49', 0, '2018-12-05', 0, 'GAND (BELGIQUE)', 10),
-(435, '484852691831237855751837623855704855', 'Nocturne De Puyferrat', '2016-11-20 20:08:50', 0, '2018-12-05', 0, 'Saint Astier (AQU / 024)', 40),
-(436, '569852707831247843201837289831759831', 'Départementaux cross cd61 FFA + Cross FSGT', '2016-11-20 20:08:50', 0, '2018-12-05', 0, 'Alencon (B-N / 061)', 41);
+(800, '717852893828796852863843273855839828', 'Ultra trail Tai Mo Shan (HKG)', '2016-11-21 12:46:32', 0, '2016-01-01', 1, 'Hong Kong (REPUBLIQUE POPULAIRE DE CHINE)', 42),
+(801, '223852199831565843433834742831517831', 'SNOW TRAIL DU NOUVEL AN', '2016-11-21 12:46:32', 0, '2016-01-01', 2, 'VALBERG (C-A / 006)', 43),
+(802, '364852860831457831643837723834300843', 'Marathon du Nouvel an (Sui)', '2016-11-21 12:46:33', 0, '2016-01-01', 1, 'Zurich (SUISSE)', 44),
+(803, '569852320831377849416849411840994837', 'Animation jeunes secteur Nord', '2016-11-21 12:46:33', 0, '2016-01-02', 2, 'LA WANTZENAU (ALS / 067)', 45),
+(804, '828852571831362840297852235831401846', 'Championnats Regionaux d''Epreuves Combinées', '2016-11-21 12:46:33', 0, '2016-01-02', 3, 'NANTES (P-L / 044)', 46),
+(805, '808852228831795840917840931852268843', 'Meeting Sprint/haies', '2016-11-21 12:46:34', 0, '2016-01-02', 2, 'OBERNAI (ALS / 067)', 47),
+(806, '991852758831506840544852628831901840', 'Championnats Regionaux MASTERS (Veterans)', '2016-11-21 12:46:34', 0, '2016-01-02', 3, 'NANTES (P-L / 044)', 46),
+(807, '444852250831295831954846837840253849', 'Kid''s athlé secteur Nord', '2016-11-21 12:46:34', 0, '2016-01-02', 2, 'LA WANTZENAU (ALS / 067)', 45),
+(808, '481852954831413831589849271837751834', 'Triathlon PO/BE/MI Caudry', '2016-11-21 12:46:34', 0, '2016-01-02', 2, 'CAUDRY (NPC / 059)', 48),
+(809, '243852959831889831296843902828393852', 'Meeting à Offenbourg (ALL)', '2016-11-21 12:46:35', 0, '2016-01-02', 3, 'OFFENBOURG (ALLEMAGNE)', 49),
+(810, '443852630834971831812834812828738834', 'Corrida de Sainte Ménehould', '2016-11-21 12:46:36', 0, '2016-01-02', 2, 'SAINTE MENEHOULD (CHA / 051)', 50),
+(811, '191852207831466831535843451831447855', 'Compétition à Gand (Bel)', '2016-11-21 12:46:36', 0, '2016-01-02', 1, 'GAND (BELGIQUE)', 51),
+(812, '401852701831695855220834760834248831', 'Meeting Sauts au CREPS', '2016-11-21 12:46:37', 0, '2016-01-02', 3, 'STRASBOURG (ALS / 067)', 52),
+(813, '448852746831975828617849148837296849', 'Compétition à Nenagh (irl)', '2016-11-21 12:46:37', 0, '2016-01-03', 1, 'NENAGH (IRLANDE)', 53),
+(814, '300852944831556831202846952831958843', 'Lancers Longs et Courses piste', '2016-11-21 12:46:37', 0, '2016-01-03', 3, 'NICE (C-A / 006)', 54),
+(815, '653852873831150849940837874849812834', 'Course des 3 Collines', '2016-11-21 12:46:37', 0, '2016-01-03', 2, 'Saint-Gervasy (LAN / 030)', 55),
+(816, '119852606831510831513846440834303855', 'La Fuvelaine 25éme édition', '2016-11-21 12:46:38', 0, '2016-01-03', 2, 'Fuveau (PRO / 013)', 56),
+(817, '553852794831951840244840253852751849', 'DETOX RELAIS', '2016-11-21 12:46:38', 0, '2016-01-03', 2, 'SAINT GERVAIS (AQU / 033)', 57),
+(818, '146852466831272849167852910855441840', 'FOULEES ESCOVIENNES', '2016-11-21 12:46:38', 0, '2016-01-03', 2, 'ECOUIS (H-N / 027)', 58),
+(819, '818852293831131840177840155849801843', 'Corrida des rois', '2016-11-21 12:46:39', 0, '2016-01-03', 2, 'SEILHAC (LIM / 019)', 59),
+(820, '512852662831122843150852918840839846', '13ème CORRIDA DE L''EPIPHANIE', '2016-11-21 12:46:39', 0, '2016-01-03', 2, 'LESCURE D''ALBIGEOIS (PYR / 081)', 60),
+(821, '686852470831960840620831310843646828', 'Départementaux sauts verticaux CD50', '2016-11-21 12:46:39', 0, '2016-01-03', 2, 'GRANVILLE (B-N / 050)', 61),
+(822, '954852649831756840970852978837511852', 'Challenge Pouchet', '2016-11-21 12:46:40', 0, '2016-01-03', 3, 'VAL DE REUIL (H-N / 027)', 62),
+(823, '358852844831373846672834442855323855', 'JOURNEE CJES NIVEAU 2 JEAN BOUIN', '2016-11-21 12:46:40', 0, '2016-01-03', 3, 'LILLE (NPC / 059)', 63),
+(824, '973852225831739843668855108855338837', 'Meeting n°2 réservé Rhône et Ain', '2016-11-21 12:46:40', 0, '2016-01-03', 3, 'LYON (R-A / 069)', 64),
+(825, '543852909831473840190834744834658855', '3ème Journée CJESV EN SALLE + REG FFSU', '2016-11-21 12:46:41', 0, '2016-01-03', 3, 'NICE (C-A / 006)', 54),
+(826, '464852341831609840687855301837518849', '7e Meeting des Hauts de Seine', '2016-11-21 12:46:41', 0, '2016-01-03', 2, 'EAUBONNE (I-F / 092)', 65),
+(827, '621852249831766840555834941852245843', 'Départementaux de lancers longs', '2016-11-21 12:46:42', 0, '2016-01-03', 2, 'LA ROCHELLE (POI / 017)', 66),
+(828, '429852300831795831284828363840626837', 'GALOUPADENN des TIMOUNS', '2016-11-21 12:46:42', 0, '2016-01-03', 2, 'Guingamp (BRE / 022)', 67),
+(829, '806852184831658831430840206849740849', 'Tecno Globe Marathon', '2016-11-21 12:46:42', 0, '2016-01-03', 2, 'Cernay La Ville (I-F / 078)', 68),
+(830, '324852140834113831813831291849510837', 'Sibérienne d''Eppeville', '2016-11-21 12:46:42', 0, '2016-01-03', 2, 'EPPEVILLE (PIC / 080)', 69),
+(831, '688852589831817843607834912834459840', 'Challenge des jeunes', '2016-11-21 12:46:43', 0, '2016-01-03', 2, 'MONTBRISON (R-A / 042)', 70),
+(832, '524852915831262834201834607843448831', 'championnat régional UGSEL Ca/Ju', '2016-11-21 12:46:43', 0, '2016-01-06', 3, 'VAL DE REUIL (CEN / 027)', 62),
+(833, '547852593828941852554843379852238855', 'Trail La Corsa Della Bora (ITA)', '2016-11-21 12:46:44', 0, '2016-01-06', 1, 'Muggia (ITALIE)', 71),
+(834, '485852760831917840579837111852526834', 'UNSS-Cht_Académie-MI-Collèges_Lycées-en_salle', '2016-11-21 12:46:44', 0, '2016-01-06', 3, 'METZ (LOR / 057)', 72),
+(835, '748852366831668837524846433855880855', 'Acad en salle UNSS Lycées', '2016-11-21 12:46:44', 0, '2016-01-06', 3, 'MONDEVILLE (B-N / 014)', 73),
+(836, '109852340831780831258831139840836846', 'Championnats académiques UNSS Salle 2016', '2016-11-21 12:46:44', 0, '2016-01-06', 3, 'BORDEAUX (AQU / 033)', 74),
+(837, '336852257831417840481831881834166843', 'Championnats d''Académie', '2016-11-21 12:46:45', 0, '2016-01-06', 3, 'VOUNEUIL SOUS BIARD (POI / 086)', 75),
+(838, '921852251831899828742852492843300831', 'Compétition à Rovaniemi (fin)', '2016-11-21 12:46:45', 0, '2016-01-06', 1, 'ROVANIEMI (FINLANDE)', 76),
+(839, '469852299831571840293828493855264831', 'ACADEMIE UNSS', '2016-11-21 12:46:45', 0, '2016-01-06', 3, 'LILLE (NPC / 059)', 63),
+(840, '582852910831582843997855277855439834', 'Soirée n°2 Comité Rhône-Métropole Lyon', '2016-11-21 12:46:46', 0, '2016-01-07', 3, 'LYON (R-A / 069)', 64),
+(841, '705852662831674852414846968849853843', '2e soirée du 95 Cdfas-Eaubonne', '2016-11-21 12:46:46', 0, '2016-01-08', 2, 'Eaubonne (I-F / 095)', 65),
+(842, '655852169831199834328852964831804846', 'Animation jeunes secteur Centre', '2016-11-21 12:46:46', 0, '2016-01-08', 2, 'STRASBOURG (ALS / 067)', 52),
+(843, '992852379831958843416831755840548855', 'LA MONTAGNE PERCEE', '2016-11-21 12:46:47', 0, '2016-01-08', 2, 'Orcines (AUV / 063)', 77),
+(844, '555852194837942843310855469846595840', 'Compétition à Baton Rouge (usa)', '2016-11-21 12:46:48', 0, '2016-01-08', 1, 'BATON ROUGE (ETATS UNIS d’AMERIQUE)', 78),
+(845, '948852473831163831186837183834559837', 'Marathon de Tiberiade (Isr)', '2016-11-21 12:46:48', 0, '2016-01-08', 1, 'Tiberiade (ISRAEL)', 79),
+(846, '424852128831171840697837204831716846', 'MEETING', '2016-11-21 12:46:48', 0, '2016-01-08', 2, 'EPINAL (LOR / 088)', 80),
+(847, '400852576831353831367831525837373855', 'Compétition à Gand (bel)', '2016-11-21 12:46:48', 0, '2016-01-09', 1, 'GAND (BELGIQUE)', 51),
+(848, '484852691831237855751837623855704855', 'Nocturne De Puyferrat', '2016-11-21 12:46:49', 0, '2016-01-09', 2, 'Saint Astier (AQU / 024)', 81),
+(849, '569852707831247843201837289831759831', 'Départementaux cross cd61 FFA + Cross FSGT', '2016-11-21 12:46:49', 0, '2016-01-09', 2, 'Alencon (B-N / 061)', 82);
 
 -- --------------------------------------------------------
 
@@ -187,11 +213,20 @@ INSERT INTO `event` (`id`, `id_hash`, `title`, `date_update`, `deleted`, `date_e
 
 CREATE TABLE `level` (
   `id` int(11) NOT NULL,
-  `code` varchar(5) NOT NULL,
+  `code` varchar(5) DEFAULT NULL,
   `label` varchar(50) NOT NULL,
   `deleted` int(11) NOT NULL,
   `date_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `level`
+--
+
+INSERT INTO `level` (`id`, `code`, `label`, `deleted`, `date_update`) VALUES
+(1, NULL, 'International', 0, '2016-11-21 12:13:48'),
+(2, NULL, 'Départemental', 0, '2016-11-21 12:13:57'),
+(3, NULL, 'Régional', 0, '2016-11-21 12:13:58');
 
 -- --------------------------------------------------------
 
@@ -9911,47 +9946,83 @@ CREATE TABLE `town` (
 --
 
 INSERT INTO `town` (`id`, `label`, `code_department`, `id_country`) VALUES
-(1, 'Hong Kong', NULL, 10),
-(2, 'VALBERG', '006', 1),
-(3, 'Zurich', NULL, 11),
-(4, 'LA WANTZENAU', '067', 1),
-(5, 'NANTES', '044', 1),
-(6, 'OBERNAI', '067', 1),
-(7, 'CAUDRY', '059', 1),
-(8, 'OFFENBOURG', NULL, 12),
-(9, 'SAINTE MENEHOULD', '051', 1),
-(10, 'GAND', NULL, 13),
-(11, 'STRASBOURG', '067', 1),
-(12, 'NENAGH', NULL, 14),
-(13, 'NICE', '006', 1),
-(14, 'Saint-Gervasy', '030', 1),
-(15, 'Fuveau', '013', 1),
-(16, 'SAINT GERVAIS', '033', 1),
-(17, 'ECOUIS', '027', 1),
-(18, 'SEILHAC', '019', 1),
-(19, 'LESCURE D''ALBIGEOIS', '081', 1),
-(20, 'GRANVILLE', '050', 1),
-(21, 'VAL DE REUIL', '027', 1),
-(22, 'LILLE', '059', 1),
-(23, 'LYON', '069', 1),
-(24, 'EAUBONNE', '092', 1),
-(25, 'LA ROCHELLE', '017', 1),
-(26, 'Guingamp', '022', 1),
-(27, 'Cernay La Ville', '078', 1),
-(28, 'EPPEVILLE', '080', 1),
-(29, 'MONTBRISON', '042', 1),
-(30, 'Muggia', NULL, 15),
-(31, 'METZ', '057', 1),
-(32, 'MONDEVILLE', '014', 1),
-(33, 'BORDEAUX', '033', 1),
-(34, 'VOUNEUIL SOUS BIARD', '086', 1),
-(35, 'ROVANIEMI', NULL, 16),
-(36, 'Orcines', '063', 1),
-(37, 'BATON ROUGE', NULL, 17),
-(38, 'Tiberiade', NULL, 18),
-(39, 'EPINAL', '088', 1),
-(40, 'Saint Astier', '024', 1),
-(41, 'Alencon', '061', 1);
+(42, 'Hong Kong', NULL, 19),
+(43, 'VALBERG', '006', 20),
+(44, 'Zurich', NULL, 21),
+(45, 'LA WANTZENAU', '067', 20),
+(46, 'NANTES', '044', 20),
+(47, 'OBERNAI', '067', 20),
+(48, 'CAUDRY', '059', 20),
+(49, 'OFFENBOURG', NULL, 22),
+(50, 'SAINTE MENEHOULD', '051', 20),
+(51, 'GAND', NULL, 23),
+(52, 'STRASBOURG', '067', 20),
+(53, 'NENAGH', NULL, 24),
+(54, 'NICE', '006', 20),
+(55, 'Saint-Gervasy', '030', 20),
+(56, 'Fuveau', '013', 20),
+(57, 'SAINT GERVAIS', '033', 20),
+(58, 'ECOUIS', '027', 20),
+(59, 'SEILHAC', '019', 20),
+(60, 'LESCURE D''ALBIGEOIS', '081', 20),
+(61, 'GRANVILLE', '050', 20),
+(62, 'VAL DE REUIL', '027', 20),
+(63, 'LILLE', '059', 20),
+(64, 'LYON', '069', 20),
+(65, 'EAUBONNE', '092', 20),
+(66, 'LA ROCHELLE', '017', 20),
+(67, 'Guingamp', '022', 20),
+(68, 'Cernay La Ville', '078', 20),
+(69, 'EPPEVILLE', '080', 20),
+(70, 'MONTBRISON', '042', 20),
+(71, 'Muggia', NULL, 25),
+(72, 'METZ', '057', 20),
+(73, 'MONDEVILLE', '014', 20),
+(74, 'BORDEAUX', '033', 20),
+(75, 'VOUNEUIL SOUS BIARD', '086', 20),
+(76, 'ROVANIEMI', NULL, 26),
+(77, 'Orcines', '063', 20),
+(78, 'BATON ROUGE', NULL, 27),
+(79, 'Tiberiade', NULL, 28),
+(80, 'EPINAL', '088', 20),
+(81, 'Saint Astier', '024', 20),
+(82, 'Alencon', '061', 20);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `type`
+--
+
+CREATE TABLE `type` (
+  `id` int(11) NOT NULL,
+  `code` varchar(10) DEFAULT NULL,
+  `label` varchar(50) NOT NULL,
+  `deleted` int(11) NOT NULL,
+  `date_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `type`
+--
+
+INSERT INTO `type` (`id`, `code`, `label`, `deleted`, `date_update`) VALUES
+(1, NULL, 'Hors Stade / Meeting', 0, '2016-11-21 12:35:03'),
+(2, NULL, 'Course', 0, '2016-11-21 12:35:18'),
+(3, NULL, 'Cross', 0, '2016-11-21 12:35:18'),
+(4, NULL, 'HS', 0, '2016-11-21 12:35:44'),
+(5, NULL, 'Trail', 0, '2016-11-21 12:35:44'),
+(6, NULL, 'Course nature', 0, '2016-11-21 12:35:44'),
+(7, NULL, 'Marathon / Epreuves à label', 0, '2016-11-21 12:35:45'),
+(8, NULL, 'Salle / Animation Jeunes', 0, '2016-11-21 12:35:45'),
+(9, NULL, 'Salle / Championnat', 0, '2016-11-21 12:35:46'),
+(11, NULL, 'Salle / Meeting', 0, '2016-11-21 12:35:46'),
+(12, NULL, 'Stade / Meeting', 0, '2016-11-21 12:35:49'),
+(13, NULL, 'Stade / Championnat', 0, '2016-11-21 12:35:54'),
+(14, NULL, 'Epreuves à label', 0, '2016-11-21 12:35:55'),
+(15, NULL, 'Cadets', 0, '2016-11-21 12:35:56'),
+(16, NULL, 'Juniors', 0, '2016-11-21 12:35:56'),
+(17, NULL, 'Cross / Championnat', 0, '2016-11-21 12:36:01');
 
 --
 -- Index pour les tables exportées
@@ -9967,6 +10038,12 @@ ALTER TABLE `country`
 -- Index pour la table `department`
 --
 ALTER TABLE `department`
+  ADD PRIMARY KEY (`code`);
+
+--
+-- Index pour la table `district`
+--
+ALTER TABLE `district`
   ADD PRIMARY KEY (`code`);
 
 --
@@ -9989,6 +10066,12 @@ ALTER TABLE `town`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Index pour la table `type`
+--
+ALTER TABLE `type`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT pour les tables exportées
 --
 
@@ -9996,17 +10079,27 @@ ALTER TABLE `town`
 -- AUTO_INCREMENT pour la table `country`
 --
 ALTER TABLE `country`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 --
 -- AUTO_INCREMENT pour la table `event`
 --
 ALTER TABLE `event`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=437;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=850;
+--
+-- AUTO_INCREMENT pour la table `level`
+--
+ALTER TABLE `level`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT pour la table `town`
 --
 ALTER TABLE `town`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
+--
+-- AUTO_INCREMENT pour la table `type`
+--
+ALTER TABLE `type`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
