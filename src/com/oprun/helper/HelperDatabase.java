@@ -18,7 +18,8 @@ public class HelperDatabase {
 		MysqlDataSource dataSource = new MysqlDataSource();
 		dataSource.setUser("root");
 		dataSource.setPassword("");
-		dataSource.setDatabaseName("oprun");
+		//dataSource.setDatabaseName("oprun");
+		dataSource.setDatabaseName("vlille");
 		dataSource.setServerName("localhost");
 
 		try {
@@ -28,6 +29,22 @@ public class HelperDatabase {
 		}
 
 		return conn;
+	}
+	
+	public static void closeConnection(){
+	    
+	    if ( null == conn ){ 
+	        return; 
+	     }
+	     
+	    try {
+	        conn.close();
+	    }catch( Exception e ){
+	        System.out.println( " Closing connection to DB -- KO" );
+	    }
+	    
+	    
+	    
 	}
 
 }
