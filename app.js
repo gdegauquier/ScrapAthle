@@ -1,8 +1,20 @@
 var express = require('express');
 var app = express();
 
-app.get('/wesh', function(req, res) {
-    res.send('Hello World!');
-});
+require('dotenv').config();
+const logger = require('./src/main/api/configuration/logger')();
 
-app.listen(3000);
+
+const {
+    API_PORT,
+    VERSION
+} = process.env;
+
+
+app.use(`/${VERSION}/scraps`, require('./src/main/api/controller/scrap/files'));
+
+
+
+app.listen(`${API_PORT}`, () => {
+    logger.info("API ScrapAthle started on port : " + process.env.API_PORT);
+});
