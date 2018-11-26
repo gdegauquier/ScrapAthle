@@ -101,7 +101,7 @@ async function analyseFile(file) {
 
         object.department = $(data[12][indRow]).text();
 
-        object.type = $(data[12][indRow]).text();
+        object.event_type = data[14][indRow];
 
         logger.debug(`line : ${JSON.stringify(object)}`);
 
