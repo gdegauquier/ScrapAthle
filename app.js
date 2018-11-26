@@ -12,7 +12,7 @@ const {
 
 
 app.use(`/${VERSION}/scraps`, require('./src/main/api/controller/scrap/files'));
-
+app.use(`/${VERSION}/scraps`, require('./src/main/api/controller/scrap/analysis'));
 
 
 app.listen(`${API_PORT}`, () => {

@@ -15,9 +15,9 @@ const logger = createLogger({
         // - Write to all logs with level `info` and below to `combined.log` 
         // - Write all logs error (and below) to `error.log`.
         //
-        new transports.Console({ timestamp: true }),
+        new transports.Console({ timestamp: true, level: 'debug' }),
         new transports.File({ filename: 'error.log', level: 'error', timestamp: true }),
-        new transports.File({ filename: 'combined.log', timestamp: true })
+        new transports.File({ filename: 'combined.log', level: 'debug', timestamp: true })
     ]
 });
 
