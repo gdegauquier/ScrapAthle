@@ -9,66 +9,105 @@ const eventLevelRepository = require('./eventLevelRepository');
 const eventLabelRepository = require('./eventLabelRepository');
 
 
+async function handleTownAndReturnId(object) {
 
-
-async function upsert(object) {
-
-    // TOWN
     let objTown = {
         label: object.town,
         department: object.department
     }
     await townRepository.insert(objTown);
-
-    // GET TOWN ID / SET ID
     let town = await townRepository.getByKey(objTown);
-    object.town = town.rows[0].id;
 
-    // FAMILY
+    return town.rows[0].id;
+
+}
+
+async function handleFamilyAndReturnId(object) {
+
     let objFamily = {
         label: object.family
     }
     await familyRepository.insert(objFamily);
     let family = await familyRepository.getByKey(objFamily);
-    object.family = family.rows[0].id;
 
-    // LEAGUE
+    return family.rows[0].id;
+
+}
+
+async function handleLeagueAndReturnId(object) {
+
     let objLeague = {
         code: object.league
     }
     await leagueRepository.insert(objLeague);
     let league = await leagueRepository.getByKey(objLeague);
-    object.league = league.rows[0].code;
+    return league.rows[0].code;
 
-    // EVENT_TYPE
+}
+
+async function handleEventTypeAndReturnId(object) {
+
     if (object.event_type === null || object.event_type.trim() === "") {
-        object.event_type = null;
-    } else {
-        let objEventType = {
-            label: object.event_type
-        }
-        await eventTypeRepository.insert(objEventType);
-        let eventType = await eventTypeRepository.getByKey(objEventType);
-        object.event_type = eventType.rows[0].id;
+        return null;
     }
 
-    // LEVEL
+    let objEventType = {
+        label: object.event_type
+    }
+    await eventTypeRepository.insert(objEventType);
+    let eventType = await eventTypeRepository.getByKey(objEventType);
+    return eventType.rows[0].id;
+
+}
+
+async function handleLevelAndReturnId(object) {
+
     let objLevel = {
         label: object.level
     }
     await eventLevelRepository.insert(objLevel);
     let level = await eventLevelRepository.getByKey(objLevel);
-    object.level = level.rows[0].id;
+    return level.rows[0].id;
 
-    // EVENT LABEL
+}
+
+async function handleEventLabelAndReturnId(object) {
+
     if (object.stamp !== null) {
         let objLabel = {
             label: object.stamp
         }
         await eventLabelRepository.insert(objLabel);
         let label = await eventLabelRepository.getByKey(objLabel);
-        object.stamp = label.rows[0].id;
+        return label.rows[0].id;
     }
+    return null;
+
+}
+
+
+
+
+async function upsert(object) {
+
+    // TOWN
+    object.town = handleTownAndReturnId(object);
+
+    // FAMILY
+    object.family = handleFamilyAndReturnId(object);
+
+    // LEAGUE
+    object.league = handleLeagueAndReturnId(object);
+
+    // EVENT_TYPE
+    object.event_type = handleEventTypeAndReturnId(object);
+
+    // LEVEL
+    object.level = handleLevelAndReturnId(object);
+
+    // EVENT LABEL
+    object.stamp = handleEventLabelAndReturnId(object);
+
 
     try {
         await insert(object);

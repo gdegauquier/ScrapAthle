@@ -31,7 +31,6 @@ router.get(`/analysis`, async function(req, res) {
         return;
     }
 
-
     let fileName = `general_analysis_${new Date().getTime()}.html`;
     res.send('Analysis completed : ' + fileName);
 
