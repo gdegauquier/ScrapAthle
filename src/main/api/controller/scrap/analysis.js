@@ -103,6 +103,15 @@ async function analyseFile(file) {
 
         object.event_type = data[14][indRow];
 
+        object.level = he.decode(data[16][indRow]);
+
+        object.stamp = null;
+        try {
+            object.stamp = $(data[18][indRow])[0].attribs.title;
+        } catch (ex) {
+            //
+        }
+
         logger.debug(`line : ${JSON.stringify(object)}`);
 
         await eventRepository.upsert(object);

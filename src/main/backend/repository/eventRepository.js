@@ -5,6 +5,8 @@ const townRepository = require('./townRepository');
 const familyRepository = require('./familyRepository');
 const leagueRepository = require('./leagueRepository');
 const eventTypeRepository = require('./eventTypeRepository');
+const eventLevelRepository = require('./eventLevelRepository');
+const eventLabelRepository = require('./eventLabelRepository');
 
 
 
@@ -50,7 +52,23 @@ async function upsert(object) {
         object.event_type = eventType.rows[0].id;
     }
 
+    // LEVEL
+    let objLevel = {
+        label: object.level
+    }
+    await eventLevelRepository.insert(objLevel);
+    let level = await eventLevelRepository.getByKey(objLevel);
+    object.level = level.rows[0].id;
 
+    // EVENT LABEL
+    if (object.stamp !== null) {
+        let objLabel = {
+            label: object.stamp
+        }
+        await eventLabelRepository.insert(objLabel);
+        let label = await eventLabelRepository.getByKey(objLabel);
+        object.stamp = label.rows[0].id;
+    }
 
     try {
         await insert(object);
@@ -64,15 +82,28 @@ async function upsert(object) {
 }
 
 async function insert(object) {
-    let query = ` insert into event (id_js, date_event_begin, label, date_creation, date_modification, date_event_end, fk_id_town, fk_id_family, fk_code_league, fk_id_event_type) 
-                  values ($1, $2, $3, current_timestamp, current_timestamp, $4, $5, $6, $7, $8) `;
-    await db.queryBuilderPromise(query, [object.id_js, object.date_event.begin, object.label, object.date_event.end, object.town, object.family, object.league, object.event_type]);
+    let query = ` insert into event (id_js, date_event_begin, label, 
+                                     date_creation, date_modification, date_event_end, 
+                                     fk_id_town, fk_id_family, fk_code_league, 
+                                     fk_id_event_type, fk_id_event_level, fk_id_event_label ) 
+                  values ($1, $2, $3, 
+                          current_timestamp, current_timestamp, $4, 
+                          $5, $6, $7, 
+                          $8, $9, $10) `;
+    await db.queryBuilderPromise(query, [object.id_js, object.date_event.begin, object.label,
+        object.date_event.end,
+        object.town, object.family, object.league,
+        object.event_type, object.level, object.stamp
+    ]);
 }
 
 async function update(object) {
     let query = ` update event set  date_event_begin = $2, label = $3, date_modification = current_timestamp,
-                                    date_event_end = $4, fk_id_town = $5, fk_id_family = $6, fk_code_league = $7, fk_id_event_type = $8 where id_js = $1 `;
-    await db.queryBuilderPromise(query, [object.id_js, object.date_event.begin, object.label, object.date_event.end, object.town, object.family, object.league, object.event_type]);
+                                    date_event_end = $4, fk_id_town = $5, fk_id_family = $6, fk_code_league = $7, 
+                                    fk_id_event_type = $8, fk_id_event_level = $9, fk_id_event_label = $10 where id_js = $1 `;
+    await db.queryBuilderPromise(query, [object.id_js, object.date_event.begin, object.label, object.date_event.end,
+        object.town, object.family, object.league, object.event_type, object.level, object.stamp
+    ]);
 }
 
 module.exports = {
