@@ -58,7 +58,6 @@ async function analyseDir(dir, type) {
                 await analyseFileGeneral(dir + file);
             }
 
-
         } catch (err) {
             let errorMsg = `Error while reading file ${file} : ${JSON.stringify(err)}`;
             logger.error(errorMsg);
@@ -81,8 +80,43 @@ async function analyseFileDetail(file) {
 
     cheerioTableparser($);
 
-    let data = $("#ctnContentDetails").parsetable();
+    let data = $("#bddDetails").parsetable();
 
+    let object = {};
+
+    object.id_js = file.split("_")[1];
+    object.date_event = {};
+
+    let date_event = {};
+
+    for (let indRow = 0; indRow < data.length; indRow++) {
+
+        for (let indCol = 0; indCol < data[indRow].length; indCol++) {
+
+            let value = data[indRow][indCol];
+
+            if (!value) {
+                continue;
+            }
+
+            if (value.indexOf("Code : ") > -1) {
+                object.code = value.split(">")[1].split("<")[0];
+            }
+
+
+            if (value.indexOf("Date de D") > -1) {
+                object.date_event.begin = value.split('">')[1].split("<")[0];
+            }
+
+            if (value.indexOf("Date de Fin") > -1) {
+                object.date_event.end = value.split('>')[1].split("<")[0];
+            }
+
+        }
+
+    }
+
+    logger.info(`line : ${JSON.stringify(object)}`);
 
 }
 
@@ -101,12 +135,9 @@ async function analyseFileGeneral(file) {
     // column 
     for (let indRow = 0; indRow < data[0].length; indRow++) {
 
-        // let line = "";
         let object = {};
 
-
         let value = he.decode(data[6][indRow]);
-
 
         if (value.indexOf("javascript:bddThrowCompet") > -1) {
             object.id_js = value.split("'")[1];
