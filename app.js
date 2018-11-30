@@ -13,6 +13,7 @@ const {
 
 app.use(`/${VERSION}/scraps`, require('./src/main/api/controller/scrap/files'));
 app.use(`/${VERSION}/scraps`, require('./src/main/api/controller/scrap/analysis'));
+app.use(`/${VERSION}/scraps`, require('./src/main/api/controller/scrap/data'));
 
 
 app.listen(`${API_PORT}`, () => {
