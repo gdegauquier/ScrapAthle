@@ -89,6 +89,8 @@ async function analyseFileDetail(file) {
 
     let date_event = {};
 
+    object.label = $(".titles").text().trim().split("\n")[0]
+
     for (let indRow = 0; indRow < data.length; indRow++) {
 
         for (let indCol = 0; indCol < data[indRow].length; indCol++) {
@@ -99,10 +101,25 @@ async function analyseFileDetail(file) {
                 continue;
             }
 
+            if (value.indexOf("bddThrowContact") > -1) {
+                object.stadium = he.decode(value.split(')">')[1].split("<")[0]);
+            }
+
+            if (value.indexOf("titles") > -1) {
+                object.level = he.decode(value.split(">")[1].split("<")[0]);
+            }
+
+            if (value.indexOf("Niveau : ") > -1) {
+                object.level = he.decode(value.split(">")[1].split("<")[0]);
+            }
+
             if (value.indexOf("Code : ") > -1) {
                 object.code = value.split(">")[1].split("<")[0];
             }
 
+            if (value.indexOf("Type : ") > -1) {
+                object.types = value.split(">")[1].split("<")[0].split(" / ");
+            }
 
             if (value.indexOf("Date de D") > -1) {
                 object.date_event.begin = value.split('">')[1].split("<")[0];
