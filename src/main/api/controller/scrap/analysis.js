@@ -49,6 +49,9 @@ async function analyseDir(dir, type) {
         if (!file.startsWith(type)) {
             continue;
         }
+        if (!file.startsWith("detail_260849285846593840950849808834776831_1543396234345.html")) {
+            continue;
+        }
 
         try {
 
@@ -86,8 +89,8 @@ async function analyseFileDetail(file) {
 
     object.id_js = file.split("_")[1];
     object.date_event = {};
-
-    let date_event = {};
+    object.address = {};
+    object.address.lines = [];
 
     object.label = $(".titles").text().trim().split("\n")[0]
 
@@ -148,8 +151,48 @@ async function analyseFileDetail(file) {
                 object.organizer = he.decode(data[indRow + 2][indCol]);
             }
 
-            if (value.indexOf("M&#xE8;l") > -1) {
+            if (he.decode(value).indexOf("Mèl") > -1) {
                 object.organizer_mail = data[indRow + 2][indCol].split(":")[1].split("?")[0];
+            }
+
+            if (value.indexOf("Site Web") > -1) {
+                object.web_site = $(data[indRow + 2][indCol]).text();
+            }
+
+            if (value.indexOf("Adresse") > -1 &&
+                object.address.lines.length === 0) {
+
+                let currentRow = indRow + 2;
+                let currentCol = indCol;
+                object.address.lines.push(he.decode(data[currentRow][indCol]));
+
+                // number of remaining rows
+                for (let ind = 0; ind < 6; ind++) {
+                    currentCol++;
+                    let valueCol = data[currentRow][currentCol];
+
+                    if (!valueCol || isNormalInteger(valueCol)) {
+                        break;
+                    }
+                    object.address.lines.push(he.decode(valueCol));
+                }
+
+            }
+
+            if (value.indexOf("Code Postal") > -1) {
+                object.address.postal_code = data[indRow + 2][indCol];
+            }
+
+            if (value.indexOf("Ville") > -1) {
+                object.address.town = he.decode(data[indRow + 2][indCol]);
+            }
+
+            if (value.indexOf("Engagement en ligne") > -1) {
+                object.online_engagement = $(data[indRow + 2][indCol]).text();
+            }
+
+            if (he.decode(value).indexOf("Avis Technique et Sécurité") > -1) {
+                object.technical_advice = he.decode(data[indRow + 2][indCol]);
             }
 
         }
@@ -158,6 +201,10 @@ async function analyseFileDetail(file) {
 
     logger.info(`line : ${JSON.stringify(object)}`);
 
+}
+
+function isNormalInteger(str) {
+    return /^\+?(0|[1-9]\d*)$/.test(str);
 }
 
 
