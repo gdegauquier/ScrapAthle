@@ -91,6 +91,12 @@ async function analyseFileDetail(file) {
 
     object.label = $(".titles").text().trim().split("\n")[0]
 
+    try {
+        object.event_label = $("td[ style='text-align:right']")[2].childNodes[0].childNodes[0].data;
+    } catch (e) {
+        //
+    }
+
     for (let indRow = 0; indRow < data.length; indRow++) {
 
         for (let indCol = 0; indCol < data[indRow].length; indCol++) {
@@ -101,12 +107,12 @@ async function analyseFileDetail(file) {
                 continue;
             }
 
-            if (value.indexOf("bddThrowContact") > -1) {
-                object.stadium = he.decode(value.split(')">')[1].split("<")[0]);
+            if (value.indexOf("<table cellpadding=\"2\" cellspacing=\"0\">") > -1) {
+                continue;
             }
 
-            if (value.indexOf("titles") > -1) {
-                object.level = he.decode(value.split(">")[1].split("<")[0]);
+            if (value.indexOf("bddThrowContact") > -1) {
+                object.stadium = he.decode(value.split(')">')[1].split("<")[0]);
             }
 
             if (value.indexOf("Niveau : ") > -1) {
@@ -118,7 +124,16 @@ async function analyseFileDetail(file) {
             }
 
             if (value.indexOf("Type : ") > -1) {
-                object.types = value.split(">")[1].split("<")[0].split(" / ");
+                let types = value.split(">")[1].split("<")[0].split(" / ");
+                let typesToAdd = [];
+
+                for (let type of types) {
+                    let typesSplitted = type.split(" - ");
+                    for (let typeSplitted of typesSplitted) {
+                        typesToAdd.push(typeSplitted);
+                    }
+                }
+                object.types = typesToAdd;
             }
 
             if (value.indexOf("Date de D") > -1) {
@@ -127,6 +142,14 @@ async function analyseFileDetail(file) {
 
             if (value.indexOf("Date de Fin") > -1) {
                 object.date_event.end = value.split('>')[1].split("<")[0];
+            }
+
+            if (value.indexOf("Organisateur") > -1) {
+                object.organizer = he.decode(data[indRow + 2][indCol]);
+            }
+
+            if (value.indexOf("M&#xE8;l") > -1) {
+                object.organizer_mail = data[indRow + 2][indCol].split(":")[1].split("?")[0];
             }
 
         }
