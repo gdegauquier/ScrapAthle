@@ -91,6 +91,8 @@ async function analyseFileDetail(file) {
     object.date_event = {};
     object.address = {};
     object.address.lines = [];
+    object.contacts = [];
+    object.services = [];
 
     object.label = $(".titles").text().trim().split("\n")[0]
 
@@ -193,6 +195,35 @@ async function analyseFileDetail(file) {
 
             if (he.decode(value).indexOf("Avis Technique et Sécurité") > -1) {
                 object.technical_advice = he.decode(data[indRow + 2][indCol]);
+            }
+
+            // TODO: RegExp sur Contact XXX :, recup type + infos  
+            if (value.search('Contact [A-Z].') > -1) {
+                let contact = $(data[indRow + 2][indCol]).text().split(" - ");
+                let objContact = {}
+
+                objContact.name = contact[0];
+                objContact.type = value.split(" ")[1];
+                if (contact.length > 0) {
+                    objContact.mail = contact[1];
+                }
+
+                object.contacts.push(objContact);
+
+            }
+
+            if (value.indexOf("Services") > -1) {
+
+                let services = $(data[indRow + 2][indCol]);
+
+                for (let service in services) {
+                    try {
+                        object.services.push(services[service].next.attribs.alt);
+                    } catch (e) {
+                        logger.warn("Service impossible à déterminer " + JSON.stringify(e));
+                    }
+                }
+
             }
 
         }
