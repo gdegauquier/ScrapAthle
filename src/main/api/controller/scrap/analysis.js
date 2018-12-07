@@ -93,6 +93,7 @@ async function analyseFileDetail(file) {
     object.address.lines = [];
     object.contacts = [];
     object.services = [];
+    object.events = [];
 
     object.label = $(".titles").text().trim().split("\n")[0]
 
@@ -197,7 +198,6 @@ async function analyseFileDetail(file) {
                 object.technical_advice = he.decode(data[indRow + 2][indCol]);
             }
 
-            // TODO: RegExp sur Contact XXX :, recup type + infos  
             if (value.search('Contact [A-Z].') > -1) {
                 let contact = $(data[indRow + 2][indCol]).text().split(" - ");
                 let objContact = {}
@@ -225,6 +225,32 @@ async function analyseFileDetail(file) {
                 }
 
             }
+
+            if (value.search("^<b>[0-9][0-9]\/[0-9][0-9] [0-9][0-9]:[0-9][0-9]</b>$") > -1) {
+
+                let event = {};
+
+                let dateHour = value.split(" ");
+                event.date = dateHour[0].split(">")[1];
+                event.hour = dateHour[1].split("<")[0];
+
+                let label = $(data[indRow + 1][indCol]).text().split(" - ");
+                event.label = label[0];
+                event.type = label[1];
+
+                event.category = data[indRow + 2][indCol];
+                event.distance = data[indRow + 3][indCol];
+
+                object.events.push(event);
+
+            }
+
+            if (value.indexOf("Conditions") > -1) {
+
+                value = value;
+
+            }
+
 
         }
 
