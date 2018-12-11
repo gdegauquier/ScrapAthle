@@ -99,8 +99,7 @@ async function upsert(object) {
     // LEAGUE
     object.league = handleLeagueAndReturnId(object);
 
-    // EVENT_TYPE
-    object.event_type = handleEventTypeAndReturnId(object);
+    // EVENT_TYPE => handled in the details
 
     // LEVEL
     object.level = handleLevelAndReturnId(object);
@@ -124,24 +123,24 @@ async function insert(object) {
     let query = ` insert into event (id_js, date_event_begin, label, 
                                      date_creation, date_modification, date_event_end, 
                                      fk_id_town, fk_id_family, fk_code_league, 
-                                     fk_id_event_type, fk_id_event_level, fk_id_event_label ) 
+                                     fk_id_event_level, fk_id_event_label ) 
                   values ($1, $2, $3, 
                           current_timestamp, current_timestamp, $4, 
                           $5, $6, $7, 
-                          $8, $9, $10) `;
+                          $8, $9) `;
     await db.queryBuilderPromise(query, [object.id_js, object.date_event.begin, object.label,
         object.date_event.end,
         object.town, object.family, object.league,
-        object.event_type, object.level, object.stamp
+        object.level, object.stamp
     ]);
 }
 
 async function update(object) {
     let query = ` update event set  date_event_begin = $2, label = $3, date_modification = current_timestamp,
                                     date_event_end = $4, fk_id_town = $5, fk_id_family = $6, fk_code_league = $7, 
-                                    fk_id_event_type = $8, fk_id_event_level = $9, fk_id_event_label = $10 where id_js = $1 `;
+                                    fk_id_event_level = $8, fk_id_event_label = $9 where id_js = $1 `;
     await db.queryBuilderPromise(query, [object.id_js, object.date_event.begin, object.label, object.date_event.end,
-        object.town, object.family, object.league, object.event_type, object.level, object.stamp
+        object.town, object.family, object.league, object.level, object.stamp
     ]);
 }
 

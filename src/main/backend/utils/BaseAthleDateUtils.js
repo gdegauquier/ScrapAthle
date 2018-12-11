@@ -17,8 +17,14 @@ function extractDatesFromString(string, year) {
 
 }
 
+function formatDateForDB(string) {
+    let parsed = string.split("/");
+    return parsed[2] + "-" + parsed[1] + "-" + parsed[0];
+}
+
 
 
 module.exports = {
-    extractDatesFromString
+    extractDatesFromString,
+    formatDateForDB
 }

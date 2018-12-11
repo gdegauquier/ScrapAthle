@@ -16,6 +16,21 @@ async function insert(object) {
 
 }
 
+async function insertRel(object) {
+
+    let query = ` insert into rel_event_type (id_js, fk_id_event_type, date_creation, date_modification) 
+                  SELECT CAST($1 AS VARCHAR), $2, current_timestamp, current_timestamp
+                  WHERE NOT EXISTS ( SELECT 1 FROM rel_event_type WHERE id_js = $1 and fk_id_event_type = $2 ) `;
+
+    try {
+        await db.queryBuilderPromise(query, [object.id_js, object.fk_id_event_type]);
+    } catch (ex) {
+        logger.debug(`KO => eventTypeRepository.insertRel() : object => ${JSON.stringify(object)}`);
+        logger.debug(`KO => eventTypeRepository.insertRel() : err => ${JSON.stringify(ex)}`);
+    }
+
+}
+
 async function getByKey(object) {
 
     let query = ` select * from event_type where label = $1 `;
@@ -24,9 +39,18 @@ async function getByKey(object) {
 
 }
 
+async function deleteByEventId(object) {
+
+    let query = ` delete from rel_event_type where id_js = $1 `;
+    await db.queryBuilderPromise(query, [object.id_js]);
+
+}
+
 
 
 module.exports = {
+    deleteByEventId,
     insert,
+    insertRel,
     getByKey
 }

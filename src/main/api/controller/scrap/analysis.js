@@ -12,6 +12,9 @@ cheerioTableparser = require('cheerio-tableparser');
 
 // move these into a service
 const eventRepository = require('./../../../backend/repository/eventRepository');
+const eventDetailRepository = require('./../../../backend/repository/eventDetailRepository');
+
+
 const baseAthleDateUtils = require('./../../../backend/utils/BaseAthleDateUtils');
 
 
@@ -31,8 +34,8 @@ router.get(`/analysis/:type`, async function(req, res) {
         return;
     }
 
-    let fileName = `general_analysis_${new Date().getTime()}.html`;
-    res.send('Analysis completed : ' + fileName);
+    // let fileName = `general_analysis_${new Date().getTime()}.html`;
+    res.send('Analysis completed : ' + SCRAP_DIR);
 
 })
 
@@ -49,9 +52,10 @@ async function analyseDir(dir, type) {
         if (!file.startsWith(type)) {
             continue;
         }
-        if (!file.startsWith("detail_260849285846593840950849808834776831_1543396234345.html")) {
-            continue;
-        }
+
+        // if (!file.startsWith("detail_319849555846697828244840224828730834_1543394819326.html")) {
+        //     continue;
+        // }
 
         try {
 
@@ -87,13 +91,18 @@ async function analyseFileDetail(file) {
 
     let object = {};
 
+
     object.id_js = file.split("_")[1];
     object.date_event = {};
+    object.date_event.begin = null;
+    object.date_event.end = null;
+
     object.address = {};
     object.address.lines = [];
     object.contacts = [];
     object.services = [];
     object.events = [];
+    object.phones = [];
 
     object.label = $(".titles").text().trim().split("\n")[0]
 
@@ -129,25 +138,29 @@ async function analyseFileDetail(file) {
                 object.code = value.split(">")[1].split("<")[0];
             }
 
+            // handled in DB
             if (value.indexOf("Type : ") > -1) {
                 let types = value.split(">")[1].split("<")[0].split(" / ");
                 let typesToAdd = [];
+                object.family = types[0];
 
-                for (let type of types) {
-                    let typesSplitted = type.split(" - ");
-                    for (let typeSplitted of typesSplitted) {
-                        typesToAdd.push(typeSplitted);
-                    }
+                let typesSplitted = types[1].split(" - ");
+                for (let typeSplitted of typesSplitted) {
+                    typesToAdd.push(typeSplitted);
                 }
-                object.types = typesToAdd;
+
+                object.event_types = typesToAdd;
+
             }
 
+
+            // handled in DB
             if (value.indexOf("Date de D") > -1) {
-                object.date_event.begin = value.split('">')[1].split("<")[0];
+                object.date_event.begin = baseAthleDateUtils.formatDateForDB(value.split('">')[1].split("<")[0]);
             }
-
+            // handled in DB
             if (value.indexOf("Date de Fin") > -1) {
-                object.date_event.end = value.split('>')[1].split("<")[0];
+                object.date_event.end = baseAthleDateUtils.formatDateForDB(value.split('>')[1].split("<")[0]);
             }
 
             if (value.indexOf("Organisateur") > -1) {
@@ -186,8 +199,12 @@ async function analyseFileDetail(file) {
                 object.address.postal_code = data[indRow + 2][indCol];
             }
 
-            if (value.indexOf("Ville") > -1) {
+            if (value === "Ville") {
                 object.address.town = he.decode(data[indRow + 2][indCol]);
+            }
+
+            if (he.decode(value).indexOf("Téléphone") > -1) {
+                object.phones.push = data[indRow + 2][indCol];
             }
 
             if (value.indexOf("Engagement en ligne") > -1) {
@@ -199,7 +216,7 @@ async function analyseFileDetail(file) {
             }
 
             if (value.search('Contact [A-Z].') > -1) {
-                let contact = $(data[indRow + 2][indCol]).text().split(" - ");
+                let contact = $(he.decode(data[indRow + 2][indCol])).text().split(" - ");
                 let objContact = {}
 
                 objContact.name = contact[0];
@@ -226,15 +243,23 @@ async function analyseFileDetail(file) {
 
             }
 
-            if (value.search("^<b>[0-9][0-9]\/[0-9][0-9] [0-9][0-9]:[0-9][0-9]</b>$") > -1) {
+            if (
+                /*value.search("^<b>[0-9][0-9]\/[0-9][0-9] [0-9][0-9]:[0-9][0-9]</b>$") > -1 ||
+                                value.search("^<b>[0-9][0-9]:[0-9][0-9]</b>$") > -1 ||*/
+                value.indexOf("plus.gif") > -1 && value.length < 1000
+            ) {
 
                 let event = {};
 
-                let dateHour = value.split(" ");
-                event.date = dateHour[0].split(">")[1];
-                event.hour = dateHour[1].split("<")[0];
+                let dateHour = data[indRow + 1][indCol].split(" ");
+                if (dateHour.length > 1) {
+                    event.date = he.decode(dateHour[0].split(">")[1]).trim();
+                    event.hour = he.decode(dateHour[1].split("<")[0]).trim();
+                } else {
+                    event.hour = he.decode(dateHour[0].split(">")[1].split("<")[0]).trim();
+                }
 
-                let label = $(data[indRow + 1][indCol]).text().split(" - ");
+                let label = $(data[indRow + 2][indCol]).text().split(" - ");
                 event.label = label[0];
                 event.type = label[1];
 
@@ -245,18 +270,33 @@ async function analyseFileDetail(file) {
 
             }
 
-            if (value.indexOf("Conditions") > -1) {
-
-                value = value;
-
+            if (value === "Conditions") {
+                object.conditions = he.decode(data[indRow + 2][indCol]);
             }
 
+            if (value === "Autres Infos") {
+                object.other_informations = he.decode(data[indRow + 2][indCol]);
+            }
+
+            if (value === "Inscrite au calendrier par") {
+                object.added_by = he.decode(data[indRow + 2][indCol]);
+            }
+
+            if (he.decode(value) === "Résultats chargés par") {
+                object.results_added_by = he.decode(data[indRow + 2][indCol]);
+            }
+
+            if (he.decode(value) === "Puis contrôlés par") {
+                object.results_controled_by = he.decode(data[indRow + 2][indCol]);
+            }
 
         }
 
     }
 
     logger.info(`line : ${JSON.stringify(object)}`);
+
+    await eventDetailRepository.upsert(object);
 
 }
 
