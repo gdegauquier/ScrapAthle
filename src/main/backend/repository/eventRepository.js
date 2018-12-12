@@ -91,21 +91,21 @@ async function handleEventLabelAndReturnId(object) {
 async function upsert(object) {
 
     // TOWN
-    object.town = handleTownAndReturnId(object);
+    object.town = await handleTownAndReturnId(object);
 
     // FAMILY
-    object.family = handleFamilyAndReturnId(object);
+    object.family = await handleFamilyAndReturnId(object);
 
     // LEAGUE
-    object.league = handleLeagueAndReturnId(object);
+    object.league = await handleLeagueAndReturnId(object);
 
     // EVENT_TYPE => handled in the details
 
     // LEVEL
-    object.level = handleLevelAndReturnId(object);
+    object.level = await handleLevelAndReturnId(object);
 
     // EVENT LABEL
-    object.stamp = handleEventLabelAndReturnId(object);
+    object.stamp = await handleEventLabelAndReturnId(object);
 
 
     try {

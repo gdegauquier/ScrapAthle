@@ -2,7 +2,44 @@ const db = require("./../../api/configuration/database/queryBuilder");
 const logger = require('./../../api/configuration/logger')();
 const familyRepository = require('./familyRepository');
 const eventTypeRepository = require('./eventTypeRepository');
+const eventContactRepository = require('./eventContactRepository');
 
+const eventLevelRepository = require('./eventLevelRepository');
+
+async function handleContacts(object) {
+
+
+    if (object.contacts === null || object.contacts.length === 0) {
+        return;
+    }
+
+    await eventContactRepository.deleteRelByEventId(object.id_js);
+
+    for (let contact of object.contacts) {
+
+        if (contact.email === null && contact.name === null) {
+            continue;
+        }
+
+        let objType = {
+            label: contact.type,
+        }
+
+        // insert type
+        await eventContactRepository.insertType(objType);
+
+        // get key
+        let typeKey = await eventContactRepository.getTypeByKey(objType);
+        typeKey = typeKey.rows[0].id;
+
+        // insert rel 
+        contact.fk_id_contact_type = typeKey;
+        contact.fk_id_js_event = object.id_js;
+        await eventContactRepository.insertRel(contact);
+
+    }
+
+}
 
 async function handleEventTypes(object) {
 
@@ -58,21 +95,40 @@ async function upsert(object) {
 
 }
 
+async function handleLevelAndReturnId(object) {
+
+    let objLevel = {
+        label: object.level
+    }
+    await eventLevelRepository.insert(objLevel);
+    let level = await eventLevelRepository.getByKey(objLevel);
+    return level.rows[0].id;
+
+}
+
 async function update(object) {
 
     // FAMILY
     object.family = await handleFamilyAndReturnId(object);
 
+    // LEVEL
+    object.level = await handleLevelAndReturnId(object);
+
     // ADD EVENT_TYPES in a foreign table 
     await handleEventTypes(object);
 
+    // ADD CONTACTS in a foreign table
+    await handleContacts(object);
+
     let query = ` update event set  date_modification = current_timestamp, code = $2, fk_id_family = $3, 
-                                    date_event_begin = $4, date_event_end = $5 
+                                    date_event_begin = $4, date_event_end = $5, stadium = $6, fk_id_event_level = $7,
+                                    website = $8
                                     where id_js = $1 `;
 
     await db.queryBuilderPromise(query, [object.id_js,
         object.code, object.family,
-        object.date_event.begin, object.date_event.end
+        object.date_event.begin, object.date_event.end, object.stadium, object.level,
+        object.website
     ]);
 
 }

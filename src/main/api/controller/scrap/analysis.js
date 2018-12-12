@@ -97,6 +97,11 @@ async function analyseFileDetail(file) {
     object.date_event.begin = null;
     object.date_event.end = null;
 
+    object.stadium = null;
+    object.website = null;
+
+    object.organizer = { type: "Organizer", name: null, email: null };
+
     object.address = {};
     object.address.lines = [];
     object.contacts = [];
@@ -118,22 +123,21 @@ async function analyseFileDetail(file) {
 
             let value = data[indRow][indCol];
 
-            if (!value) {
+            if (!value || value.indexOf("<table cellpadding=\"2\" cellspacing=\"0\">") > -1) {
                 continue;
             }
 
-            if (value.indexOf("<table cellpadding=\"2\" cellspacing=\"0\">") > -1) {
-                continue;
-            }
-
+            // handled in DB
             if (value.indexOf("bddThrowContact") > -1) {
                 object.stadium = he.decode(value.split(')">')[1].split("<")[0]);
             }
 
+            // handled in DB
             if (value.indexOf("Niveau : ") > -1) {
                 object.level = he.decode(value.split(">")[1].split("<")[0]);
             }
 
+            // handled in DB
             if (value.indexOf("Code : ") > -1) {
                 object.code = value.split(">")[1].split("<")[0];
             }
@@ -163,16 +167,19 @@ async function analyseFileDetail(file) {
                 object.date_event.end = baseAthleDateUtils.formatDateForDB(value.split('>')[1].split("<")[0]);
             }
 
+            // handled in DB
             if (value.indexOf("Organisateur") > -1) {
-                object.organizer = he.decode(data[indRow + 2][indCol]);
+                object.organizer.name = he.decode(data[indRow + 2][indCol]);
             }
 
+            // handled in DB
             if (he.decode(value).indexOf("Mèl") > -1) {
-                object.organizer_mail = data[indRow + 2][indCol].split(":")[1].split("?")[0];
+                object.organizer.email = data[indRow + 2][indCol].split(":")[1].split("?")[0];
             }
 
+            // handled in DB
             if (value.indexOf("Site Web") > -1) {
-                object.web_site = $(data[indRow + 2][indCol]).text();
+                object.website = $(data[indRow + 2][indCol]).text();
             }
 
             if (value.indexOf("Adresse") > -1 &&
@@ -215,14 +222,16 @@ async function analyseFileDetail(file) {
                 object.technical_advice = he.decode(data[indRow + 2][indCol]);
             }
 
+            // handled in DB
             if (value.search('Contact [A-Z].') > -1) {
                 let contact = $(he.decode(data[indRow + 2][indCol])).text().split(" - ");
                 let objContact = {}
 
                 objContact.name = contact[0];
                 objContact.type = value.split(" ")[1];
+                objContact.email = null;
                 if (contact.length > 0) {
-                    objContact.mail = contact[1];
+                    objContact.email = contact[1];
                 }
 
                 object.contacts.push(objContact);
@@ -243,11 +252,7 @@ async function analyseFileDetail(file) {
 
             }
 
-            if (
-                /*value.search("^<b>[0-9][0-9]\/[0-9][0-9] [0-9][0-9]:[0-9][0-9]</b>$") > -1 ||
-                                value.search("^<b>[0-9][0-9]:[0-9][0-9]</b>$") > -1 ||*/
-                value.indexOf("plus.gif") > -1 && value.length < 1000
-            ) {
+            if (value.indexOf("plus.gif") > -1 && value.length < 1000) {
 
                 let event = {};
 
@@ -260,8 +265,8 @@ async function analyseFileDetail(file) {
                 }
 
                 let label = $(data[indRow + 2][indCol]).text().split(" - ");
-                event.label = label[0];
-                event.type = label[1];
+                event.label = he.decode(label[0]);
+                event.type = he.decode(label[1]);
 
                 event.category = data[indRow + 2][indCol];
                 event.distance = data[indRow + 3][indCol];
@@ -296,6 +301,7 @@ async function analyseFileDetail(file) {
 
     logger.info(`line : ${JSON.stringify(object)}`);
 
+    object.contacts.push(object.organizer);
     await eventDetailRepository.upsert(object);
 
 }
