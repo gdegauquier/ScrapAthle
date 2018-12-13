@@ -117,6 +117,10 @@ async function handleEventTypes(object) {
 
 async function handleFamilyAndReturnId(object) {
 
+    if (object.family === null) {
+        return null;
+    }
+
     let objFamily = {
         label: object.family
     }
@@ -139,6 +143,10 @@ async function upsert(object) {
 }
 
 async function handleLevelAndReturnId(object) {
+
+    if (object.level === null) {
+        return null;
+    }
 
     let objLevel = {
         label: object.level
@@ -168,13 +176,15 @@ async function update(object) {
 
     let query = ` update event set  date_modification = current_timestamp, code = $2, fk_id_family = $3, 
                                     date_event_begin = $4, date_event_end = $5, stadium = $6, fk_id_event_level = $7,
-                                    website = $8, conditions = $9, other_information = $10, technical_security_advice = $11
+                                    website = $8, conditions = $9, other_information = $10, technical_security_advice = $11, 
+                                    online_engagement = $12
                                     where id_js = $1 `;
 
     await db.queryBuilderPromise(query, [object.id_js,
         object.code, object.family,
         object.date_event.begin, object.date_event.end, object.stadium, object.level,
-        object.website, object.conditions, object.other_information, object.technical_security_advice
+        object.website, object.conditions, object.other_information, object.technical_security_advice,
+        object.online_engagement
     ]);
 
 }

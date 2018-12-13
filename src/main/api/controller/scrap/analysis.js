@@ -108,12 +108,16 @@ async function analyseFileDetail(file) {
     object.services = [];
     object.events = [];
     object.phones = [];
+    object.event_types = [];
+    object.family = null;
 
     object.conditions = null;
     object.other_information = null;
     object.technical_security_advice = null;
+    object.online_engagement = null;
 
-    object.label = $(".titles").text().trim().split("\n")[0]
+    object.label = $(".titles").text().trim().split("\n")[0];
+    object.event_label = null;
 
     try {
         object.event_label = $("td[ style='text-align:right']")[2].childNodes[0].childNodes[0].data;
@@ -154,7 +158,7 @@ async function analyseFileDetail(file) {
 
                 let typesSplitted = types[1].split(" - ");
                 for (let typeSplitted of typesSplitted) {
-                    typesToAdd.push(typeSplitted);
+                    typesToAdd.push(he.decode(typeSplitted));
                 }
 
                 object.event_types = typesToAdd;
@@ -218,6 +222,7 @@ async function analyseFileDetail(file) {
                 object.phones.push = data[indRow + 2][indCol];
             }
 
+            // handled in DB
             if (value.indexOf("Engagement en ligne") > -1) {
                 object.online_engagement = $(data[indRow + 2][indCol]).text();
             }
