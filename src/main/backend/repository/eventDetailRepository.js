@@ -5,13 +5,14 @@ const eventTypeRepository = require('./eventTypeRepository');
 const eventContactRepository = require('./eventContactRepository');
 
 const eventLevelRepository = require('./eventLevelRepository');
+const eventServiceRepository = require('./eventServiceRepository');
+
 
 const baseAthleContactUtils = require("./../utils/BaseAthleContactUtils");
 
 
 
 async function handleContacts(object) {
-
 
     if (object.contacts === null || object.contacts.length === 0) {
         return;
@@ -45,6 +46,43 @@ async function handleContacts(object) {
     }
 
 }
+
+
+
+async function handleServices(object) {
+
+    if (object.services === null || object.services.length === 0) {
+        return;
+    }
+
+    await eventServiceRepository.deleteRelByEventId(object.id_js);
+
+    for (let service of object.services) {
+
+        if (service === null) {
+            continue;
+        }
+
+        let objService = {
+            label: service
+        }
+
+        // insert type
+        await eventServiceRepository.insertService(objService);
+
+        // get key
+        let serviceKey = await eventServiceRepository.getTypeByKey(objService);
+        serviceKey = serviceKey.rows[0].id;
+
+        // insert rel 
+        objService.fk_id_event_service = serviceKey;
+        objService.fk_id_js_event = object.id_js;
+        await eventServiceRepository.insertRel(objService);
+
+    }
+
+}
+
 
 async function handleEventTypes(object) {
 
@@ -124,6 +162,9 @@ async function update(object) {
 
     // ADD CONTACTS in a foreign table
     await handleContacts(object);
+
+    // ADD SERVICES in a foreign table
+    await handleServices(object);
 
     let query = ` update event set  date_modification = current_timestamp, code = $2, fk_id_family = $3, 
                                     date_event_begin = $4, date_event_end = $5, stadium = $6, fk_id_event_level = $7,

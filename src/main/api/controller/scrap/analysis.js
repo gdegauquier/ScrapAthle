@@ -243,6 +243,7 @@ async function analyseFileDetail(file) {
 
             }
 
+            // handled in DB
             if (value.indexOf("Services") > -1) {
 
                 let services = $(data[indRow + 2][indCol]);

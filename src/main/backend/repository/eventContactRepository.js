@@ -46,7 +46,7 @@ async function getTypeByKey(object) {
 async function deleteRelByEventId(object) {
 
     let query = ` delete from rel_event_contact where fk_id_js_event = $1 `;
-    await db.queryBuilderPromise(query, [object.id_js]);
+    await db.queryBuilderPromise(query, [object]);
 
 }
 
