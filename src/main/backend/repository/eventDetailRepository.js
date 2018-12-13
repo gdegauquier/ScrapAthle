@@ -157,6 +157,43 @@ async function handleLevelAndReturnId(object) {
 
 }
 
+async function handleDetails(object) {
+
+    await deleteByEventId(object.id_js);
+
+    for (let event of object.events) {
+
+        let eventToAdd = {
+            fk_id_js_event: object.id_js,
+            date_event_string: event.date,
+            hour_event_string: event.hour,
+            distance: event.distance,
+            label: event.label
+        }
+
+        await insert(eventToAdd);
+
+    }
+
+}
+
+async function insert(object) {
+
+    let query = ` insert into event_detail ( fk_id_js_event, date_event_string, hour_event_string, distance, label, date_creation, date_modification ) 
+                                    SELECT  CAST($1 as varchar), CAST($2 as varchar),CAST( $3 as varchar), CAST($4 as varchar), CAST($5 as varchar), 
+                                            current_timestamp, current_timestamp 
+                                    WHERE NOT EXISTS ( SELECT 1 FROM event_detail WHERE FK_ID_JS_EVENT = $1 AND LABEL = $5) `;
+    await db.queryBuilderPromise(query, [object.fk_id_js_event, object.date_event_string, object.hour_event_string, object.distance, object.label]);
+}
+
+async function deleteByEventId(key) {
+
+    let query = ` delete from event_detail where fk_id_js_event = $1 `;
+    await db.queryBuilderPromise(query, [key]);
+
+}
+
+
 async function update(object) {
 
     // FAMILY
@@ -173,6 +210,9 @@ async function update(object) {
 
     // ADD SERVICES in a foreign table
     await handleServices(object);
+
+    // ADD DETAILS in a foreign table 
+    await handleDetails(object);
 
     let query = ` update event set  date_modification = current_timestamp, code = $2, fk_id_family = $3, 
                                     date_event_begin = $4, date_event_end = $5, stadium = $6, fk_id_event_level = $7,

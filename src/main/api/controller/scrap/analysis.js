@@ -272,6 +272,7 @@ async function analyseFileDetail(file) {
                     event.date = he.decode(dateHour[0].split(">")[1]).trim();
                     event.hour = he.decode(dateHour[1].split("<")[0]).trim();
                 } else {
+                    event.date = null;
                     event.hour = he.decode(dateHour[0].split(">")[1].split("<")[0]).trim();
                 }
 
@@ -279,8 +280,25 @@ async function analyseFileDetail(file) {
                 event.label = he.decode(label[0]);
                 event.type = he.decode(label[1]);
 
-                event.category = data[indRow + 2][indCol];
-                event.distance = data[indRow + 3][indCol];
+                event.categories = data[indRow + 3][indCol].split(" / ");
+                event.distance = data[indRow + 4][indCol];
+
+                // RAZ if necessary
+
+                if (event.label === null || event.label.trim() === "") {
+                    event.label = null;
+                }
+
+                if (event.date === null || event.date.trim() === "") {
+                    event.date = null;
+                }
+                if (event.hour === null || event.hour.trim() === "") {
+                    event.hour = null;
+                }
+
+                if (event.distance === null || event.distance.trim() === "") {
+                    event.distance = null;
+                }
 
                 object.events.push(event);
 
