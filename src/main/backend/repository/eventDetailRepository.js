@@ -6,6 +6,10 @@ const eventContactRepository = require('./eventContactRepository');
 
 const eventLevelRepository = require('./eventLevelRepository');
 
+const baseAthleContactUtils = require("./../utils/BaseAthleContactUtils");
+
+
+
 async function handleContacts(object) {
 
 
@@ -17,7 +21,8 @@ async function handleContacts(object) {
 
     for (let contact of object.contacts) {
 
-        if (contact.email === null && contact.name === null) {
+        if (contact.email === null &&
+            !baseAthleContactUtils.isNameValid(contact.name)) {
             continue;
         }
 
@@ -122,13 +127,13 @@ async function update(object) {
 
     let query = ` update event set  date_modification = current_timestamp, code = $2, fk_id_family = $3, 
                                     date_event_begin = $4, date_event_end = $5, stadium = $6, fk_id_event_level = $7,
-                                    website = $8
+                                    website = $8, conditions = $9, other_information = $10, technical_security_advice = $11
                                     where id_js = $1 `;
 
     await db.queryBuilderPromise(query, [object.id_js,
         object.code, object.family,
         object.date_event.begin, object.date_event.end, object.stadium, object.level,
-        object.website
+        object.website, object.conditions, object.other_information, object.technical_security_advice
     ]);
 
 }

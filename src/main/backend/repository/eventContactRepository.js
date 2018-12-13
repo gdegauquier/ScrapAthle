@@ -22,7 +22,7 @@ async function insertRel(object) {
 
     let query = ` insert into rel_event_contact ( name, email, fk_id_contact_type, date_creation, date_modification, fk_id_js_event ) 
                   SELECT CAST($1 as varchar), CAST($2 as varchar), CAST( $3 as integer), current_timestamp, current_timestamp, CAST ( $4 as varchar )
-                  WHERE NOT EXISTS ( SELECT 1 FROM rel_event_contact WHERE name = $1 AND email = $2 AND fk_id_js_event = $4 ) `;
+                  WHERE NOT EXISTS ( SELECT 1 FROM rel_event_contact WHERE (name = $1 OR email = $2) AND fk_id_js_event = $4 ) `;
 
     try {
         await db.queryBuilderPromise(query, [object.name, object.email, object.fk_id_contact_type, object.fk_id_js_event]);

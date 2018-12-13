@@ -100,7 +100,7 @@ async function analyseFileDetail(file) {
     object.stadium = null;
     object.website = null;
 
-    object.organizer = { type: "Organizer", name: null, email: null };
+    object.organizer = { type: "Organisation", name: null, email: null };
 
     object.address = {};
     object.address.lines = [];
@@ -108,6 +108,10 @@ async function analyseFileDetail(file) {
     object.services = [];
     object.events = [];
     object.phones = [];
+
+    object.conditions = null;
+    object.other_information = null;
+    object.technical_security_advice = null;
 
     object.label = $(".titles").text().trim().split("\n")[0]
 
@@ -218,8 +222,9 @@ async function analyseFileDetail(file) {
                 object.online_engagement = $(data[indRow + 2][indCol]).text();
             }
 
+            // handled in DB
             if (he.decode(value).indexOf("Avis Technique et Sécurité") > -1) {
-                object.technical_advice = he.decode(data[indRow + 2][indCol]);
+                object.technical_security_advice = he.decode(data[indRow + 2][indCol]);
             }
 
             // handled in DB
@@ -275,24 +280,44 @@ async function analyseFileDetail(file) {
 
             }
 
+            // handled in DB
             if (value === "Conditions") {
                 object.conditions = he.decode(data[indRow + 2][indCol]);
             }
 
+            // handled in DB
             if (value === "Autres Infos") {
-                object.other_informations = he.decode(data[indRow + 2][indCol]);
+                object.other_information = he.decode(data[indRow + 2][indCol]);
             }
 
+            // handled in DB
             if (value === "Inscrite au calendrier par") {
-                object.added_by = he.decode(data[indRow + 2][indCol]);
+                let objContact = {};
+                let val = he.decode(data[indRow + 2][indCol]).split(" - ");
+                objContact.name = val[0];
+                objContact.type = "Calendrier"
+                objContact.email = val.length > 1 && val[1].indexOf("mailto:") > -1 ? val[1].split(":")[1].split("?")[0] : null;
+                object.contacts.push(objContact);
             }
 
+            // handled in DB
             if (he.decode(value) === "Résultats chargés par") {
-                object.results_added_by = he.decode(data[indRow + 2][indCol]);
+                let objContact = {};
+                let val = he.decode(data[indRow + 2][indCol]).split(" - ");
+                objContact.name = val[0];
+                objContact.type = "Résultats - envoi";
+                objContact.email = val.length > 1 && val[1].indexOf("mailto:") > -1 ? val[1].split(":")[1].split("?")[0] : null;
+                object.contacts.push(objContact);
             }
 
+            // handled in DB
             if (he.decode(value) === "Puis contrôlés par") {
-                object.results_controled_by = he.decode(data[indRow + 2][indCol]);
+                let objContact = {};
+                let val = he.decode(data[indRow + 2][indCol]).split(" - ");
+                objContact.name = val[0];
+                objContact.type = "Résultats - contrôle";
+                objContact.email = val.length > 1 && val[1].indexOf("mailto:") > -1 ? val[1].split(":")[1].split("?")[0] : null;
+                object.contacts.push(objContact);
             }
 
         }
