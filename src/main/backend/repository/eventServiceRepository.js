@@ -36,7 +36,7 @@ async function insertRel(object) {
 
 async function getTypeByKey(object) {
 
-    let query = ` select * from event_service where label = $1`;
+    let query = ` select * from event_service where label = $1 `;
     let ret = await db.queryBuilderPromise(query, [object.label]);
     return ret;
 

@@ -2,10 +2,17 @@ const db = require("./../../api/configuration/database/queryBuilder");
 const logger = require('./../../api/configuration/logger')();
 const familyRepository = require('./familyRepository');
 const eventTypeRepository = require('./eventTypeRepository');
+
+const eventDetailTypeRepository = require('./eventDetailTypeRepository');
+const eventDetailCategoryRepository = require('./eventDetailCategoryRepository');
+
+
 const eventContactRepository = require('./eventContactRepository');
 
 const eventLevelRepository = require('./eventLevelRepository');
 const eventServiceRepository = require('./eventServiceRepository');
+
+
 
 
 const baseAthleContactUtils = require("./../utils/BaseAthleContactUtils");
@@ -163,15 +170,38 @@ async function handleDetails(object) {
 
     for (let event of object.events) {
 
+        let detailType = {
+            label: event.type
+        }
+
+        // type
+        await eventDetailTypeRepository.insert(detailType);
+        let typeKey = await eventDetailTypeRepository.getByKey(detailType);
+        typeKey = typeKey.rows[0].id;
+
         let eventToAdd = {
             fk_id_js_event: object.id_js,
             date_event_string: event.date,
             hour_event_string: event.hour,
             distance: event.distance,
-            label: event.label
+            label: event.label,
+            fk_id_event_detail_type: typeKey
         }
 
         await insert(eventToAdd);
+        let detailId = await getByKey(object.id_js, event.label);
+        detailId = detailId.rows[0].id;
+
+        for (let category of event.categories) {
+
+            // rel_event_detail_category
+            let categoryToAdd = {
+                fk_code_event_detail_category: category,
+                fk_id_event_detail: detailId,
+                fk_id_js_event: object.id_js
+            }
+            await eventDetailCategoryRepository.insertRel(categoryToAdd);
+        }
 
     }
 
@@ -179,12 +209,22 @@ async function handleDetails(object) {
 
 async function insert(object) {
 
-    let query = ` insert into event_detail ( fk_id_js_event, date_event_string, hour_event_string, distance, label, date_creation, date_modification ) 
+    let query = ` insert into event_detail ( fk_id_js_event, date_event_string, hour_event_string, distance, label, fk_id_event_detail_type, 
+                                            date_creation, date_modification ) 
                                     SELECT  CAST($1 as varchar), CAST($2 as varchar),CAST( $3 as varchar), CAST($4 as varchar), CAST($5 as varchar), 
+                                            CAST($6 as integer),
                                             current_timestamp, current_timestamp 
-                                    WHERE NOT EXISTS ( SELECT 1 FROM event_detail WHERE FK_ID_JS_EVENT = $1 AND LABEL = $5) `;
-    await db.queryBuilderPromise(query, [object.fk_id_js_event, object.date_event_string, object.hour_event_string, object.distance, object.label]);
+                                    WHERE NOT EXISTS ( SELECT 1 FROM event_detail WHERE FK_ID_JS_EVENT = $1 AND LABEL = $5 ) `;
+    await db.queryBuilderPromise(query, [object.fk_id_js_event, object.date_event_string, object.hour_event_string,
+        object.distance, object.label, object.fk_id_event_detail_type
+    ]);
 }
+
+async function getByKey(eventId, eventDetailLabel) {
+    let query = ` select * from event_detail where fk_id_js_event = $1 and label = $2 `;
+    return await db.queryBuilderPromise(query, [eventId, eventDetailLabel]);
+}
+
 
 async function deleteByEventId(key) {
 
