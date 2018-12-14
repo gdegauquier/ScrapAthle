@@ -102,8 +102,9 @@ async function analyseFileDetail(file) {
 
     object.organizer = { type: "Organisation", name: null, email: null };
 
-    object.address = {};
-    object.address.lines = [];
+    object.adress = { postal_code: null, town: null };
+    object.adress.lines = [];
+
     object.contacts = [];
     object.services = [];
     object.events = [];
@@ -118,6 +119,7 @@ async function analyseFileDetail(file) {
 
     object.label = $(".titles").text().trim().split("\n")[0];
     object.event_label = null;
+    object.level = null;
 
     try {
         object.event_label = $("td[ style='text-align:right']")[2].childNodes[0].childNodes[0].data;
@@ -191,11 +193,11 @@ async function analyseFileDetail(file) {
             }
 
             if (value.indexOf("Adresse") > -1 &&
-                object.address.lines.length === 0) {
+                object.adress.lines.length === 0) {
 
                 let currentRow = indRow + 2;
                 let currentCol = indCol;
-                object.address.lines.push(he.decode(data[currentRow][indCol]));
+                object.adress.lines.push(he.decode(data[currentRow][indCol]));
 
                 // number of remaining rows
                 for (let ind = 0; ind < 6; ind++) {
@@ -205,19 +207,20 @@ async function analyseFileDetail(file) {
                     if (!valueCol || isNormalInteger(valueCol)) {
                         break;
                     }
-                    object.address.lines.push(he.decode(valueCol));
+                    object.adress.lines.push(he.decode(valueCol));
                 }
 
             }
 
             if (value.indexOf("Code Postal") > -1) {
-                object.address.postal_code = data[indRow + 2][indCol];
+                object.adress.postal_code = data[indRow + 2][indCol];
             }
 
             if (value === "Ville") {
-                object.address.town = he.decode(data[indRow + 2][indCol]);
+                object.adress.town = he.decode(data[indRow + 2][indCol]);
             }
 
+            // handled in DB
             if (he.decode(value).indexOf("Téléphone") > -1) {
                 object.phones.push = data[indRow + 2][indCol];
             }
@@ -257,7 +260,7 @@ async function analyseFileDetail(file) {
                     try {
                         object.services.push(services[service].next.attribs.alt);
                     } catch (e) {
-                        logger.warn("Service impossible à déterminer " + JSON.stringify(e));
+                        // logger.warn("Service impossible à déterminer " + JSON.stringify(e));
                     }
                 }
 
@@ -278,7 +281,7 @@ async function analyseFileDetail(file) {
 
                 let label = $(data[indRow + 2][indCol]).text().split(" - ");
                 event.label = he.decode(label[0]);
-                event.type = he.decode(label[1]);
+                event.type = label.length > 1 ? he.decode(label[1]) : null;
 
                 event.categories = data[indRow + 3][indCol].split(" / ");
                 event.distance = data[indRow + 4][indCol];

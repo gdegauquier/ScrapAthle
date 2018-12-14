@@ -11,6 +11,8 @@ const eventContactRepository = require('./eventContactRepository');
 
 const eventLevelRepository = require('./eventLevelRepository');
 const eventServiceRepository = require('./eventServiceRepository');
+const eventAdressRepository = require('./eventAdressRepository');
+
 
 
 
@@ -164,6 +166,29 @@ async function handleLevelAndReturnId(object) {
 
 }
 
+
+async function handleAdress(object) {
+
+    await eventAdressRepository.deleteByEventId(object.id_js);
+
+    let line1 = object.adress.lines.length > 0 ? object.adress.lines[0] : null;
+    let line2 = object.adress.lines.length > 1 ? object.adress.lines[1] : null;
+    let line3 = object.adress.lines.length > 2 ? object.adress.lines[2] : null;
+
+    let objAdress = {
+        fk_id_js_event: object.id_js,
+        postal_code: object.adress.postal_code,
+        town: object.adress.town,
+        line_1: line1,
+        line_2: line2,
+        line_3: line3
+    }
+
+    await eventAdressRepository.insert(objAdress);
+
+}
+
+
 async function handleDetails(object) {
 
     await deleteByEventId(object.id_js);
@@ -200,6 +225,7 @@ async function handleDetails(object) {
                 fk_id_event_detail: detailId,
                 fk_id_js_event: object.id_js
             }
+            await eventDetailCategoryRepository.insert({ code: category });
             await eventDetailCategoryRepository.insertRel(categoryToAdd);
         }
 
@@ -254,17 +280,26 @@ async function update(object) {
     // ADD DETAILS in a foreign table 
     await handleDetails(object);
 
+    // ADD ADRESS in a foreign table
+    await handleAdress(object);
+
     let query = ` update event set  date_modification = current_timestamp, code = $2, fk_id_family = $3, 
                                     date_event_begin = $4, date_event_end = $5, stadium = $6, fk_id_event_level = $7,
                                     website = $8, conditions = $9, other_information = $10, technical_security_advice = $11, 
-                                    online_engagement = $12
+                                    online_engagement = $12, 
+                                    phone_1 = $13, phone_2 = $14, phone_3 = $15
                                     where id_js = $1 `;
+
+    // phones
+    let phone1 = object.phones.length > 0 ? object.phones[0] : null;
+    let phone2 = object.phones.length > 1 ? object.phones[1] : null;
+    let phone3 = object.phones.length > 2 ? object.phones[2] : null;
 
     await db.queryBuilderPromise(query, [object.id_js,
         object.code, object.family,
         object.date_event.begin, object.date_event.end, object.stadium, object.level,
         object.website, object.conditions, object.other_information, object.technical_security_advice,
-        object.online_engagement
+        object.online_engagement, phone1, phone2, phone3
     ]);
 
 }

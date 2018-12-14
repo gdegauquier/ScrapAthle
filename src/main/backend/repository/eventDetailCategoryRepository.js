@@ -1,6 +1,21 @@
 const db = require("./../../api/configuration/database/queryBuilder");
 const logger = require('./../../api/configuration/logger')();
 
+async function insert(object) {
+
+    let query = ` insert into event_detail_category ( code, date_creation, date_modification )
+                  SELECT CAST($1 as VARCHAR), current_timestamp, current_timestamp 
+                  WHERE NOT EXISTS ( SELECT 1 FROM event_detail_category WHERE code = $1 ) `;
+
+    try {
+        await db.queryBuilderPromise(query, [object.code]);
+    } catch (ex) {
+        logger.debug(`KO => eventDetailCategoryRepository.insert() : object => ${JSON.stringify(object)}`);
+        logger.debug(`KO => eventDetailCategoryRepository.insert() : err => ${JSON.stringify(ex)}`);
+    }
+
+
+}
 
 async function insertRel(object) {
 
@@ -13,8 +28,8 @@ async function insertRel(object) {
     try {
         await db.queryBuilderPromise(query, [object.fk_code_event_detail_category, object.fk_id_event_detail, object.fk_id_js_event]);
     } catch (ex) {
-        logger.debug(`KO => eventDetailCategoryRepository.insert() : object => ${JSON.stringify(object)}`);
-        logger.debug(`KO => eventDetailCategoryRepository.insert() : err => ${JSON.stringify(ex)}`);
+        logger.debug(`KO => eventDetailCategoryRepository.insertRel() : object => ${JSON.stringify(object)}`);
+        logger.debug(`KO => eventDetailCategoryRepository.insertRel() : err => ${JSON.stringify(ex)}`);
     }
 
 }
@@ -31,6 +46,7 @@ async function getByKey(eventId, eventDetailId) {
 
 
 module.exports = {
+    insert,
     insertRel,
     getByKey
 }
