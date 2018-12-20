@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const db = require("./../../configuration/database/queryBuilder");
+const db = require("../../configuration/database/queryBuilder");
 
-const logger = require('./../../configuration/logger')();
+const logger = require('../../configuration/logger')();
 
 const got = require('got');
 const fs = require('fs').promises;

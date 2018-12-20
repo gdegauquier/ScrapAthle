@@ -11,9 +11,11 @@ const {
 } = process.env;
 
 
-app.use(`/${VERSION}/scraps`, require('./src/main/api/controller/scrap/files'));
-app.use(`/${VERSION}/scraps`, require('./src/main/api/controller/scrap/analysis'));
-app.use(`/${VERSION}/scraps`, require('./src/main/api/controller/scrap/data'));
+// _ [underscore] means it's a route of the system (won't be used after cron is set up)
+app.use(`/${VERSION}/_scraps`, require('./src/main/api/controller/scrap/filesController'));
+app.use(`/${VERSION}/_scraps`, require('./src/main/api/controller/scrap/analysisController'));
+app.use(`/${VERSION}/_scraps`, require('./src/main/api/controller/scrap/dataController'));
+
 
 
 app.listen(`${API_PORT}`, () => {

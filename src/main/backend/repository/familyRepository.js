@@ -10,8 +10,8 @@ async function insert(object) {
     try {
         await db.queryBuilderPromise(query, [object.label]);
     } catch (ex) {
-        logger.debug(`KO => eventRepository.insert() : object => ${JSON.stringify(object)}`);
-        logger.debug(`KO => eventRepository.insert() : err => ${JSON.stringify(ex)}`);
+        logger.debug(`KO => familyRepository.insert() : object => ${JSON.stringify(object)}`);
+        logger.debug(`KO => familyRepository.insert() : err => ${JSON.stringify(ex)}`);
     }
 
 }

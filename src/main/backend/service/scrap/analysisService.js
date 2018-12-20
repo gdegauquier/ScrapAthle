@@ -1,43 +1,20 @@
-const express = require('express');
-const router = express.Router();
-const logger = require('./../../configuration/logger')();
-
-const fs = require('fs').promises;
+const logger = require('../../../api/configuration/logger')();
 
 const { SCRAP_DIR } = process.env;
+
+const eventRepository = require('../../../backend/repository/eventRepository');
+const eventDetailRepository = require('../../../backend/repository/eventDetailRepository');
+const baseAthleDateUtils = require('../../../backend/utils/BaseAthleDateUtils');
 
 const cheerio = require('cheerio');
 var he = require('he');
 cheerioTableparser = require('cheerio-tableparser');
-
-// move these into a service
-const eventRepository = require('./../../../backend/repository/eventRepository');
-const eventDetailRepository = require('./../../../backend/repository/eventDetailRepository');
+const fs = require('fs').promises;
 
 
-const baseAthleDateUtils = require('./../../../backend/utils/BaseAthleDateUtils');
-
-
-
-router.get(`/analysis/:type`, async function(req, res) {
-
-    logger.info(`GET /analysis/${req.params.type}`);
-
-    try {
-
-        await analyseDir(SCRAP_DIR, req.params.type);
-
-    } catch (err) {
-        let errorMsg = `Error while reading directory : ${JSON.stringify(err)}`;
-        logger.error(errorMsg);
-        res.status(500).send(errorMsg);
-        return;
-    }
-
-    // let fileName = `general_analysis_${new Date().getTime()}.html`;
-    res.send('Analysis completed : ' + SCRAP_DIR);
-
-})
+function isNormalInteger(str) {
+    return /^\+?(0|[1-9]\d*)$/.test(str);
+}
 
 async function analyseDir(dir, type) {
 
@@ -73,7 +50,6 @@ async function analyseDir(dir, type) {
     }
 
 }
-
 
 
 async function analyseFileDetail(file) {
@@ -354,12 +330,11 @@ async function analyseFileDetail(file) {
     logger.info(`line : ${JSON.stringify(object)}`);
 
     object.contacts.push(object.organizer);
+    if (object.date_event.begin === null) {
+        return;
+    }
     await eventDetailRepository.upsert(object);
 
-}
-
-function isNormalInteger(str) {
-    return /^\+?(0|[1-9]\d*)$/.test(str);
 }
 
 
@@ -424,6 +399,8 @@ async function analyseFileGeneral(file) {
 }
 
 
-
-
-module.exports = router;
+module.exports = {
+    analyseDir,
+    analyseFileDetail,
+    analyseFileGeneral
+}

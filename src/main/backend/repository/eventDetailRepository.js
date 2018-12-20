@@ -200,9 +200,13 @@ async function handleDetails(object) {
         }
 
         // type
-        await eventDetailTypeRepository.insert(detailType);
-        let typeKey = await eventDetailTypeRepository.getByKey(detailType);
-        typeKey = typeKey.rows[0].id;
+        let typeKey = null;
+
+        if (event.type !== null) {
+            await eventDetailTypeRepository.insert(detailType);
+            let typeKey = await eventDetailTypeRepository.getByKey(detailType);
+            typeKey = typeKey.rows[0].id;
+        }
 
         let eventToAdd = {
             fk_id_js_event: object.id_js,
@@ -214,7 +218,7 @@ async function handleDetails(object) {
         }
 
         await insert(eventToAdd);
-        let detailId = await getByKey(object.id_js, event.label);
+        let detailId = await getByKey(object.id_js, event.label, event.distance);
         detailId = detailId.rows[0].id;
 
         for (let category of event.categories) {
@@ -246,9 +250,13 @@ async function insert(object) {
     ]);
 }
 
-async function getByKey(eventId, eventDetailLabel) {
-    let query = ` select * from event_detail where fk_id_js_event = $1 and label = $2 `;
-    return await db.queryBuilderPromise(query, [eventId, eventDetailLabel]);
+async function getByKey(eventId, eventDetailLabel, eventDetailDistance) {
+
+    let value = eventDetailLabel === null ? eventDetailDistance : eventDetailLabel;
+    let where = eventDetailLabel === null ? " and distance = $2 " : " and label = $2 ";
+
+    let query = ` select * from event_detail where fk_id_js_event = $1 ` + where;
+    return await db.queryBuilderPromise(query, [eventId, value]);
 }
 
 
