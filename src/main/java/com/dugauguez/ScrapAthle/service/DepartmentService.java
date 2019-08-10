@@ -25,8 +25,8 @@ public class DepartmentService {
         // prepare result list
         List<String> listDepartments = new ArrayList<>();
 
-        // open departments.txt
-        URL fileUrl = getClass().getResource("/departments.txt");
+        // open departments.html
+        URL fileUrl = getClass().getResource("/departments.html");
         File file = new File(fileUrl.getFile());
 
         // parse file
@@ -37,8 +37,6 @@ public class DepartmentService {
         }catch(IOException e){
             return listDepartments;
         }
-
-
 
         Elements elements = doc.getElementsByAttribute("value");
 

@@ -19,7 +19,10 @@ public class FileService {
     private String host;
 
     @Value("${bases.athle.uri.list}")
-    private String hostArgs;
+    private String hostArgsByYearAndDepartment;
+
+    @Value("${bases.athle.uri.detail}")
+    private String hostArgsById;
 
 
     @Autowired
@@ -42,17 +45,65 @@ public class FileService {
 
         }
 
+    }
+
+    public void getById(int year, String department, String id) {
+
+        String lf = getWebPageAsString(id);
+
+        if (lf == null) {
+            return;
+        }
+
+        writeWebPageOnLocalFile(year, department, id,lf);
 
     }
+
 
     // TODO: TO IMPROVE with a FORMATTER
     private String getHostAndArgs(int year, String department) {
 
-        String ret = host.concat(hostArgs);
+        String ret = host.concat(hostArgsByYearAndDepartment);
         ret = ret.replace("%YEAR%", year + "");
         ret = ret.replace("%DEPARTMENT%", department);
 
         return ret;
+
+    }
+
+    // TODO: TO IMPROVE with a FORMATTER
+    private String getHostAndArgs(String id) {
+
+        String ret = host.concat(hostArgsById);
+        ret = ret.replace("%ID%", id);
+
+        return ret;
+
+    }
+
+    private String getWebPageAsString(String id) {
+
+        String uri = getHostAndArgs(id);
+
+        URLConnection con;
+        URL url;
+        BufferedReader in;
+        String lf = "";
+        String l;
+
+        try {
+            url = new URL(uri);
+            con = url.openConnection();
+            in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            while ((l = in.readLine()) != null) {
+                lf += l;
+            }
+        } catch (Exception e) {
+            log.error("Could not read the file {}", id, e);
+            return null;
+        }
+
+        return lf;
 
     }
 
@@ -85,12 +136,33 @@ public class FileService {
     private void writeWebPageOnLocalFile(int year, String department, String content) {
 
         String dir = getClass().getResource("/").getFile();
+        String fileStr = dir + "/data/" + year + "/" + department + ".html";
+        new File(fileStr).getParentFile().mkdirs();
         OutputStream os;
 
         try {
-            os = new FileOutputStream(dir + "/data_general_" + year + "_" + department + ".html");
-        } catch (FileNotFoundException f) {
-            log.error("Could not write the file {}/{}", year, department);
+            os = new FileOutputStream(fileStr);
+        } catch (Exception e) {
+            log.error("Could not write the file {}/{}", year, department,e);
+            return;
+        }
+
+        final PrintStream printStream = new PrintStream(os);
+        printStream.println(content);
+        printStream.close();
+    }
+
+    private void writeWebPageOnLocalFile(int year, String department, String id, String content) {
+
+        String dir = getClass().getResource("/").getFile();
+        String fileStr = dir + "/data/" + year + "/" + department + "/" + id + ".html";
+        new File(fileStr).getParentFile().mkdirs();
+        OutputStream os;
+
+        try {
+            os = new FileOutputStream(fileStr);
+        } catch (Exception e) {
+            log.error("Could not write the file {}", id, e);
             return;
         }
 
