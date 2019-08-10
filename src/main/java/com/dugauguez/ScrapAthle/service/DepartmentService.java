@@ -4,6 +4,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -16,7 +17,8 @@ import java.util.List;
 @Service
 public class DepartmentService {
 
-    public static final String FOO_URI = "http://example.com/";
+    @Value("${bases.athle.uri.base}")
+    private String host;
 
     public List<String> getAll(){
 
@@ -31,7 +33,7 @@ public class DepartmentService {
         Document doc;
 
         try {
-            doc = Jsoup.parse(file, "UTF-8", FOO_URI);
+            doc = Jsoup.parse(file, "UTF-8", host);
         }catch(IOException e){
             return listDepartments;
         }
