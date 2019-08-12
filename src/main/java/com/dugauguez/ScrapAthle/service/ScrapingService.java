@@ -1,5 +1,6 @@
 package com.dugauguez.ScrapAthle.service;
 
+import com.dugauguez.ScrapAthle.utils.JsoupUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -42,7 +43,7 @@ public class ScrapingService {
             }
 
             log.info("File being scraped is {}", file.getName());
-            scrap(file);
+            scrapEvents(file);
             break;
 
         }
@@ -56,7 +57,7 @@ public class ScrapingService {
     private boolean hasDetailFileToBeRetrieved(int year, String department, String id) {
         URL url = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html");
 
-        if (url == null){
+        if (url == null) {
             return true;
         }
 
@@ -70,7 +71,7 @@ public class ScrapingService {
         LocalDate now = LocalDate.now();
         LocalDate fileTime = Instant.ofEpochMilli(test.lastModified()).atZone(ZoneId.systemDefault()).toLocalDate();
 
-        Period period = Period.between(now, fileTime);
+        Period period = Period.between(fileTime, now);
         int diff = period.getDays();
 
         return diff >= 2;
@@ -78,7 +79,7 @@ public class ScrapingService {
     }
 
 
-    private void scrap(File file) {
+    private void scrapEvents(File file) {
 
         int year = Integer.valueOf(file.getParentFile().getName());
         String department = file.getName().split(".html")[0];
@@ -101,17 +102,31 @@ public class ScrapingService {
                 String id = element.attr("href").split("'")[1];
 
                 log.debug("Compet {} found", id);
-                if (!hasDetailFileToBeRetrieved(year, department, id)) {
-                    log.debug("Compet {} already retrieved", id);
-                    continue;
+                if (hasDetailFileToBeRetrieved(year, department, id)) {
+                    fileService.getById(year, department, id);
+
                 }
-                fileService.getById(year, department, id);
+                parseEvent(year, department, id);
             }
 
         }
 
-        // log.info("File {} parsed {}", file.getName(), parsed);
+    }
+
+    private void parseEvent(int year, String department, String id) {
+
+        String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
+
+        Document doc = JsoupUtils.INSTANCE.getDocument(new File(file));
+        if (doc == null) {
+            log.error("Could not parse file {}", file);
+            return;
+        }
+
+        log.info("DOC ID PARSED {}", doc);
+
 
     }
+
 
 }
