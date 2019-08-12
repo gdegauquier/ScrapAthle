@@ -123,8 +123,15 @@ public class ScrapingService {
             return;
         }
 
-        log.info("DOC ID PARSED {}", doc);
+        log.debug("DOC ID PARSED {}", doc);
 
+        getGeneralInformation(doc);
+
+    }
+
+    private void getGeneralInformation(Document doc){
+
+        doc.selectFirst("b"); // TODO: parentNode to analyse, to get the right type of info
 
     }
 
