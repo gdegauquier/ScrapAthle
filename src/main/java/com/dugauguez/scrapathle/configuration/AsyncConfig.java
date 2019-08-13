@@ -1,4 +1,4 @@
-package com.dugauguez.ScrapAthle.configuration;
+package com.dugauguez.scrapathle.configuration;
 
 
 import org.springframework.context.annotation.Configuration;

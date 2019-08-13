@@ -1,11 +1,12 @@
-package com.dugauguez.ScrapAthle.repository;
+package com.dugauguez.scrapathle.repository;
 
 
-import com.dugauguez.ScrapAthle.utils.JsoupUtils;
+import com.dugauguez.scrapathle.utils.JsoupUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -23,6 +24,9 @@ public class DepartmentRepository {
     @Value("${bases.athle.uri.base}")
     private String host;
 
+    @Autowired
+    private JsoupUtils jsoupUtils;
+
     public List<String> getAll() {
 
         // prepare result list
@@ -30,7 +34,7 @@ public class DepartmentRepository {
 
         // parse file
         File file = getDepartmentsFile();
-        Document doc = JsoupUtils.INSTANCE.getDocument(file);
+        Document doc = jsoupUtils.getDocument(file);
         if (doc == null) {
             return listDepartments;
         }
