@@ -1,25 +1,10 @@
-package com.dugauguez.ScrapAthle.repository;
+package com.dugauguez.scrapathle.repository;
 
-import com.dugauguez.ScrapAthle.service.FileService;
-import com.dugauguez.ScrapAthle.utils.JsoupUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
-
-import java.io.File;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.ZoneId;
 
 @Slf4j
 @Repository
