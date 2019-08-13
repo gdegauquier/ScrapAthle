@@ -1,6 +1,6 @@
-package com.dugauguez.ScrapAthle.controller;
+package com.dugauguez.scrapathle.controller;
 
-import com.dugauguez.ScrapAthle.service.DepartmentService;
+import com.dugauguez.scrapathle.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,7 +24,7 @@ public class DepartmentController {
 
         List<String> departments = departmentService.getAll();
 
-        if (departments.isEmpty()){
+        if (departments.isEmpty()) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(departments);
         }
 

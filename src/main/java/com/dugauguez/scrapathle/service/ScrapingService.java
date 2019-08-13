@@ -1,9 +1,8 @@
-package com.dugauguez.ScrapAthle.service;
+package com.dugauguez.scrapathle.service;
 
-import com.dugauguez.ScrapAthle.repository.ScrapingRepository;
-import com.dugauguez.ScrapAthle.utils.JsoupUtils;
+import com.dugauguez.scrapathle.repository.ScrapingRepository;
+import com.dugauguez.scrapathle.utils.JsoupUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
@@ -32,6 +30,8 @@ public class ScrapingService {
 
     @Value("${bases.athle.uri.base}")
     private String host;
+
+    private JsoupUtils jsoupUtils;
 
     @Async
     public void getAllByYear(int year) {
@@ -85,17 +85,10 @@ public class ScrapingService {
 
     private void scrapEvents(File file) {
 
-        int year = Integer.valueOf(file.getParentFile().getName());
+        int year = Integer.parseInt(file.getParentFile().getName());
         String department = file.getName().split(".html")[0];
 
-        Document doc;
-
-        try {
-            doc = Jsoup.parse(file, StandardCharsets.UTF_8.displayName(), host);
-        } catch (Exception e) {
-            log.error("File {} could not be parsed", e);
-            return;
-        }
+        Document doc = jsoupUtils.getDocument(file);
 
         Elements elements = doc.getElementsByAttribute("href");
 
@@ -121,7 +114,7 @@ public class ScrapingService {
 
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
-        Document doc = JsoupUtils.INSTANCE.getDocument(new File(file));
+        Document doc = jsoupUtils.getDocument(new File(file));
         if (doc == null) {
             log.error("Could not parse file {}", file);
             return;
@@ -133,7 +126,7 @@ public class ScrapingService {
 
     }
 
-    private void getGeneralInformation(Document doc){
+    private void getGeneralInformation(Document doc) {
 
         String code = scrapingRepository.getCode(doc);
         String dateBegin = scrapingRepository.getBeginDate(doc);
@@ -142,11 +135,7 @@ public class ScrapingService {
         String type = scrapingRepository.getType(doc);
 
 
-
-
     }
-
-
 
 
 }

@@ -1,6 +1,6 @@
-package com.dugauguez.ScrapAthle.service;
+package com.dugauguez.scrapathle.service;
 
-import com.dugauguez.ScrapAthle.repository.DepartmentRepository;
+import com.dugauguez.scrapathle.repository.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

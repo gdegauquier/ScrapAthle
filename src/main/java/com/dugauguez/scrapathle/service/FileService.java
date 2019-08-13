@@ -1,4 +1,4 @@
-package com.dugauguez.ScrapAthle.service;
+package com.dugauguez.scrapathle.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,18 +15,14 @@ import java.util.List;
 @Service
 public class FileService {
 
-    @Value("${bases.athle.uri.base}")
-    private String host;
-
-    @Value("${bases.athle.uri.list}")
-    private String hostArgsByYearAndDepartment;
-
-    @Value("${bases.athle.uri.detail}")
-    private String hostArgsById;
-
-
     @Autowired
     DepartmentService departmentService;
+    @Value("${bases.athle.uri.base}")
+    private String host;
+    @Value("${bases.athle.uri.list}")
+    private String hostArgsByYearAndDepartment;
+    @Value("${bases.athle.uri.detail}")
+    private String hostArgsById;
 
     @Async
     public void getAllByYear(int year) {
@@ -55,7 +51,7 @@ public class FileService {
             return;
         }
 
-        writeWebPageOnLocalFile(year, department, id,lf);
+        writeWebPageOnLocalFile(year, department, id, lf);
 
     }
 
@@ -143,7 +139,7 @@ public class FileService {
         try {
             os = new FileOutputStream(fileStr);
         } catch (Exception e) {
-            log.error("Could not write the file {}/{}", year, department,e);
+            log.error("Could not write the file {}/{}", year, department, e);
             return;
         }
 

@@ -1,6 +1,6 @@
-package com.dugauguez.ScrapAthle.controller;
+package com.dugauguez.scrapathle.controller;
 
-import com.dugauguez.ScrapAthle.service.FileService;
+import com.dugauguez.scrapathle.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ public class FileController {
 
     @GetMapping(value = "/files/general/2019",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> getProducts(){
+    public ResponseEntity<String> getProducts() {
 
         fileService.getAllByYear(2019);
 
