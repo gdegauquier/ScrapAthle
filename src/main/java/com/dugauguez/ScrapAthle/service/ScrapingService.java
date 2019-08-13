@@ -1,5 +1,6 @@
 package com.dugauguez.ScrapAthle.service;
 
+import com.dugauguez.ScrapAthle.repository.ScrapingRepository;
 import com.dugauguez.ScrapAthle.utils.JsoupUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -25,6 +26,9 @@ public class ScrapingService {
 
     @Autowired
     FileService fileService;
+
+    @Autowired
+    ScrapingRepository scrapingRepository;
 
     @Value("${bases.athle.uri.base}")
     private String host;
@@ -131,9 +135,18 @@ public class ScrapingService {
 
     private void getGeneralInformation(Document doc){
 
-        doc.selectFirst("b"); // TODO: parentNode to analyse, to get the right type of info
+        String code = scrapingRepository.getCode(doc);
+        String dateBegin = scrapingRepository.getBeginDate(doc);
+
+        String level = scrapingRepository.getLevel(doc);
+        String type = scrapingRepository.getType(doc);
+
+
+
 
     }
+
+
 
 
 }
