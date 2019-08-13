@@ -4,7 +4,6 @@ package com.dugauguez.scrapathle.repository;
 import com.dugauguez.scrapathle.utils.JsoupUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +14,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -44,17 +44,18 @@ public class DepartmentRepository {
 
     private List<String> extractDepartments(Document doc) {
 
-        List<String> listDepartments = new ArrayList<>();
         Elements elements = doc.getElementsByAttribute("value");
 
+        log.info("[extractDepartments] Starting calculate supplier size");
+        long startProcessing = System.currentTimeMillis();
+
         // loop on values && add them to the response
-        for (Element e : elements) {
+        List<String> listDepartments = elements.parallelStream()
+                                               .filter(e -> !StringUtils.isEmpty(e.text()) && e.text().length() < 5)
+                                               .map(e -> e.text())
+                                               .collect(Collectors.toList());
+        log.info("[extractDepartments] Elapsed time : {} ms", System.currentTimeMillis() - startProcessing);
 
-            if (!StringUtils.isEmpty(e.text()) && e.text().length() < 5) {
-                listDepartments.add(e.text());
-            }
-
-        }
         return listDepartments;
 
     }

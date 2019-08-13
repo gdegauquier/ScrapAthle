@@ -33,12 +33,9 @@ public class FileService {
 
             String lf = getWebPageAsString(year, department);
 
-            if (lf == null) {
-                continue;
+            if (lf != null) {
+                writeWebPageOnLocalFile(year, department, lf);
             }
-
-            writeWebPageOnLocalFile(year, department, lf);
-
         }
 
     }
