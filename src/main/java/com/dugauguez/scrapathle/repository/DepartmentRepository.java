@@ -1,7 +1,7 @@
-package com.dugauguez.ScrapAthle.repository;
+package com.dugauguez.scrapathle.repository;
 
 
-import com.dugauguez.ScrapAthle.utils.JsoupUtils;
+import com.dugauguez.scrapathle.utils.JsoupUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

@@ -1,7 +1,6 @@
-package com.dugauguez.ScrapAthle.controller;
+package com.dugauguez.scrapathle.controller;
 
-import com.dugauguez.ScrapAthle.service.FileService;
-import com.dugauguez.ScrapAthle.service.ScrapingService;
+import com.dugauguez.scrapathle.service.ScrapingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +15,11 @@ public class ScrapingController {
 
     @GetMapping(value = "/scrapings/2019",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> getProducts(){
+    public ResponseEntity<String> getProducts() {
 
         scrapingService.getAllByYear(2019);
 
-        return ResponseEntity.ok("Scraping has begun for year "+2019+"...");
+        return ResponseEntity.ok("Scraping has begun for year " + 2019 + "...");
 
     }
 

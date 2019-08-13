@@ -1,4 +1,4 @@
-package com.dugauguez.ScrapAthle;
+package com.dugauguez.scrapathle;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

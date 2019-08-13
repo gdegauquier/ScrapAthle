@@ -1,6 +1,6 @@
-package com.dugauguez.ScrapAthle.service;
+package com.dugauguez.scrapathle.service;
 
-import com.dugauguez.ScrapAthle.utils.JsoupUtils;
+import com.dugauguez.scrapathle.utils.JsoupUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -81,7 +81,7 @@ public class ScrapingService {
 
     private void scrapEvents(File file) {
 
-        int year = Integer.valueOf(file.getParentFile().getName());
+        int year = Integer.parseInt(file.getParentFile().getName());
         String department = file.getName().split(".html")[0];
 
         Document doc;
@@ -129,7 +129,7 @@ public class ScrapingService {
 
     }
 
-    private void getGeneralInformation(Document doc){
+    private void getGeneralInformation(Document doc) {
 
         doc.selectFirst("b"); // TODO: parentNode to analyse, to get the right type of info
 

@@ -1,4 +1,4 @@
-package com.dugauguez.ScrapAthle.utils;
+package com.dugauguez.scrapathle.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -14,10 +14,9 @@ import java.io.IOException;
 @Slf4j
 public class JsoupUtils {
 
+    public static JsoupUtils INSTANCE;
     @Value("${bases.athle.uri.base}")
     private String host;
-
-    public static JsoupUtils INSTANCE;
 
     @PostConstruct
     public void init() {
