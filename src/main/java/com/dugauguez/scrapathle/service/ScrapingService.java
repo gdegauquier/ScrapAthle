@@ -2,18 +2,15 @@ package com.dugauguez.scrapathle.service;
 
 import com.dugauguez.scrapathle.utils.JsoupUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
@@ -26,8 +23,8 @@ public class ScrapingService {
     @Autowired
     FileService fileService;
 
-    @Value("${bases.athle.uri.base}")
-    private String host;
+    @Autowired
+    private JsoupUtils jsoupUtils;
 
     @Async
     public void getAllByYear(int year) {
@@ -84,14 +81,7 @@ public class ScrapingService {
         int year = Integer.parseInt(file.getParentFile().getName());
         String department = file.getName().split(".html")[0];
 
-        Document doc;
-
-        try {
-            doc = Jsoup.parse(file, StandardCharsets.UTF_8.displayName(), host);
-        } catch (Exception e) {
-            log.error("File {} could not be parsed", e);
-            return;
-        }
+        Document doc = jsoupUtils.getDocument(file);
 
         Elements elements = doc.getElementsByAttribute("href");
 
@@ -117,7 +107,7 @@ public class ScrapingService {
 
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
-        Document doc = JsoupUtils.INSTANCE.getDocument(new File(file));
+        Document doc = jsoupUtils.getDocument(new File(file));
         if (doc == null) {
             log.error("Could not parse file {}", file);
             return;

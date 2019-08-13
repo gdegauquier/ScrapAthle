@@ -1,32 +1,35 @@
 package com.dugauguez.scrapathle.utils;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
-@Service
 @Slf4j
+@Setter
+@Getter
+@Configuration
+@ConfigurationProperties(prefix = "bases.athle.uri")
 public class JsoupUtils {
 
-    public static JsoupUtils INSTANCE;
-    @Value("${bases.athle.uri.base}")
-    private String host;
+    private String base;
 
-    @PostConstruct
-    public void init() {
-        INSTANCE = this;
+    @Bean
+    public JsoupUtils jsoupUtilsBean() {
+        return new JsoupUtils();
     }
 
     public Document getDocument(File file) {
         try {
-            Document doc = Jsoup.parse(file, "UTF-8", host);
-            return doc;
+            return Jsoup.parse(file, StandardCharsets.UTF_8.displayName(), base);
         } catch (IOException e) {
             log.error("Document file could not be parsed", e);
         }
