@@ -24,9 +24,6 @@ public class DepartmentRepository {
     @Value("${bases.athle.uri.base}")
     private String host;
 
-    @Autowired
-    private JsoupUtils jsoupUtils;
-
     public List<String> getAll() {
 
         // prepare result list
@@ -34,7 +31,7 @@ public class DepartmentRepository {
 
         // parse file
         File file = getDepartmentsFile();
-        Document doc = jsoupUtils.getDocument(file);
+        Document doc = JsoupUtils.INSTANCE.getDocument(file);
         if (doc == null) {
             return listDepartments;
         }

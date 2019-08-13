@@ -31,8 +31,6 @@ public class ScrapingService {
     @Value("${bases.athle.uri.base}")
     private String host;
 
-    private JsoupUtils jsoupUtils;
-
     @Async
     public void getAllByYear(int year) {
 
@@ -88,7 +86,7 @@ public class ScrapingService {
         int year = Integer.parseInt(file.getParentFile().getName());
         String department = file.getName().split(".html")[0];
 
-        Document doc = jsoupUtils.getDocument(file);
+        Document doc = JsoupUtils.INSTANCE.getDocument(file);
 
         Elements elements = doc.getElementsByAttribute("href");
 
@@ -114,7 +112,7 @@ public class ScrapingService {
 
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
-        Document doc = jsoupUtils.getDocument(new File(file));
+        Document doc = JsoupUtils.INSTANCE.getDocument(new File(file));
         if (doc == null) {
             log.error("Could not parse file {}", file);
             return;
@@ -128,8 +126,14 @@ public class ScrapingService {
 
     private void getGeneralInformation(Document doc) {
 
+        String title =  scrapingRepository.getTitle(doc);
         String code = scrapingRepository.getCode(doc);
+
+        String department =  scrapingRepository.getDepartment(doc);
+        String league = scrapingRepository.getLeague(doc);
+
         String dateBegin = scrapingRepository.getBeginDate(doc);
+        String dateEnd = scrapingRepository.getEndDate(doc);
 
         String level = scrapingRepository.getLevel(doc);
         String type = scrapingRepository.getType(doc);

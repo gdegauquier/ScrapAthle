@@ -19,9 +19,31 @@ public class ScrapingRepository {
         return null;
     }
 
+    public String getTitle(Document doc){
+       String title = doc.select("div.titles").text();
+       return title.substring(0, title.lastIndexOf(" ("));
+    }
+
+    public String getLeague(Document doc){
+        String title = doc.select("div.titles").text();
+        return title.substring(title.lastIndexOf('(') + 1).split(" / ")[0];
+    }
+
+    public String getDepartment(Document doc){
+        String title = doc.select("div.titles").text();
+        title = title.substring(title.lastIndexOf('(')).split(" / ")[1];
+        return title.substring(0, title.length() - 1);
+    }
+
+
     public String getBeginDate(Document doc) {
         Elements els = doc.select("b");
         return getPropertyViaParentNode(els, "Date de Début");
+    }
+
+    public String getEndDate(Document doc) {
+        Elements els = doc.select("b");
+        return getPropertyViaParentNode(els, "Date de Fin");
     }
 
     public String getCode(Document doc) {
