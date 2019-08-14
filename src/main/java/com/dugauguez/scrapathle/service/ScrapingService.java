@@ -4,7 +4,6 @@ import com.dugauguez.scrapathle.repository.ScrapingRepository;
 import com.dugauguez.scrapathle.utils.JsoupUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +16,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
+import java.util.Arrays;
 
 @Slf4j
 @Service
@@ -39,16 +39,18 @@ public class ScrapingService {
         File folder = new File(dir);
         File[] listOfFiles = folder.listFiles();
 
-        for (File file : listOfFiles) {
-            if (!isValidFile(year, file.getAbsolutePath())) {
-                continue;
-            }
+        log.info("[getAllByYear] Starting calculate supplier size");
+        long startProcessing = System.currentTimeMillis();
 
-            log.info("File being scraped is {}", file.getName());
-            scrapEvents(file);
-            break;
+        Arrays.stream(listOfFiles)
+              .parallel()
+              .filter(file -> isValidFile(year, file.getAbsolutePath()))
+              .forEach(file -> {
+                  log.info("File being scraped is {}", file.getName());
+                  scrapEvents(file);
+              });
 
-        }
+        log.info("[getAllByYear] Elapsed time : {} ms", System.currentTimeMillis() - startProcessing);
 
     }
 
@@ -90,21 +92,16 @@ public class ScrapingService {
 
         Elements elements = doc.getElementsByAttribute("href");
 
-        for (Element element : elements) {
-
-            if (element.attr("href").contains("bddThrowCompet")) {
-
-                String id = element.attr("href").split("'")[1];
-
-                log.debug("Compet {} found", id);
-                if (hasDetailFileToBeRetrieved(year, department, id)) {
-                    fileService.getById(year, department, id);
-
-                }
-                parseEvent(year, department, id);
-            }
-
-        }
+        elements.parallelStream()
+                .filter(element -> element.attr("href").contains("bddThrowCompet"))
+                .forEach(element -> {
+                    String id = element.attr("href").split("'")[1];
+                    log.debug("Compet {} found", id);
+                    if (hasDetailFileToBeRetrieved(year, department, id)) {
+                        fileService.getById(year, department, id);
+                    }
+                    parseEvent(year, department, id);
+                });
 
     }
 
