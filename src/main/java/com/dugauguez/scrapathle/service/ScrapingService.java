@@ -126,10 +126,11 @@ public class ScrapingService {
 
     private void getGeneralInformation(Document doc) {
 
-        String title =  scrapingRepository.getTitle(doc);
+        String title = scrapingRepository.getTitle(doc);
+        String town = scrapingRepository.getTown(doc);
         String code = scrapingRepository.getCode(doc);
 
-        String department =  scrapingRepository.getDepartment(doc);
+        String department = scrapingRepository.getDepartment(doc);
         String league = scrapingRepository.getLeague(doc);
 
         String dateBegin = scrapingRepository.getBeginDate(doc);
