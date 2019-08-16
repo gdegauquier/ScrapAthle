@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -20,7 +19,7 @@ public class DepartmentController {
 
     @GetMapping(value = "/departments",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<String>> getProducts() throws IOException {
+    public ResponseEntity<List<String>> getProducts() {
 
         List<String> departments = departmentService.getAll();
 
