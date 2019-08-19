@@ -2,9 +2,10 @@ package com.dugauguez.scrapathle.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @Entity
@@ -116,7 +117,7 @@ public class Event {
     private String type = null;
 
     @JsonProperty("date_de_debut")
-    private String dateDeDebut = null;
+    private LocalDate dateDeDebut = null;
 
     @JsonProperty("date_de_fin")
     private String dateDeFin = null;
@@ -134,4 +135,9 @@ public class Event {
     @JsonProperty("depart")
     private String depart = null;
 
- }
+    public void setDateDeDebut(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
+        this.dateDeDebut = LocalDate.parse(date.trim(), formatter);
+    }
+
+}
