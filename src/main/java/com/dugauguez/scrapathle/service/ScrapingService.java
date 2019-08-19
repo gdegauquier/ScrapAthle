@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,7 @@ public class ScrapingService {
 
     @Autowired
     private JsoupUtils jsoupUtils;
+
 
     @Async
     public void getAllByYear(int year) {
@@ -99,7 +101,7 @@ public class ScrapingService {
         int year = Integer.parseInt(file.getParentFile().getName());
         String department = file.getName().split(".html")[0];
 
-        Document doc = jsoupUtils.getDocument(file);
+        Document doc = JsoupUtils.INSTANCE.getDocument(file);
 
         Elements elements = doc.getElementsByAttribute("href");
 
@@ -123,7 +125,7 @@ public class ScrapingService {
 
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
-        Document doc = jsoupUtils.getDocument(new File(file));
+        Document doc = JsoupUtils.INSTANCE.getDocument(new File(file));
         if (doc == null) {
             log.error("Could not parse file {}", file);
             return null;
