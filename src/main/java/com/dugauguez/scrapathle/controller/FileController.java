@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class FileController {
@@ -13,13 +14,13 @@ public class FileController {
     @Autowired
     private FileService fileService;
 
-    @GetMapping(value = "/files/general/2019",
+    @GetMapping(value = "/files/general/{year}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> getProducts() {
+    public ResponseEntity<String> getProducts(@PathVariable("year") int year) {
 
-        fileService.getAllByYear(2019);
+        fileService.getAllByYear(year);
 
-        return ResponseEntity.ok("Files are being retrieved...");
+        return ResponseEntity.ok("Files are being retrieved for year " + year + "...");
 
     }
 
