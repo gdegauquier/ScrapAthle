@@ -20,119 +20,119 @@ public class Event {
     @JsonProperty("file_id")
     private String fileId = null;
 
-    @JsonProperty("telephone_1")
+    @JsonProperty("Téléphone 1")
     private String telephone1 = null;
 
-    @JsonProperty("telephone_2")
+    @JsonProperty("Téléphone 2")
     private String telephone2 = null;
 
-    @JsonProperty("resultats_charges_par")
+    @JsonProperty("Résultats chargés par")
     private String resultatsChargesPar = null;
 
-    @JsonProperty("puis_controles_par")
+    @JsonProperty("Puis contrôlés par")
     private String puisControlesPar = null;
 
-    @JsonProperty("inscrite_au_calendrier_par")
+    @JsonProperty("Inscrite au calendrier par")
     private String inscriteAuCalendrierPar = null;
 
-    @JsonProperty("adresse")
+    @JsonProperty("Adresse")
     private String adresse = null;
 
-    @JsonProperty("ville")
+    @JsonProperty("Ville")
     private String ville = null;
 
-    @JsonProperty("code_postal")
+    @JsonProperty("Code Postal")
     private String codePostal = null;
 
-    @JsonProperty("organisation")
+    @JsonProperty("Organisation")
     private String organisation = null;
 
-    @JsonProperty("recompenses")
+    @JsonProperty("Récompenses")
     private String recompenses = null;
 
-    @JsonProperty("conditions")
+    @JsonProperty("Conditions")
     private String conditions = null;
 
-    @JsonProperty("avis_technique_et_securite")
+    @JsonProperty("Avis Technique et Sécurité")
     private String avisTechniqueEtSecurite = null;
 
-    @JsonProperty("mel")
+    @JsonProperty("Mèl")
     private String emaill = null;
 
-    @JsonProperty("organisateur")
+    @JsonProperty("Organisateur")
     private String organisateur = null;
 
-    @JsonProperty("stade")
+    @JsonProperty("Stade")
     private String stade = null;
 
-    @JsonProperty("montant_inscription")
+    @JsonProperty("Montant Inscription")
     private String montantInscription = null;
 
-    @JsonProperty("contact_presse")
+    @JsonProperty("Contact Presse")
     private String contactPresse = null;
 
-    @JsonProperty("site_web")
+    @JsonProperty("Site Web")
     private String siteWeb = null;
 
-    @JsonProperty("fax")
+    @JsonProperty("Fax")
     private String fax = null;
 
-    @JsonProperty("vainqueur")
+    @JsonProperty("Vainqueur")
     private String vainqueur = null;
 
-    @JsonProperty("certificat_de_mesurage")
+    @JsonProperty("Certificat de mesurage")
     private String certificatDeMesurage = null;
 
-    @JsonProperty("contact_engagement")
+    @JsonProperty("Contact Engagement")
     private String contactEngagement = null;
 
-    @JsonProperty("engagement_en_ligne")
+    @JsonProperty("Engagement en ligne")
     private String engagementEnLigne = null;
 
-    @JsonProperty("autres_infos")
+    @JsonProperty("Autres Infos")
     private String autresInfos = null;
 
-    @JsonProperty("annee_precedente")
+    @JsonProperty("Année Précédente")
     private String anneePrecedente = null;
 
-    @JsonProperty("officiel_(juge_arbitre)")
+    @JsonProperty("Officiel (Juge arbitre)")
     private String officiel = null;
 
-    @JsonProperty("infos_epreuve")
+    @JsonProperty("Infos Epreuve")
     private String infosEpreuve = null;
 
-    @JsonProperty("challenge")
+    @JsonProperty("Challenge")
     private String challenge = null;
 
-    @JsonProperty("contact_technique")
+    @JsonProperty("Contact Technique")
     private String contactTechnique = null;
 
-    @JsonProperty("epreuves")
+    @JsonProperty("Epreuves")
     private String epreuves = null;
 
-    @JsonProperty("services")
+    @JsonProperty("Services")
     private String services = null;
 
-    @JsonProperty("type")
-    private String type = null;
+//    @JsonProperty("type")
+//    private String type = null;
 
-    @JsonProperty("date_de_debut")
+    @JsonProperty("Date de Début")
     private LocalDate dateDeDebut = null;
 
-    @JsonProperty("date_de_fin")
-    private String dateDeFin = null;
+//    @JsonProperty("date_de_fin")
+//    private String dateDeFin = null;
 
-    @JsonProperty("niveau")
+    @JsonProperty("Niveau")
     private String niveau = null;
 
-    @JsonProperty("code")
-    private String code = null;
+//    @JsonProperty("code")
+//    private String code = null;
 
 
-    @JsonProperty("arrivee")
+    @JsonProperty("Arrivée")
     private String arrivee = null;
 
-    @JsonProperty("depart")
+    @JsonProperty("Départ")
     private String depart = null;
 
     public void setDateDeDebut(String date) {
