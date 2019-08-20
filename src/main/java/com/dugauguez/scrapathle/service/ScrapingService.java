@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +18,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
@@ -28,21 +28,18 @@ import static java.util.stream.Collectors.toMap;
 @Service
 public class ScrapingService {
 
+    public static final int OLDER_THAN_TWO_DAYS = 2;
     @Autowired
     FileService fileService;
 
     @Autowired
     EventRepository eventRepository;
 
-    @Autowired
-    private JsoupUtils jsoupUtils;
-
-
     @Async
     public void getAllByYear(int year) {
 
+        log.debug("Parsing is starting...");
 
-        log.info("[getAllByYear] Starting calculate supplier size");
         long startProcessing = System.currentTimeMillis();
 
         String dir = getClass().getResource("/data/" + year).getFile();
@@ -53,18 +50,18 @@ public class ScrapingService {
         List<Event> all = new ArrayList<>();
 
         Arrays.stream(listOfFiles)
-              .parallel()
-              .filter(file -> isValidFile(year, file.getAbsolutePath()))
-              .forEach(file -> {
-                  List<Event> eventList = scrapEvents(file);
-                  all.addAll(eventList);
-              });
+                .parallel()
+                .filter(file -> isValidFile(year, file.getAbsolutePath()))
+                .forEach(file -> {
+                    List<Event> eventList = scrapEvents(file);
+                    all.addAll(eventList);
+                });
 
         eventRepository.saveAll(all);
 
         long duration = System.currentTimeMillis() - startProcessing;
-        log.info("[getAllByYear] Elapsed time : {} min {} s {} ms", duration / 1000 / 60, duration / 1000 % 60, (duration - ((duration / 1000 % 60) * 1000)));
-        log.info("there are " + all.size() + " events ");
+        log.debug("Elapsed time : {} min {} s {} ms", duration / 1000 / 60, duration / 1000 % 60, (duration - ((duration / 1000 % 60) * 1000)));
+        log.info("There are {} events", all.size());
     }
 
     private boolean isValidFile(int year, String file) {
@@ -91,7 +88,7 @@ public class ScrapingService {
         Period period = Period.between(fileTime, now);
         int diff = period.getDays();
 
-        return diff >= 2;
+        return diff >= OLDER_THAN_TWO_DAYS;
 
     }
 
@@ -121,6 +118,68 @@ public class ScrapingService {
         return enventList;
     }
 
+    private List<String> getColumnNamesToLowerCase() {
+        List<String> keys = getColumnNames();
+        return keys.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getColumnNames() {
+
+        List<String> keys = new ArrayList<>();
+
+        keys.add("Récompenses");
+        keys.add("Résultats chargés par");
+        keys.add("Puis contrôlés par");
+
+        keys.add("Adresse");
+        keys.add("Code Postal");
+        keys.add("Ville");
+        keys.add("Services");
+
+        keys.add("Avis Technique et Sécurité");
+        keys.add("Contact Engagement");
+        keys.add("Conditions");
+
+        keys.add("Organisation");
+        keys.add("Organisateur");
+        keys.add("Mèl");
+        keys.add("Stade");
+        keys.add("Fax");
+
+        keys.add("Inscrite au calendrier par");
+        keys.add("Vainqueur");
+        keys.add("Date de Début");
+
+        keys.add("Départ");
+        keys.add("Arrivée");
+        keys.add("Epreuves");
+        keys.add("Niveau");
+
+        keys.add("Les principes");
+        keys.add("Contact Technique");
+        keys.add("Challenge");
+        keys.add("Infos Epreuve");
+        keys.add("Officiel (Juge arbitre)");
+        keys.add("Année Précédente");
+        keys.add("Autres Infos");
+
+        keys.add("Engagement en ligne");
+        keys.add("Certificat de mesurage");
+        keys.add("Site Web");
+        keys.add("Contact Presse");
+        keys.add("Montant Inscription");
+        keys.add("Téléphone 1");
+        keys.add("Téléphone 2");
+
+        keys.add("Droits d'inscription");
+        keys.add("Les licenciés titulaires d’une licence sportive des fédérations suivantes");
+
+        return keys;
+
+    }
+
     private Event parseEvent(int year, String department, String id) {
 
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
@@ -134,89 +193,56 @@ public class ScrapingService {
         Elements styles = doc.getElementsByTag("td");
 
         List<String> strr = new ArrayList<>();
+
         styles.stream()
-              .parallel()
-              .forEach(element -> {
-                  String text = element.text();
-                  boolean parseConditions = text.contains(":") && text.length() > 5 && !text.contains(":00") && text.indexOf(":") != 2 && text.indexOf(":") != 4 && text.indexOf(":") != 5;
-                  if (parseConditions) {
+                .parallel()
+                .forEach(element -> {
+                    String text = element.text();
 
-                      String[] splitString = text.replace("Récompenses :", "\nrécompenses :")
-                                                 .replace("Résultats chargés par :", "\nrésultats chargés par :")
-                                                 .replace("Puis contrôlés par :", "\npuis contrôlés par :")
-                                                 .replace("Adresse :", "\nadresse :")
-                                                 .replace("Code Postal :", "\nCode Postal :")
-                                                 .replace("Ville :", "\nville :")
-                                                 .replace("Services :", "\nServices :")
-                                                 .replace("Avis Technique et Sécurité :", "\nAvis Technique et Sécurité :")
-                                                 .replace("Contact Engagement :", "\nContact Engagement :")
-                                                 .replace("Conditions :", "\nConditions :")
-                                                 .replace("Organisation :", "\nOrganisation :")
-                                                 .replace("Organisateur :", "\nOrganisateur :")
-                                                 .replace("Mèl :", "\nMèl :")
-                                                 .replace("Stade :", "\nStade :")
-                                                 .replace("Fax :", "\nFax :")
-                                                 .replace("Inscrite au calendrier par :", "\nInscrite au calendrier par :")
-                                                 .replace("Femmes :", "\nFemmes :")
-                                                 .replace("Vainqueur :", "\nVainqueur :")
-//                                                 .replace("Hommes :", "\nHommes :")
-                                                 .replace("Date de Début :", "\nDate de Début :")
-                                                 .replace("Départ :", "\nDépart :")
-                                                 .replace("Arrivée :", "\nArrivée :")
-                                                 .replace("Droits d'inscription :", "\nDroits d'inscription :")
-                                                 .replace("Epreuves :", "\nEpreuves :")
-                                                 .replace("Les licenciés titulaires d’une licence sportive des fédérations suivantes :", "\nLes licenciés titulaires d’une licence sportive des fédérations suivantes :")
-                                                 .replace("Les principes :", "\nLes principes :")
-                                                 .replace("Contact Technique :", "\nContact Technique :")
-                                                 .replace("Challenge :", "\nChallenge :")
-                                                 .replace("Infos Epreuve :", "\nInfos Epreuve :")
-                                                 .replace("Officiel (Juge arbitre) :", "\nOfficiel (Juge arbitre) :")
-                                                 .replace("Année Précédente :", "\nAnnée Précédente :")
-                                                 .replace("Autres Infos :", "\nAutres Infos :")
-                                                 .replace("Engagement en ligne :", "\nEngagement en ligne :")
-                                                 .replace("Certificat de mesurage :", "\nCertificat de mesurage :")
-                                                 .replace("Site Web :", "\nSite Web :")
-                                                 .replace("Contact Presse :", "\nContact Presse :")
-                                                 .replace("Montant Inscription :", "\nMontant Inscription :")
-                                                 .replace("Téléphone 1 :", "\nTéléphone 1 :")
-                                                 .replace("Téléphone 2 :", "\nTéléphone 2 :")
-                                                 .split("\n");
+                    boolean canParseColumn = text.contains(":") && text.length() > 5 &&
+                            !text.contains(":00") &&
+                            text.indexOf(":") != 2 &&
+                            text.indexOf(":") != 4 &&
+                            text.indexOf(":") != 5;
 
-                      Stream.of(splitString)
+                    if (!canParseColumn) {
+                        return;
+                    }
+
+                    for (String key : getColumnNames()) {
+                        text = addSplitDelemiter(text, key);
+                    }
+
+                    String[] splitString = text.split("\n");
+
+                    Stream.of(splitString)
                             .parallel()
                             .filter(e -> e != null)
                             .filter(e -> e != "")
                             .filter(e -> e.contains(":"))
                             .forEach(e -> strr.add(e));
-                  }
-              });
+
+                });
 
 
-        List<String> keys = Arrays.asList("récompenses :", "résultats chargés par :", "puis contrôlés par :", "adresse :", "code postal :", "ville :", "services :",
-                                          "avis technique et sécurité :", "contact engagement :", "conditions :", "organisation :", "organisateur :", "mèl :", "stade :", "fax :",
-                                          "inscrite au calendrier par :", "vainqueur :", "date de début :",
-//                                                                "femmes :", "hommes :","droits d'inscription :", "les licenciés titulaires d’une licence sportive des fédérations suivantes :",
-                                          "départ :", "arrivée :", "epreuves :", "niveau :",
-                                          "les principes :", "contact technique :", "challenge :", "infos epreuve :", "officiel (juge arbitre) :", "année précédente :", "autres infos :",
-                                          "engagement en ligne :", "certificat de mesurage :", "site web :", "contact presse :", "montant inscription :", "téléphone 1 :", "téléphone 2 :");
-
+        List<String> keys = getColumnNamesToLowerCase();
         strr.removeAll(Collections.singleton(null));
 
         Map<String, String> collectMap = strr.stream()
-                                             .parallel()
-                                             .filter(str -> str.contains(":"))
-                                             .map(str -> str.split(":", 2))
-                                             .filter(str -> keys.contains(str[0].toLowerCase() + ":"))
-                                             .filter(str -> str[1].length() < 254)
-                                             .collect(toMap(str -> str[0].trim()
-                                                                         .replaceAll(" ", "_")
-                                                                         .replaceAll("é", "e")
-                                                                         .replaceAll("è", "e")
-                                                                         .replaceAll("ô", "o")
-                                                                         .toLowerCase(),
-                                                            str -> (str[0].equals("Téléphone 2 ") || str[0].equals("Téléphone 1 ")) ? str[1].replaceAll("\\s+", "").replaceAll("\\.", "") : str[1],
-                                                            (v1, v2) -> v1
-                                             ));
+                .parallel()
+                .filter(str -> str.contains(" : "))
+                .map(str -> str.split(" : ", 2))
+                .filter(str -> keys.contains(str[0].toLowerCase()))
+                .filter(str -> str[1].length() < 254)
+                .collect(toMap(str -> str[0].trim()
+                                .replaceAll(" ", "_")
+                                .replaceAll("é", "e")
+                                .replaceAll("è", "e")
+                                .replaceAll("ô", "o")
+                                .toLowerCase(),
+                        str -> (str[0].equals("Téléphone 2 ") || str[0].equals("Téléphone 1 ")) ? str[1].replaceAll("\\s+", "").replaceAll("\\.", "") : str[1],
+                        (v1, v2) -> v1
+                ));
 
 
         final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
@@ -224,6 +250,10 @@ public class ScrapingService {
         event.setFileId(id);
 
         return event;
+    }
+
+    private String addSplitDelemiter(String text, String marker) {
+        return text.replace(marker + " :", "\n" + marker + " :");
     }
 
 

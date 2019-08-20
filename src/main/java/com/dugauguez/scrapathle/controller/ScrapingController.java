@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class ScrapingController {
@@ -13,13 +14,13 @@ public class ScrapingController {
     @Autowired
     private ScrapingService scrapingService;
 
-    @GetMapping(value = "/scrapings/2019",
+    @GetMapping(value = "/scrapings/{year}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> getProducts() {
+    public ResponseEntity<String> getProducts(@PathVariable("year") int year) {
 
-        scrapingService.getAllByYear(2019);
+        scrapingService.getAllByYear(year);
 
-        return ResponseEntity.ok("Scraping has begun for year " + 2019 + "...");
+        return ResponseEntity.ok("Scraping has begun for year " + year + "...");
 
     }
 
