@@ -3,6 +3,7 @@ package com.dugauguez.scrapathle.service;
 import com.dugauguez.scrapathle.entity.Event;
 import com.dugauguez.scrapathle.repository.EventRepository;
 import com.dugauguez.scrapathle.utils.JsoupUtils;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
@@ -50,12 +51,12 @@ public class ScrapingService {
         List<Event> all = new ArrayList<>();
 
         Arrays.stream(listOfFiles)
-                .parallel()
-                .filter(file -> isValidFile(year, file.getAbsolutePath()))
-                .forEach(file -> {
-                    List<Event> eventList = scrapEvents(file);
-                    all.addAll(eventList);
-                });
+              .parallel()
+              .filter(file -> isValidFile(year, file.getAbsolutePath()))
+              .forEach(file -> {
+                  List<Event> eventList = scrapEvents(file);
+                  all.addAll(eventList);
+              });
 
         eventRepository.saveAll(all);
 
@@ -118,66 +119,13 @@ public class ScrapingService {
         return enventList;
     }
 
-    private List<String> getColumnNamesToLowerCase() {
-        List<String> keys = getColumnNames();
-        return keys.stream()
-                .map(String::toLowerCase)
-                .collect(Collectors.toList());
-    }
 
     private List<String> getColumnNames() {
-
-        List<String> keys = new ArrayList<>();
-
-        keys.add("Récompenses");
-        keys.add("Résultats chargés par");
-        keys.add("Puis contrôlés par");
-
-        keys.add("Adresse");
-        keys.add("Code Postal");
-        keys.add("Ville");
-        keys.add("Services");
-
-        keys.add("Avis Technique et Sécurité");
-        keys.add("Contact Engagement");
-        keys.add("Conditions");
-
-        keys.add("Organisation");
-        keys.add("Organisateur");
-        keys.add("Mèl");
-        keys.add("Stade");
-        keys.add("Fax");
-
-        keys.add("Inscrite au calendrier par");
-        keys.add("Vainqueur");
-        keys.add("Date de Début");
-
-        keys.add("Départ");
-        keys.add("Arrivée");
-        keys.add("Epreuves");
-        keys.add("Niveau");
-
-        keys.add("Les principes");
-        keys.add("Contact Technique");
-        keys.add("Challenge");
-        keys.add("Infos Epreuve");
-        keys.add("Officiel (Juge arbitre)");
-        keys.add("Année Précédente");
-        keys.add("Autres Infos");
-
-        keys.add("Engagement en ligne");
-        keys.add("Certificat de mesurage");
-        keys.add("Site Web");
-        keys.add("Contact Presse");
-        keys.add("Montant Inscription");
-        keys.add("Téléphone 1");
-        keys.add("Téléphone 2");
-
-        keys.add("Droits d'inscription");
-        keys.add("Les licenciés titulaires d’une licence sportive des fédérations suivantes");
-
-        return keys;
-
+        /**
+         *  Retrieve the values of the annotation @JsonProperty which exits in the class Event.
+         *  This values are exactly the same in the html file
+         */
+        return Stream.of(Event.class.getDeclaredFields()).map(field -> field.getDeclaredAnnotation(JsonProperty.class).value()).collect(Collectors.toList());
     }
 
     private Event parseEvent(int year, String department, String id) {
@@ -195,54 +143,49 @@ public class ScrapingService {
         List<String> strr = new ArrayList<>();
 
         styles.stream()
-                .parallel()
-                .forEach(element -> {
-                    String text = element.text();
+              .parallel()
+              .forEach(element -> {
+                  String text = element.text();
 
-                    boolean canParseColumn = text.contains(":") && text.length() > 5 &&
-                            !text.contains(":00") &&
-                            text.indexOf(":") != 2 &&
-                            text.indexOf(":") != 4 &&
-                            text.indexOf(":") != 5;
+                  boolean canParseColumn = text.contains(":") && text.length() > 5 &&
+                          !text.contains(":00") &&
+                          text.indexOf(":") != 2 &&
+                          text.indexOf(":") != 4 &&
+                          text.indexOf(":") != 5;
 
-                    if (!canParseColumn) {
-                        return;
-                    }
+                  if (!canParseColumn) {
+                      return;
+                  }
 
-                    for (String key : getColumnNames()) {
-                        text = addSplitDelemiter(text, key);
-                    }
+                  for (String key : getColumnNames()) {
+                      text = addSplitDelemiter(text, key);
+                  }
 
-                    String[] splitString = text.split("\n");
+                  String[] splitString = text.split("\n");
 
-                    Stream.of(splitString)
-                            .parallel()
-                            .filter(e -> e != null)
-                            .filter(e -> e != "")
-                            .filter(e -> e.contains(":"))
-                            .forEach(e -> strr.add(e));
+                  Stream.of(splitString)
+                        .parallel()
+                        .filter(e -> e != null)
+                        .filter(e -> e != "")
+                        .filter(e -> e.contains(":"))
+                        .forEach(e -> strr.add(e));
 
-                });
+              });
 
 
-        List<String> keys = getColumnNamesToLowerCase();
+        List<String> keys = getColumnNames();
         strr.removeAll(Collections.singleton(null));
 
         Map<String, String> collectMap = strr.stream()
-                .parallel()
-                .filter(str -> str.contains(" : "))
-                .map(str -> str.split(" : ", 2))
-                .filter(str -> keys.contains(str[0].toLowerCase()))
-                .filter(str -> str[1].length() < 254)
-                .collect(toMap(str -> str[0].trim()
-                                .replaceAll(" ", "_")
-                                .replaceAll("é", "e")
-                                .replaceAll("è", "e")
-                                .replaceAll("ô", "o")
-                                .toLowerCase(),
-                        str -> (str[0].equals("Téléphone 2 ") || str[0].equals("Téléphone 1 ")) ? str[1].replaceAll("\\s+", "").replaceAll("\\.", "") : str[1],
-                        (v1, v2) -> v1
-                ));
+                                             .parallel()
+                                             .filter(str -> str.contains(" : "))
+                                             .map(str -> str.split(" : ", 2))
+                                             .filter(str -> keys.contains(str[0].trim()))
+                                             .filter(str -> str[1].length() < 254)
+                                             .collect(toMap(str -> str[0].trim(),
+                                                            str -> (str[0].equals("Téléphone 2") || str[0].equals("Téléphone 1")) ? str[1].replaceAll("\\s+", "").replaceAll("\\.", "") : str[1],
+                                                            (v1, v2) -> v1
+                                             ));
 
 
         final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
