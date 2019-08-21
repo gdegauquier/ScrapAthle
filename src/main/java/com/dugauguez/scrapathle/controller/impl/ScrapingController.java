@@ -1,21 +1,18 @@
-package com.dugauguez.scrapathle.controller;
+package com.dugauguez.scrapathle.controller.impl;
 
+import com.dugauguez.scrapathle.controller.ScrapingApi;
 import com.dugauguez.scrapathle.service.ScrapingService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
-public class ScrapingController {
+public class ScrapingController implements ScrapingApi {
 
     @Autowired
     private ScrapingService scrapingService;
 
-    @GetMapping(value = "/scrapings/{year}",
-            produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<String> getProducts(@PathVariable("year") int year) {
 
         scrapingService.getAllByYear(year);

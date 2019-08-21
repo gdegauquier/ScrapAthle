@@ -20,3 +20,10 @@ CREATE USER runner WITH PASSWORD 'password';
 ```sql
 CREATE DATABASE runner_db WITH OWNER = runner ENCODING = 'UTF8' TABLESPACE = pg_default CONNECTION LIMIT = -1;
 ```
+### API Documentation avec Swagger
+
+Pour documenter correctement les endpoints disponibles de l' API, ce qu'ils peuvent faire, les paramètres d'entrée dont ils ont besoin et ce qu'ils fourniront en sortie. Swagger est un standard populaire utilisé à cette fin.
+
+Après avoir exécuté l'application, accédez à http://localhost:8080/go-api/swagger-ui.html
+
+![img](src/main/resources/screen-shot/swagger.jpg "Title")
