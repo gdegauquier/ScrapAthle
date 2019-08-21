@@ -1,0 +1,9 @@
+
+                 ________        ${application.formatted-version}
+                /  _____/  ____
+               /   \  ___ /  _ \
+               \    \_\  (  <_> )
+                \______  /\____/
+                       \/
+
+:: Running Spring Boot ${spring-boot.version} ::
