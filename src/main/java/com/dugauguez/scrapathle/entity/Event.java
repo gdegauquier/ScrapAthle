@@ -57,7 +57,7 @@ public class Event {
     private String avisTechniqueEtSecurite = null;
 
     @JsonProperty("Mèl")
-    private String emaill = null;
+    private String email = null;
 
     @JsonProperty("Organisateur")
     private String organisateur = null;

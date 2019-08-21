@@ -183,7 +183,7 @@ public class ScrapingService {
                                              .filter(str -> keys.contains(str[0].trim()))
                                              .filter(str -> str[1].length() < 254)
                                              .collect(toMap(str -> str[0].trim(),
-                                                            str -> (str[0].equals("Téléphone 2") || str[0].equals("Téléphone 1")) ? str[1].replaceAll("\\s+", "").replaceAll("\\.", "") : str[1],
+                                                            str -> (str[0].equals("Téléphone 2") || str[0].equals("Téléphone 1")) ? str[1].replaceAll("\\s+", "").replaceAll("\\.", "").trim() : str[1].trim(),
                                                             (v1, v2) -> v1
                                              ));
 
