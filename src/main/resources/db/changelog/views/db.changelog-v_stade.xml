@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet author="Abderraouf MAKHLOUF" id="create_view_v_stade">
+        <createView viewName="v_stade" replaceIfExists="true">
+            SELECT
+            rank() OVER ( ORDER BY stade,ville,code_postal ) AS id,
+            stade,
+            ville,
+            code_postal
+            FROM event
+            WHERE stade NOTNULL
+            AND stade NOT LIKE '%Non référencé%'
+            AND stade NOT LIKE '_ '
+            GROUP BY
+            stade, ville, code_postal
+            ORDER BY id
+        </createView>
+    </changeSet>
+
+</databaseChangeLog>
