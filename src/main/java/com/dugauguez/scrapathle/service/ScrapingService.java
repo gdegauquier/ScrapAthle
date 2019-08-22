@@ -2,6 +2,7 @@ package com.dugauguez.scrapathle.service;
 
 import com.dugauguez.scrapathle.entity.Event;
 import com.dugauguez.scrapathle.repository.EventRepository;
+import com.dugauguez.scrapathle.repository.ScrapingRepository;
 import com.dugauguez.scrapathle.utils.JsoupUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +37,9 @@ public class ScrapingService {
     @Autowired
     EventRepository eventRepository;
 
+    @Autowired
+    ScrapingRepository scrapingRepository;
+
     @Async
     public void getAllByYear(int year) {
 
@@ -51,12 +55,12 @@ public class ScrapingService {
         List<Event> all = new ArrayList<>();
 
         Arrays.stream(listOfFiles)
-              .parallel()
-              .filter(file -> isValidFile(year, file.getAbsolutePath()))
-              .forEach(file -> {
-                  List<Event> eventList = scrapEvents(file);
-                  all.addAll(eventList);
-              });
+                .parallel()
+                .filter(file -> isValidFile(year, file.getAbsolutePath()))
+                .forEach(file -> {
+                    List<Event> eventList = scrapEvents(file);
+                    all.addAll(eventList);
+                });
 
         eventRepository.saveAll(all);
 
@@ -138,59 +142,82 @@ public class ScrapingService {
             return null;
         }
 
+        /*
         Elements styles = doc.getElementsByTag("td");
 
         List<String> strr = new ArrayList<>();
 
         styles.stream()
-              .parallel()
-              .forEach(element -> {
-                  String text = element.text();
+                .parallel()
+                .forEach(element -> {
+                    String text = element.text();
 
-                  boolean canParseColumn = text.contains(":") && text.length() > 5 &&
-                          !text.contains(":00") &&
-                          text.indexOf(":") != 2 &&
-                          text.indexOf(":") != 4 &&
-                          text.indexOf(":") != 5;
+                    boolean canParseColumn = text.contains(":") && text.length() > 5 &&
+                            !text.contains(":00") &&
+                            text.indexOf(":") != 2 &&
+                            text.indexOf(":") != 4 &&
+                            text.indexOf(":") != 5;
 
-                  if (!canParseColumn) {
-                      return;
-                  }
+                    if (!canParseColumn) {
+                        return;
+                    }
 
-                  for (String key : getColumnNames()) {
-                      text = addSplitDelemiter(text, key);
-                  }
+                    for (String key : getColumnNames()) {
+                        text = addSplitDelemiter(text, key);
+                    }
 
-                  String[] splitString = text.split("\n");
+                    String[] splitString = text.split("\n");
 
-                  Stream.of(splitString)
-                        .parallel()
-                        .filter(e -> e != null)
-                        .filter(e -> e != "")
-                        .filter(e -> e.contains(":"))
-                        .forEach(e -> strr.add(e));
+                    Stream.of(splitString)
+                            .parallel()
+                            .filter(e -> e != null)
+                            .filter(e -> e != "")
+                            .filter(e -> e.contains(":"))
+                            .forEach(e -> strr.add(e));
 
-              });
+                });
 
 
         List<String> keys = getColumnNames();
         strr.removeAll(Collections.singleton(null));
 
         Map<String, String> collectMap = strr.stream()
-                                             .parallel()
-                                             .filter(str -> str.contains(" : "))
-                                             .map(str -> str.split(" : ", 2))
-                                             .filter(str -> keys.contains(str[0].trim()))
-                                             .filter(str -> str[1].length() < 254)
-                                             .collect(toMap(str -> str[0].trim(),
-                                                            str -> (str[0].equals("Téléphone 2") || str[0].equals("Téléphone 1")) ? str[1].replaceAll("\\s+", "").replaceAll("\\.", "") : str[1],
-                                                            (v1, v2) -> v1
-                                             ));
+                .parallel()
+                .filter(str -> str.contains(" : "))
+                .map(str -> str.split(" : ", 2))
+                .filter(str -> keys.contains(str[0].trim()))
+                .filter(str -> str[1].length() < 254)
+                .collect(toMap(str -> str[0].trim(),
+                        str -> (str[0].equals("Téléphone 2") || str[0].equals("Téléphone 1")) ? str[1].replaceAll("\\s+", "").replaceAll("\\.", "") : str[1],
+                        (v1, v2) -> v1
+                ));
+        */
 
+        Map<String, String> collectMap = new HashMap<>();
+
+        collectMap.put("fileId", id);
+        collectMap.put("code", scrapingRepository.getCode(doc));
+
+        collectMap.put("beginDate", scrapingRepository.getBeginDate(doc));
+        collectMap.put("endDate", scrapingRepository.getEndDate(doc));
+
+        collectMap.put("title", scrapingRepository.getTitle(doc));
+        collectMap.put("town", scrapingRepository.getTown(doc));
+
+        collectMap.put("league", scrapingRepository.getLeague(doc));
+        collectMap.put("department", scrapingRepository.getDepartment(doc));
+
+        collectMap.put("type", scrapingRepository.getType(doc));
+        collectMap.put("level", scrapingRepository.getLevel(doc));
+
+        // handle adresses
+
+        Map<String,Map<String,String>> adresses = new HashMap<>();
+        adresses.put("stadiumAdress", scrapingRepository.getStadiumAdress(doc));
+        adresses.put("organisationAdress", scrapingRepository.getOrganisationAdress(doc));
 
         final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
         Event event = mapper.convertValue(collectMap, Event.class);
-        event.setFileId(id);
 
         return event;
     }

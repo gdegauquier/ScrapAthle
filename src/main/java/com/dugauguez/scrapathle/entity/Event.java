@@ -12,28 +12,46 @@ import java.time.format.DateTimeFormatter;
 @Table(name = "event")
 public class Event {
 
+    @JsonProperty("fileId")
+    private String fileId = null;
+
+    @JsonProperty("code")
+    private String code = null;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty("id")
     private Integer id;
 
-    @JsonProperty("file_id")
-    private String fileId = null;
+    @JsonProperty("title")
+    private String title;
+
+    @JsonProperty("town")
+    private String town;
+
+    @JsonProperty("league")
+    private String league;
+
+    @JsonProperty("type")
+    private String type;
+
+    @JsonProperty("department")
+    private String department = null;
 
     @JsonProperty("Téléphone 1")
-    private String telephone1 = null;
+    private String phoneNumber1 = null;
 
     @JsonProperty("Téléphone 2")
-    private String telephone2 = null;
-
-    @JsonProperty("Résultats chargés par")
-    private String resultatsChargesPar = null;
-
-    @JsonProperty("Puis contrôlés par")
-    private String puisControlesPar = null;
+    private String phoneNumber2 = null;
 
     @JsonProperty("Inscrite au calendrier par")
-    private String inscriteAuCalendrierPar = null;
+    private String eventSubmittedBy = null;
+
+    @JsonProperty("Résultats chargés par")
+    private String resultsGivenBy = null;
+
+    @JsonProperty("Puis contrôlés par")
+    private String resultsControledBy = null;
 
     @JsonProperty("Adresse")
     private String adresse = null;
@@ -119,15 +137,11 @@ public class Event {
     @JsonProperty("Date de Début")
     private LocalDate dateDeDebut = null;
 
-//    @JsonProperty("date_de_fin")
-//    private String dateDeFin = null;
+    @JsonProperty("Date de Fin")
+    private String dateDeFin = null;
 
     @JsonProperty("Niveau")
     private String niveau = null;
-
-//    @JsonProperty("code")
-//    private String code = null;
-
 
     @JsonProperty("Arrivée")
     private String arrivee = null;
