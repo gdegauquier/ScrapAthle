@@ -184,6 +184,21 @@ public class ScrapingService {
         Map<String, Map<String, String>> tests = new HashMap<>();
         tests = scrapingRepository.getTests(doc);
 
+
+        Map<String, String> organisationAdress = scrapingRepository.getOrganisationAdress(doc);
+        if (organisationAdress != null) {
+            Address address = mapper.convertValue(organisationAdress, Address.class);
+            addressRepository.save(address);
+        }
+
+
+        //handle contacts
+        Map<String, String> contacts = scrapingRepository.getContacts(doc);
+        Map<String, String> staff = scrapingRepository.getStaff(doc);
+
+        return mapper.convertValue(collectMap, Event.class);
+    }
+
         Event event = mapper.convertValue(collectMap, Event.class);
         eventRepository.save(event);
         return event;

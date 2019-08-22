@@ -14,9 +14,7 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-
     @JsonProperty("Name")
-
     private String name = null;
 
     @JsonProperty("Line1")
@@ -29,7 +27,6 @@ public class Address {
     private String line3 = null;
 
     @JsonProperty("Ville")
-
     private String town = null;
 
     @JsonProperty("Code Postal")
@@ -44,5 +41,4 @@ public class Address {
 
     @JsonProperty("Code Postal")
     private String codePostal = null;
-
 }

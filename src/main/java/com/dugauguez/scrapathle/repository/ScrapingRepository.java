@@ -34,20 +34,20 @@ public class ScrapingRepository {
         return null;
     }
 
-
     private Map<String, String> getPropertiesViaParentNode(Elements els, String textToFind) {
         Map<String, String> props = new HashMap<>();
 
         for (Element el : els) {
             if (el.parentNode().outerHtml().contains(textToFind) && el.text().contains(textToFind)) {
                 Node node = el.parentNode();
-                if (node.childNodes().size() < 3) {
-                    props.put(el.text(), "");
-                }
+
+               if( node.childNodes().size() <3 ){
+                   props.put(el.text(), "");
+               }
                 Node node1 = node.childNode(2);
-                if (node1.childNodes().isEmpty()) {
+                if( node1.childNodes().isEmpty() ){
                     props.put(el.text(), "");
-                } else {
+                }else{
                     String string = node1.childNode(0).toString();
                     props.put(el.text(), string);
                 }
@@ -60,6 +60,7 @@ public class ScrapingRepository {
     public String getTitle(Document doc) {
         Element first = doc.select("div.titles").first();
         if (first == null) {
+
             return "";
         }
         return first.childNodes().get(0).toString().replace("\n", "").trim();
@@ -143,28 +144,43 @@ public class ScrapingRepository {
             // TR has column : value
             Node rawNode = node.childNodes().get(0).childNodes().get(0);
             Node rawNodeValue = node.childNodes().get(2).childNodes().get(0);
-            address.put(getAddressColumnName(rawNode.toString(), nbLines),
-                    getAddressColumnValue(rawNodeValue));
-
-            address.put("Type", type);
+            adress.put(getAdressColumnName(rawNode.toString(), nbLines),
+                    getAdressColumnValue(rawNodeValue));
         }
 
-        return address;
+        if (adress.containsKey("stName")) {
+            adress.put("Type","Stade");
+            adress.put("name",adress.get("stName"));
+            adress.remove("stName");
+        }
+
+        if (adress.containsKey("orgName")) {
+            adress.put("Type","Organisateur-Organisation");
+            adress.put("name",adress.get("orgName"));
+            adress.remove("orgName");
+        }
+
+        return adress;
 
     }
 
     private String getAddressColumnName(String rawColumn, AtomicInteger nbLines) {
 
-        if (rawColumn.equals("&nbsp;") || rawColumn.equals("Adresse")) {
+        if ( rawColumn.equals("Stade") ) {
+            rawColumn = "stName" ;
+            return rawColumn;
+        }
+
+        if (rawColumn.equals("Organisateur") ||rawColumn.equals("Organisation")  ) {
+            rawColumn = "orgName" ;
+            return rawColumn;
+        }
+
+        if (rawColumn.equals("&nbsp;") || rawColumn.equals("Adresse") ) {
             rawColumn = "Line" + nbLines;
             nbLines.incrementAndGet();
             return rawColumn;
         }
-
-        if (rawColumn.equals("Stade") || rawColumn.contains("Organisat")) {
-            rawColumn = "Name";
-        }
-
         return rawColumn;
     }
 
@@ -234,7 +250,6 @@ public class ScrapingRepository {
         return tests;
 
     }
-
     public Map<String, String> getStaff(Document doc) {
         Elements els = doc.select("td[style*=font-weight:bolder]");
         return getPropertiesViaParentNode(els, " par");
