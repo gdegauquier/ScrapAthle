@@ -123,17 +123,10 @@ public class ScrapingService {
         return enventList;
     }
 
-
-    private List<String> getColumnNames() {
-        /**
-         *  Retrieve the values of the annotation @JsonProperty which exits in the class Event.
-         *  This values are exactly the same in the html file
-         */
-        return Stream.of(Event.class.getDeclaredFields()).map(field -> field.getDeclaredAnnotation(JsonProperty.class).value()).collect(Collectors.toList());
-    }
-
     private Event parseEvent(int year, String department, String id) {
 
+        // department = "021";
+        // id = "903849522846443840174834256852468837";
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
         Document doc = JsoupUtils.INSTANCE.getDocument(new File(file));
@@ -141,57 +134,6 @@ public class ScrapingService {
             log.error("Could not parse file {}", file);
             return null;
         }
-
-        /*
-        Elements styles = doc.getElementsByTag("td");
-
-        List<String> strr = new ArrayList<>();
-
-        styles.stream()
-                .parallel()
-                .forEach(element -> {
-                    String text = element.text();
-
-                    boolean canParseColumn = text.contains(":") && text.length() > 5 &&
-                            !text.contains(":00") &&
-                            text.indexOf(":") != 2 &&
-                            text.indexOf(":") != 4 &&
-                            text.indexOf(":") != 5;
-
-                    if (!canParseColumn) {
-                        return;
-                    }
-
-                    for (String key : getColumnNames()) {
-                        text = addSplitDelemiter(text, key);
-                    }
-
-                    String[] splitString = text.split("\n");
-
-                    Stream.of(splitString)
-                            .parallel()
-                            .filter(e -> e != null)
-                            .filter(e -> e != "")
-                            .filter(e -> e.contains(":"))
-                            .forEach(e -> strr.add(e));
-
-                });
-
-
-        List<String> keys = getColumnNames();
-        strr.removeAll(Collections.singleton(null));
-
-        Map<String, String> collectMap = strr.stream()
-                .parallel()
-                .filter(str -> str.contains(" : "))
-                .map(str -> str.split(" : ", 2))
-                .filter(str -> keys.contains(str[0].trim()))
-                .filter(str -> str[1].length() < 254)
-                .collect(toMap(str -> str[0].trim(),
-                        str -> (str[0].equals("Téléphone 2") || str[0].equals("Téléphone 1")) ? str[1].replaceAll("\\s+", "").replaceAll("\\.", "") : str[1],
-                        (v1, v2) -> v1
-                ));
-        */
 
         Map<String, String> collectMap = new HashMap<>();
 
@@ -210,11 +152,18 @@ public class ScrapingService {
         collectMap.put("type", scrapingRepository.getType(doc));
         collectMap.put("level", scrapingRepository.getLevel(doc));
 
+        collectMap.put("technicalAdvice", scrapingRepository.getTechnicalAdvice(doc));
+
         // handle adresses
 
         Map<String,Map<String,String>> adresses = new HashMap<>();
         adresses.put("stadiumAdress", scrapingRepository.getStadiumAdress(doc));
         adresses.put("organisationAdress", scrapingRepository.getOrganisationAdress(doc));
+
+        //handle contacts
+        Map<String,String> contacts = scrapingRepository.getContacts(doc);
+        Map<String,String> staff = scrapingRepository.getStaff(doc);
+
 
         final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
         Event event = mapper.convertValue(collectMap, Event.class);
