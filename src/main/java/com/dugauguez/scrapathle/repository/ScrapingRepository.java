@@ -17,12 +17,33 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ScrapingRepository {
 
     private String getPropertyViaParentNode(Elements els, String textToFind) {
+        return getPropertyViaParentNode(els, textToFind, false);
+    }
+
+    private String getPropertyViaParentNode(Elements els, String textToFind, boolean valueAfterDots) {
         for (Element el : els) {
             if (el.parentNode().outerHtml().contains(textToFind)) {
+
+                if (valueAfterDots) {
+                    return el.parentNode().childNode(2).childNode(0).toString();
+                }
+
                 return el.text();
             }
         }
         return null;
+    }
+
+    private Map<String, String> getPropertiesViaParentNode(Elements els, String textToFind) {
+        Map<String, String> props = new HashMap<>();
+
+        for (Element el : els) {
+            if (el.parentNode().outerHtml().contains(textToFind) && el.text().contains(textToFind)) {
+                props.put(el.text(), el.parentNode().childNode(2).childNode(0).toString());
+            }
+        }
+
+        return props;
     }
 
     public String getTitle(Document doc) {
@@ -139,6 +160,21 @@ public class ScrapingRepository {
 
     }
 
+    public String getTechnicalAdvice(Document doc) {
+        Elements els = doc.select("td[style*=font-weight:bolder]");
+        return getPropertyViaParentNode(els, "Avis Technique et Sécurité", true);
+    }
+
+    public Map<String, String> getContacts(Document doc) {
+        Elements els = doc.select("td[style*=font-weight:bolder]");
+        return getPropertiesViaParentNode(els, "Contact ");
+    }
+
+    public Map<String, String> getStaff(Document doc) {
+        Elements els = doc.select("td[style*=font-weight:bolder]");
+        return getPropertiesViaParentNode(els, " par");
+    }
+
     public Map<String, String> getStadiumAdress(Document doc) {
 
         String end = "padding:10px;text-align:left;width:100%";
@@ -152,8 +188,10 @@ public class ScrapingRepository {
         String begin = "padding:10px;text-align:left;width:100%";
         String end = "padding:5px;text-align:left;width:100%";
 
+        Elements elsBegin = doc.select("td[style=" + begin + "]");
         Elements els = doc.select("td[style=" + end + "]");
-        return parseAdressElements(els, begin, end);
+
+        return parseAdressElements(els, elsBegin.size() == 0 ? null : begin, end);
     }
 
     public String getType(Document doc) {
