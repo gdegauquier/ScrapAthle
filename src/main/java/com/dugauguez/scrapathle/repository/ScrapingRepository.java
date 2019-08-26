@@ -39,7 +39,17 @@ public class ScrapingRepository {
 
         for (Element el : els) {
             if (el.parentNode().outerHtml().contains(textToFind) && el.text().contains(textToFind)) {
-                props.put(el.text(), el.parentNode().childNode(2).childNode(0).toString());
+                Node node = el.parentNode();
+               if( node.childNodes().size() <3 ){
+                   props.put(el.text(), "");
+               }
+                Node node1 = node.childNode(2);
+                if( node1.childNodes().isEmpty() ){
+                    props.put(el.text(), "");
+                }else{
+                    String string = node1.childNode(0).toString();
+                    props.put(el.text(), string);
+                }
             }
         }
 
@@ -47,7 +57,11 @@ public class ScrapingRepository {
     }
 
     public String getTitle(Document doc) {
-        return doc.select("div.titles").first().childNodes().get(0).toString().replace("\n", "").trim();
+        Element first = doc.select("div.titles").first();
+        if (first==null) {
+            return "";
+        }
+        return first.childNodes().get(0).toString().replace("\n", "").trim();
     }
 
     public String getLeague(Document doc) {
@@ -57,7 +71,15 @@ public class ScrapingRepository {
 
     public String getDepartment(Document doc) {
         String title = doc.select("div.titles").text();
-        title = title.substring(title.lastIndexOf('(')).split(" / ")[1];
+        int beginIndex = title.lastIndexOf('(');
+        if(beginIndex<0){
+            return "";
+        }
+        String substring = title.substring(beginIndex);
+        if(substring.split(" / ").length==1){
+            return "";
+        }
+        title = substring.split(" / ")[1];
         return title.substring(0, title.length() - 1);
     }
 
@@ -124,17 +146,40 @@ public class ScrapingRepository {
                     getAdressColumnValue(rawNodeValue));
         }
 
+        if (adress.containsKey("stName")) {
+            adress.put("type","Stade");
+            adress.put("name",adress.get("stName"));
+            adress.remove("stName");
+        }
+
+        if (adress.containsKey("orgName")) {
+            adress.put("type","Organisateur-Organisation");
+            adress.put("name",adress.get("orgName"));
+            adress.remove("orgName");
+        }
+
         return adress;
 
     }
 
     private String getAdressColumnName(String rawColumn, AtomicInteger nbLines) {
-        if (rawColumn.equals("&nbsp;")) {
+
+        if ( rawColumn.equals("Stade") ) {
+            rawColumn = "stName" ;
+            return rawColumn;
+        }
+
+        if (rawColumn.equals("Organisateur") ||rawColumn.equals("Organisation")  ) {
+            rawColumn = "orgName" ;
+            return rawColumn;
+        }
+
+        if (rawColumn.equals("&nbsp;") || rawColumn.equals("Adresse") ) {
             rawColumn = "Line" + nbLines;
             nbLines.incrementAndGet();
+            return rawColumn;
         }
         return rawColumn;
-
     }
 
     private String getAdressColumnValue(Node rawColumnValue) {
@@ -200,6 +245,15 @@ public class ScrapingRepository {
     }
 
     public String getTown(Document doc) {
-        return doc.select("div.titles").first().childNodes().get(3).childNodes().get(0).toString().split("\\(")[0].trim();
+        Elements select = doc.select("div.titles");
+        Element first = select.first();
+        if (first==null) {
+            return "";
+        }
+        List<Node> nodes = first.childNodes();
+        Node node = nodes.get(3);
+        List<Node> nodes1 = node.childNodes();
+        Node node1 = nodes1.get(0);
+        return node1.toString().split("\\(")[0].trim();
     }
 }

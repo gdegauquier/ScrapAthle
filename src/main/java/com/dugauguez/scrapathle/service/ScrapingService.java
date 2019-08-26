@@ -1,10 +1,12 @@
 package com.dugauguez.scrapathle.service;
 
+import com.dugauguez.scrapathle.entity.Address;
 import com.dugauguez.scrapathle.entity.Event;
+import com.dugauguez.scrapathle.repository.AddressRepository;
 import com.dugauguez.scrapathle.repository.EventRepository;
 import com.dugauguez.scrapathle.repository.ScrapingRepository;
 import com.dugauguez.scrapathle.utils.JsoupUtils;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
@@ -20,10 +22,6 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toMap;
 
 
 @Slf4j
@@ -36,6 +34,9 @@ public class ScrapingService {
 
     @Autowired
     EventRepository eventRepository;
+
+    @Autowired
+    AddressRepository addressRepository;
 
     @Autowired
     ScrapingRepository scrapingRepository;
@@ -55,12 +56,12 @@ public class ScrapingService {
         List<Event> all = new ArrayList<>();
 
         Arrays.stream(listOfFiles)
-                .parallel()
-                .filter(file -> isValidFile(year, file.getAbsolutePath()))
-                .forEach(file -> {
-                    List<Event> eventList = scrapEvents(file);
-                    all.addAll(eventList);
-                });
+              .parallel()
+              .filter(file -> isValidFile(year, file.getAbsolutePath()))
+              .forEach(file -> {
+                  List<Event> eventList = scrapEvents(file);
+                  all.addAll(eventList);
+              });
 
         eventRepository.saveAll(all);
 
@@ -103,7 +104,7 @@ public class ScrapingService {
         int year = Integer.parseInt(file.getParentFile().getName());
         String department = file.getName().split(".html")[0];
 
-        Document doc = JsoupUtils.INSTANCE.getDocument(file);
+        Document doc = JsoupUtils.instance.getDocument(file);
 
         Elements elements = doc.getElementsByAttribute("href");
 
@@ -125,11 +126,11 @@ public class ScrapingService {
 
     private Event parseEvent(int year, String department, String id) {
 
-        // department = "021";
-        // id = "903849522846443840174834256852468837";
+        //  department = "021";
+        //  id = "903849522846443840174834256852468837";
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
-        Document doc = JsoupUtils.INSTANCE.getDocument(new File(file));
+        Document doc = JsoupUtils.instance.getDocument(new File(file));
         if (doc == null) {
             log.error("Could not parse file {}", file);
             return null;
@@ -156,24 +157,33 @@ public class ScrapingService {
 
         // handle adresses
 
-        Map<String,Map<String,String>> adresses = new HashMap<>();
+        Map<String, Map<String, String>> adresses = new HashMap<>();
         adresses.put("stadiumAdress", scrapingRepository.getStadiumAdress(doc));
         adresses.put("organisationAdress", scrapingRepository.getOrganisationAdress(doc));
 
+
+        final ObjectMapper mapper = new ObjectMapper(); // jackson's object mapper to change with orika or mapstruct
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        Map<String, String> stadiumAdress = scrapingRepository.getStadiumAdress(doc);
+        if (stadiumAdress != null) {
+            Address address = mapper.convertValue(stadiumAdress, Address.class);
+            addressRepository.save(address);
+        }
+
+
+        Map<String, String> organisationAdress = scrapingRepository.getOrganisationAdress(doc);
+        if (organisationAdress != null) {
+            Address address = mapper.convertValue(organisationAdress, Address.class);
+            addressRepository.save(address);
+        }
+
+
         //handle contacts
-        Map<String,String> contacts = scrapingRepository.getContacts(doc);
-        Map<String,String> staff = scrapingRepository.getStaff(doc);
+        Map<String, String> contacts = scrapingRepository.getContacts(doc);
+        Map<String, String> staff = scrapingRepository.getStaff(doc);
 
-
-        final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
-        Event event = mapper.convertValue(collectMap, Event.class);
-
-        return event;
+        return mapper.convertValue(collectMap, Event.class);
     }
-
-    private String addSplitDelemiter(String text, String marker) {
-        return text.replace(marker + " :", "\n" + marker + " :");
-    }
-
 
 }
