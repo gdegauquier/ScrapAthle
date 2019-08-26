@@ -125,8 +125,8 @@ public class ScrapingService {
 
     private Event parseEvent(int year, String department, String id) {
 
-        //  department = "021";
-        //  id = "903849522846443840174834256852468837";
+          department = "021";
+          id = "903849522846443840174834256852468837";
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
         Document doc = JsoupUtils.INSTANCE.getDocument(new File(file));
@@ -176,10 +176,6 @@ public class ScrapingService {
         adresses.put("stadiumAdress", scrapingRepository.getStadiumAdress(doc));
         adresses.put("organisationAdress", scrapingRepository.getOrganisationAdress(doc));
 
-        //handle contacts
-        Map<String, String> contacts = scrapingRepository.getContacts(doc);
-        Map<String, String> staff = scrapingRepository.getStaff(doc);
-
         final ObjectMapper mapper = new ObjectMapper(); // jackson's object mapper to change with orika or mapstruct
 
         Map<String, String> stadiumAdress = scrapingRepository.getStadiumAdress(doc);
@@ -193,6 +189,14 @@ public class ScrapingService {
             Address address = mapper.convertValue(organisationAdress, Address.class);
             addressRepository.save(address);
         }
+
+        //handle contacts
+        Map<String, String> contacts = scrapingRepository.getContacts(doc);
+        Map<String, String> staff = scrapingRepository.getStaff(doc);
+
+        // parse tests (epreuves)
+        Map<String, Map<String, String>> tests = new HashMap<>();
+        tests = scrapingRepository.getTests(doc);
 
         Event event = mapper.convertValue(collectMap, Event.class);
         eventRepository.save(event);

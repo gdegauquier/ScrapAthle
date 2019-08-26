@@ -34,6 +34,7 @@ public class ScrapingRepository {
         return null;
     }
 
+
     private Map<String, String> getPropertiesViaParentNode(Elements els, String textToFind) {
         Map<String, String> props = new HashMap<>();
 
@@ -89,7 +90,7 @@ public class ScrapingRepository {
         }
 
         AtomicInteger nbLines = new AtomicInteger(1);
-        Map<String, String> adress = new HashMap<>();
+        Map<String, String> address = new HashMap<>();
         List<Node> nodes = els.get(0).parentNode().parentNode().childNodes();
 
         boolean canParse = begin == null ? true : false;
@@ -120,17 +121,17 @@ public class ScrapingRepository {
             // TR has column : value
             Node rawNode = node.childNodes().get(0).childNodes().get(0);
             Node rawNodeValue = node.childNodes().get(2).childNodes().get(0);
-            adress.put(getAdressColumnName(rawNode.toString(), nbLines),
+            address.put(getAddressColumnName(rawNode.toString(), nbLines),
                     getAdressColumnValue(rawNodeValue));
 
-            adress.put("type", type);
+            address.put("Type", type);
         }
 
-        return adress;
+        return address;
 
     }
 
-    private String getAdressColumnName(String rawColumn, AtomicInteger nbLines) {
+    private String getAddressColumnName(String rawColumn, AtomicInteger nbLines) {
 
         if (rawColumn.equals("&nbsp;") || rawColumn.equals("Adresse")) {
             rawColumn = "Line" + nbLines;
@@ -175,6 +176,40 @@ public class ScrapingRepository {
     public Map<String, String> getContacts(Document doc) {
         Elements els = doc.select("td[style*=font-weight:bolder]");
         return getPropertiesViaParentNode(els, "Contact ");
+    }
+
+    public Map<String, Map<String, String>> getTests(Document doc) {
+
+        Map<String, Map<String, String>> tests = new HashMap<>();
+
+        Elements els = doc.select("td[style*=width:5%; padding:3px 0px 3px 10px; white-space:nowrap; color:#444]");
+
+        if (els == null) {
+            return null;
+        }
+
+        int index = 1;
+
+
+        for (Element el : els) {
+
+            List<Node> nodes = els.get(index - 1).getElementsByTag("td").get(0).parentNode().childNodes();
+
+            Map<String, String> test = new HashMap<>();
+
+            test.put("time", nodes.get(1).childNodes().get(0).childNode(0).toString());
+            // TODO description
+            test.put("description", nodes.get(1).childNodes().get(0).childNode(0).toString());
+            // TODO improve
+            test.put("categories", nodes.get(3).childNodes().get(0).toString());
+            test.put("distance", nodes.get(4).childNodes().size() > 0 ? nodes.get(4).childNodes().get(0).toString() : "");
+            tests.put("test" + index, test);
+
+            index++;
+        }
+
+        return tests;
+
     }
 
     public Map<String, String> getStaff(Document doc) {
