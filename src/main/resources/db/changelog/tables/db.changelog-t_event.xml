@@ -1,0 +1,58 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+
+    <changeSet author="Abderraouf MAKHLOUF" id="create the first resource table : event">
+
+        <preConditions onFail="CONTINUE">
+            <not>
+                <tableExists tableName="event"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="event">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="event_pkey"/>
+            </column>
+            <column name="adresse" type="VARCHAR(255)"/>
+            <column name="annee_precedente" type="VARCHAR(255)"/>
+            <column name="arrivee" type="VARCHAR(255)"/>
+            <column name="autres_infos" type="VARCHAR(255)"/>
+            <column name="avis_technique_et_securite" type="VARCHAR(255)"/>
+            <column name="certificat_de_mesurage" type="VARCHAR(255)"/>
+            <column name="challenge" type="VARCHAR(255)"/>
+            <column name="code_postal" type="VARCHAR(255)"/>
+            <column name="conditions" type="VARCHAR(255)"/>
+            <column name="contact_engagement" type="VARCHAR(255)"/>
+            <column name="contact_presse" type="VARCHAR(255)"/>
+            <column name="contact_technique" type="VARCHAR(255)"/>
+            <column name="date_de_debut" type="date"/>
+            <column name="depart" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="engagement_en_ligne" type="VARCHAR(255)"/>
+            <column name="epreuves" type="VARCHAR(255)"/>
+            <column name="fax" type="VARCHAR(255)"/>
+            <column name="file_id" type="VARCHAR(255)"/>
+            <column name="infos_epreuve" type="VARCHAR(255)"/>
+            <column name="inscrite_au_calendrier_par" type="VARCHAR(255)"/>
+            <column name="montant_inscription" type="VARCHAR(255)"/>
+            <column name="niveau" type="VARCHAR(255)"/>
+            <column name="officiel" type="VARCHAR(255)"/>
+            <column name="organisateur" type="VARCHAR(255)"/>
+            <column name="organisation" type="VARCHAR(255)"/>
+            <column name="puis_controles_par" type="VARCHAR(255)"/>
+            <column name="recompenses" type="VARCHAR(255)"/>
+            <column name="resultats_charges_par" type="VARCHAR(255)"/>
+            <column name="services" type="VARCHAR(255)"/>
+            <column name="site_web" type="VARCHAR(255)"/>
+            <column name="stade" type="VARCHAR(255)"/>
+            <column name="telephone1" type="VARCHAR(255)"/>
+            <column name="telephone2" type="VARCHAR(255)"/>
+            <column name="vainqueur" type="VARCHAR(255)"/>
+            <column name="ville" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

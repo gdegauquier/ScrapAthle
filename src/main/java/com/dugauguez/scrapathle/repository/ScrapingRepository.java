@@ -82,7 +82,7 @@ public class ScrapingRepository {
         return getPropertyViaParentNode(els, "Niveau");
     }
 
-    private Map<String, String> parseAdressElements(Elements els, String begin, String end) {
+    private Map<String, String> parseAdressElements(Elements els, String begin, String end, String type) {
 
         if (els.size() == 0 || els.get(0).parentNode().childNodes().size() == 0) {
             return null;
@@ -122,6 +122,8 @@ public class ScrapingRepository {
             Node rawNodeValue = node.childNodes().get(2).childNodes().get(0);
             adress.put(getAdressColumnName(rawNode.toString(), nbLines),
                     getAdressColumnValue(rawNodeValue));
+
+            adress.put("type", type);
         }
 
         return adress;
@@ -129,12 +131,17 @@ public class ScrapingRepository {
     }
 
     private String getAdressColumnName(String rawColumn, AtomicInteger nbLines) {
-        if (rawColumn.equals("&nbsp;") || rawColumn.equals("Adresse") ) {
+
+        if (rawColumn.equals("&nbsp;") || rawColumn.equals("Adresse")) {
             rawColumn = "Line" + nbLines;
             nbLines.incrementAndGet();
         }
-        return rawColumn;
 
+        if (rawColumn.equals("Stade") || rawColumn.contains("Organisat")) {
+            rawColumn = "Name";
+        }
+
+        return rawColumn;
     }
 
     private String getAdressColumnValue(Node rawColumnValue) {
@@ -180,7 +187,7 @@ public class ScrapingRepository {
         String end = "padding:10px;text-align:left;width:100%";
 
         Elements els = doc.select("td[style=" + end + "]");
-        return parseAdressElements(els, null, end);
+        return parseAdressElements(els, null, end, "STD");
     }
 
     public Map<String, String> getOrganisationAdress(Document doc) {
@@ -191,7 +198,7 @@ public class ScrapingRepository {
         Elements elsBegin = doc.select("td[style=" + begin + "]");
         Elements els = doc.select("td[style=" + end + "]");
 
-        return parseAdressElements(els, elsBegin.size() == 0 ? null : begin, end);
+        return parseAdressElements(els, elsBegin.size() == 0 ? null : begin, end, "ORG");
     }
 
     public String getType(Document doc) {

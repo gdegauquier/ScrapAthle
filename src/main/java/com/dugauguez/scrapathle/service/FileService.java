@@ -5,10 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.List;
 
 @Slf4j
@@ -23,6 +25,8 @@ public class FileService {
     private String hostArgsByYearAndDepartment;
     @Value("${bases.athle.uri.detail}")
     private String hostArgsById;
+
+    private RestTemplate restTemplate = new RestTemplate();
 
     @Async
     public void getAllByYear(int year) {
@@ -53,77 +57,20 @@ public class FileService {
     }
 
 
-    // TODO: TO IMPROVE with a FORMATTER
-    private String getHostAndArgs(int year, String department) {
-
-        String ret = host.concat(hostArgsByYearAndDepartment);
-        ret = ret.replace("%YEAR%", year + "");
-        ret = ret.replace("%DEPARTMENT%", department);
-
-        return ret;
-
-    }
-
-    // TODO: TO IMPROVE with a FORMATTER
-    private String getHostAndArgs(String id) {
-
-        String ret = host.concat(hostArgsById);
-        ret = ret.replace("%ID%", id);
-
-        return ret;
-
-    }
-
     private String getWebPageAsString(String id) {
+        String uri = host.concat(hostArgsById)
+                         .replace("%ID%", id);
 
-        String uri = getHostAndArgs(id);
-
-        URLConnection con;
-        URL url;
-        BufferedReader in;
-        String lf = "";
-        String l;
-
-        try {
-            url = new URL(uri);
-            con = url.openConnection();
-            in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            while ((l = in.readLine()) != null) {
-                lf += l;
-            }
-        } catch (Exception e) {
-            log.error("Could not read the file {}", id, e);
-            return null;
-        }
-
-        return lf;
-
+        return restTemplate.getForObject(uri, String.class);
     }
 
     private String getWebPageAsString(int year, String department) {
 
-        String uri = getHostAndArgs(year, department);
+        String uri = host.concat(hostArgsByYearAndDepartment)
+                         .replace("%YEAR%", year + "")
+                         .replace("%DEPARTMENT%", department);
 
-        URLConnection con;
-        URL url;
-        BufferedReader in;
-        String lf = "";
-        String l;
-
-        try {
-            url = new URL(uri);
-            con = url.openConnection();
-            in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            while ((l = in.readLine()) != null) {
-                lf += l;
-            }
-        } catch (Exception e) {
-            log.error("Could not read the file {}/{}", year, department, e);
-            return null;
-        }
-
-        return lf;
-
+        return restTemplate.getForObject(uri, String.class);
     }
 
     private void writeWebPageOnLocalFile(int year, String department, String content) {

@@ -1,10 +1,11 @@
 package com.dugauguez.scrapathle.service;
 
+import com.dugauguez.scrapathle.entity.Address;
 import com.dugauguez.scrapathle.entity.Event;
+import com.dugauguez.scrapathle.repository.AddressRepository;
 import com.dugauguez.scrapathle.repository.EventRepository;
 import com.dugauguez.scrapathle.repository.ScrapingRepository;
 import com.dugauguez.scrapathle.utils.JsoupUtils;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
@@ -20,10 +21,6 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toMap;
 
 
 @Slf4j
@@ -36,6 +33,9 @@ public class ScrapingService {
 
     @Autowired
     EventRepository eventRepository;
+
+    @Autowired
+    AddressRepository addressRepository;
 
     @Autowired
     ScrapingRepository scrapingRepository;
@@ -125,8 +125,8 @@ public class ScrapingService {
 
     private Event parseEvent(int year, String department, String id) {
 
-       //  department = "021";
-       //  id = "903849522846443840174834256852468837";
+        //  department = "021";
+        //  id = "903849522846443840174834256852468837";
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
         Document doc = JsoupUtils.INSTANCE.getDocument(new File(file));
@@ -154,26 +154,48 @@ public class ScrapingService {
 
         collectMap.put("technicalAdvice", scrapingRepository.getTechnicalAdvice(doc));
 
-        // handle adresses
+        collectMap.put("fileId", id);
+        collectMap.put("code", scrapingRepository.getCode(doc));
 
-        Map<String,Map<String,String>> adresses = new HashMap<>();
+        collectMap.put("beginDate", scrapingRepository.getBeginDate(doc));
+        collectMap.put("endDate", scrapingRepository.getEndDate(doc));
+
+        collectMap.put("title", scrapingRepository.getTitle(doc));
+        collectMap.put("town", scrapingRepository.getTown(doc));
+
+        collectMap.put("league", scrapingRepository.getLeague(doc));
+        collectMap.put("department", scrapingRepository.getDepartment(doc));
+
+        collectMap.put("type", scrapingRepository.getType(doc));
+        collectMap.put("level", scrapingRepository.getLevel(doc));
+
+        collectMap.put("technicalAdvice", scrapingRepository.getTechnicalAdvice(doc));
+
+        // handle adresses
+        Map<String, Map<String, String>> adresses = new HashMap<>();
         adresses.put("stadiumAdress", scrapingRepository.getStadiumAdress(doc));
         adresses.put("organisationAdress", scrapingRepository.getOrganisationAdress(doc));
 
         //handle contacts
-        Map<String,String> contacts = scrapingRepository.getContacts(doc);
-        Map<String,String> staff = scrapingRepository.getStaff(doc);
+        Map<String, String> contacts = scrapingRepository.getContacts(doc);
+        Map<String, String> staff = scrapingRepository.getStaff(doc);
 
+        final ObjectMapper mapper = new ObjectMapper(); // jackson's object mapper to change with orika or mapstruct
 
-        final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+        Map<String, String> stadiumAdress = scrapingRepository.getStadiumAdress(doc);
+        if (stadiumAdress != null) {
+            Address address = mapper.convertValue(stadiumAdress, Address.class);
+            addressRepository.save(address);
+        }
+
+        Map<String, String> organisationAdress = scrapingRepository.getOrganisationAdress(doc);
+        if (organisationAdress != null) {
+            Address address = mapper.convertValue(organisationAdress, Address.class);
+            addressRepository.save(address);
+        }
+
         Event event = mapper.convertValue(collectMap, Event.class);
-
+        eventRepository.save(event);
         return event;
     }
-
-    private String addSplitDelemiter(String text, String marker) {
-        return text.replace(marker + " :", "\n" + marker + " :");
-    }
-
-
 }
