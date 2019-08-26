@@ -129,7 +129,7 @@ public class ScrapingRepository {
     }
 
     private String getAdressColumnName(String rawColumn, AtomicInteger nbLines) {
-        if (rawColumn.equals("&nbsp;")) {
+        if (rawColumn.equals("&nbsp;") || rawColumn.equals("Adresse") ) {
             rawColumn = "Line" + nbLines;
             nbLines.incrementAndGet();
         }
