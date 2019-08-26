@@ -124,17 +124,40 @@ public class ScrapingRepository {
                     getAdressColumnValue(rawNodeValue));
         }
 
+        if (adress.containsKey("stName")) {
+            adress.put("type","Stade");
+            adress.put("name",adress.get("stName"));
+            adress.remove("stName");
+        }
+
+        if (adress.containsKey("orgName")) {
+            adress.put("type","Organisateur-Organisation");
+            adress.put("name",adress.get("orgName"));
+            adress.remove("orgName");
+        }
+
         return adress;
 
     }
 
     private String getAdressColumnName(String rawColumn, AtomicInteger nbLines) {
+
+        if ( rawColumn.equals("Stade") ) {
+            rawColumn = "stName" ;
+            return rawColumn;
+        }
+
+        if (rawColumn.equals("Organisateur") ||rawColumn.equals("Organisation")  ) {
+            rawColumn = "orgName" ;
+            return rawColumn;
+        }
+
         if (rawColumn.equals("&nbsp;") || rawColumn.equals("Adresse") ) {
             rawColumn = "Line" + nbLines;
             nbLines.incrementAndGet();
+            return rawColumn;
         }
         return rawColumn;
-
     }
 
     private String getAdressColumnValue(Node rawColumnValue) {
