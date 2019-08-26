@@ -14,14 +14,14 @@ import java.io.IOException;
 @Slf4j
 public class JsoupUtils {
 
-    public static JsoupUtils INSTANCE;
+    public static JsoupUtils instance;
 
     @Value("${bases.athle.uri.base}")
     private String host;
 
     @PostConstruct
     public void init() {
-        INSTANCE = this;
+        instance = this;
     }
 
     public Document getDocument(File file) {

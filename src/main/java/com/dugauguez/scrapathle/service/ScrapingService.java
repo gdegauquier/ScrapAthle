@@ -6,6 +6,7 @@ import com.dugauguez.scrapathle.repository.AddressRepository;
 import com.dugauguez.scrapathle.repository.EventRepository;
 import com.dugauguez.scrapathle.repository.ScrapingRepository;
 import com.dugauguez.scrapathle.utils.JsoupUtils;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
@@ -103,7 +104,7 @@ public class ScrapingService {
         int year = Integer.parseInt(file.getParentFile().getName());
         String department = file.getName().split(".html")[0];
 
-        Document doc = JsoupUtils.INSTANCE.getDocument(file);
+        Document doc = JsoupUtils.instance.getDocument(file);
 
         Elements elements = doc.getElementsByAttribute("href");
 
@@ -125,11 +126,12 @@ public class ScrapingService {
 
     private Event parseEvent(int year, String department, String id) {
 
-          department = "021";
-          id = "903849522846443840174834256852468837";
+        //  department = "021";
+        //  id = "903849522846443840174834256852468837";
+
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
-        Document doc = JsoupUtils.INSTANCE.getDocument(new File(file));
+        Document doc = JsoupUtils.instance.getDocument(new File(file));
         if (doc == null) {
             log.error("Could not parse file {}", file);
             return null;
@@ -154,29 +156,13 @@ public class ScrapingService {
 
         collectMap.put("technicalAdvice", scrapingRepository.getTechnicalAdvice(doc));
 
-        collectMap.put("fileId", id);
-        collectMap.put("code", scrapingRepository.getCode(doc));
-
-        collectMap.put("beginDate", scrapingRepository.getBeginDate(doc));
-        collectMap.put("endDate", scrapingRepository.getEndDate(doc));
-
-        collectMap.put("title", scrapingRepository.getTitle(doc));
-        collectMap.put("town", scrapingRepository.getTown(doc));
-
-        collectMap.put("league", scrapingRepository.getLeague(doc));
-        collectMap.put("department", scrapingRepository.getDepartment(doc));
-
-        collectMap.put("type", scrapingRepository.getType(doc));
-        collectMap.put("level", scrapingRepository.getLevel(doc));
-
-        collectMap.put("technicalAdvice", scrapingRepository.getTechnicalAdvice(doc));
-
         // handle adresses
         Map<String, Map<String, String>> adresses = new HashMap<>();
         adresses.put("stadiumAdress", scrapingRepository.getStadiumAdress(doc));
         adresses.put("organisationAdress", scrapingRepository.getOrganisationAdress(doc));
 
         final ObjectMapper mapper = new ObjectMapper(); // jackson's object mapper to change with orika or mapstruct
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         Map<String, String> stadiumAdress = scrapingRepository.getStadiumAdress(doc);
         if (stadiumAdress != null) {
@@ -202,4 +188,5 @@ public class ScrapingService {
         eventRepository.save(event);
         return event;
     }
+
 }
