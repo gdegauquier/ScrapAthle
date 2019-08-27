@@ -1,12 +1,12 @@
 package com.dugauguez.scrapathle.service;
 
-import com.dugauguez.scrapathle.utils.OpenStreetMapUtils;
 import com.dugauguez.scrapathle.entity.Address;
 import com.dugauguez.scrapathle.entity.Event;
 import com.dugauguez.scrapathle.repository.AddressRepository;
 import com.dugauguez.scrapathle.repository.EventRepository;
 import com.dugauguez.scrapathle.repository.ScrapingRepository;
 import com.dugauguez.scrapathle.utils.JsoupUtils;
+import com.dugauguez.scrapathle.utils.OpenStreetMapUtils;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -165,27 +165,6 @@ public class ScrapingService {
         addresses.put("stadiumAddress", scrapingRepository.getStadiumAddress(doc));
         addresses.put("organisationAddress", scrapingRepository.getOrganisationAddress(doc));
 
-        final ObjectMapper mapper = new ObjectMapper(); // jackson's object mapper to change with orika or mapstruct
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        Map<String, String> stadiumAddress = scrapingRepository.getStadiumAddress(doc);
-        if (stadiumAddress != null) {
-            Address address = mapper.convertValue(stadiumAddress, Address.class);
-            // this is working  but we don't need  look for data every time
-//            Map<String, Double> coords = openStreetMapUtils.getCoordinates(address.getAddress());
-//            if (!coords.isEmpty()) {
-//                address.setLongitude(coords.get("lon"));
-//                address.setLatitude(coords.get("lat"));
-//            }
-            addressRepository.save(address);
-        }
-
-        Map<String, String> organisationAddress = scrapingRepository.getOrganisationAddress(doc);
-        if (organisationAddress != null) {
-            Address address = mapper.convertValue(organisationAddress, Address.class);
-            addressRepository.save(address);
-        }
-
         //handle contacts
         Map<String, String> contacts = scrapingRepository.getContacts(doc);
         Map<String, String> staff = scrapingRepository.getStaff(doc);
@@ -195,9 +174,52 @@ public class ScrapingService {
         tests = scrapingRepository.getTests(doc);
 
 
+        final ObjectMapper mapper = new ObjectMapper(); // jackson's object mapper to change with orika or mapstruct
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
         Event event = mapper.convertValue(collectMap, Event.class);
+
+        Map<String, String> stadiumAddress = scrapingRepository.getStadiumAddress(doc);
+        if (stadiumAddress != null) {
+            Address address = mapper.convertValue(stadiumAddress, Address.class);
+
+            if (address.getName() != null && address.getTown() != null && address.getPostalCode() != null) {
+                Address foundAddress = addressRepository.findByNameAndTownAndPostalCode(address.getName(), address.getTown(), address.getPostalCode());
+                if (foundAddress == null) {
+                    addressRepository.save(address);
+                    event.setStadiumAddress(address);
+                } else {
+                    event.setStadiumAddress(foundAddress);
+                }
+            }
+        }
+
+//        Map<String, String> organisationAddress = scrapingRepository.getOrganisationAddress(doc);
+//        if (organisationAddress != null) {
+//            Address address = mapper.convertValue(organisationAddress, Address.class);
+////            addressRepository.save(address);
+//            event.setOrganisationAddress(address);
+//        }
+
         eventRepository.save(event);
         return event;
+    }
+
+
+    public List<Address> StadiumInTown(Integer postalCode) {
+        List<Address> stade = addressRepository.findByTypeAndPostalCodeStartsWith("Stade",postalCode.toString());
+
+        stade.stream().parallel()
+             .forEach(sta -> {
+                 Map<String, Double> coordinates = openStreetMapUtils.getCoordinates(sta.getAddress());
+                 sta.setLatitude(coordinates.get("lat"));
+                 sta.setLongitude(coordinates.get("lon"));
+             });
+
+        addressRepository.saveAll(stade);
+
+        log.info("StadiumInTown : " + stade.size());
+        return stade;
     }
 
 }

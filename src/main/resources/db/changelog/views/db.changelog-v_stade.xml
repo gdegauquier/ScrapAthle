@@ -7,18 +7,19 @@
 
     <changeSet author="Abderraouf MAKHLOUF" id="create_view_v_stade">
         <createView viewName="v_stade" replaceIfExists="true">
-            SELECT
-            rank() OVER ( ORDER BY stade,ville,code_postal ) AS id,
-            stade,
-            ville,
-            code_postal
-            FROM event
-            WHERE stade NOTNULL
-            AND stade NOT LIKE '%Non référencé%'
-            AND stade NOT LIKE '_ '
-            GROUP BY
-            stade, ville, code_postal
-            ORDER BY id
+            select
+            rank()   OVER (    ORDER BY  postal_code  asc ) AS id,
+            type, name,
+            ( CASE WHEN line1= CONCAT(postal_code,' ',lower(town)  ) THEN null ELSE line1 END) as line1,
+            line2,  line3,  postal_code, town,latitude, longitude
+            from address where
+            line1  NOTNULL
+            and type NOTNULL
+            and postal_code NOTNULL
+            and length(postal_code) = 5
+            and type = 'Stade'
+            GROUP BY  type, name, line1, line2, line3, postal_code, town,latitude, longitude
+            ORDER BY    postal_code  asc
         </createView>
     </changeSet>
 

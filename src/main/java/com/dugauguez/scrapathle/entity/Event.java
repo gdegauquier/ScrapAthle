@@ -1,7 +1,8 @@
 package com.dugauguez.scrapathle.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -10,6 +11,10 @@ import java.time.format.DateTimeFormatter;
 @Data
 @Entity
 @Table(name = "event")
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(exclude = {"stadiumAddress"})
+@ToString(exclude = {"stadiumAddress"})
 public class Event {
 
     @JsonProperty("fileId")
@@ -25,9 +30,6 @@ public class Event {
 
     @JsonProperty("title")
     private String title;
-
-    @JsonProperty("town")
-    private String town;
 
     @JsonProperty("league")
     private String league;
@@ -53,12 +55,6 @@ public class Event {
     @JsonProperty("Puis contrôlés par")
     private String resultsControledBy = null;
 
-    @JsonProperty("Adresse")
-    private String adresse = null;
-
-    @JsonProperty("Ville")
-    private String ville = null;
-
     @JsonProperty("Code Postal")
     private String codePostal = null;
 
@@ -80,8 +76,11 @@ public class Event {
     @JsonProperty("Organisateur")
     private String organisateur = null;
 
-    @JsonProperty("Stade")
-    private String stade = null;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_stadium_address")
+    private Address stadiumAddress = null;
+
 
     @JsonProperty("Montant Inscription")
     private String montantInscription = null;
@@ -130,9 +129,6 @@ public class Event {
 
     @JsonProperty("Services")
     private String services = null;
-
-//    @JsonProperty("type")
-//    private String type = null;
 
     @JsonProperty("Date de Début")
     private LocalDate dateDeDebut = null;
