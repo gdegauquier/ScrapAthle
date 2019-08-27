@@ -144,23 +144,23 @@ public class ScrapingRepository {
             // TR has column : value
             Node rawNode = node.childNodes().get(0).childNodes().get(0);
             Node rawNodeValue = node.childNodes().get(2).childNodes().get(0);
-            adress.put(getAdressColumnName(rawNode.toString(), nbLines),
-                    getAdressColumnValue(rawNodeValue));
+            address.put(getAddressColumnName(rawNode.toString(), nbLines),
+                    getAddressColumnValue(rawNodeValue));
         }
 
-        if (adress.containsKey("stName")) {
-            adress.put("Type","Stade");
-            adress.put("name",adress.get("stName"));
-            adress.remove("stName");
+        if (address.containsKey("stName")) {
+            address.put("Type","Stade");
+            address.put("name",address.get("stName"));
+            address.remove("stName");
         }
 
-        if (adress.containsKey("orgName")) {
-            adress.put("Type","Organisateur-Organisation");
-            adress.put("name",adress.get("orgName"));
-            adress.remove("orgName");
+        if (address.containsKey("orgName")) {
+            address.put("Type","Organisateur-Organisation");
+            address.put("name",address.get("orgName"));
+            address.remove("orgName");
         }
 
-        return adress;
+        return address;
 
     }
 

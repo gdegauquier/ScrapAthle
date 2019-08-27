@@ -39,6 +39,27 @@ public class Address {
 
     private Integer eventId;
 
-    @JsonProperty("Code Postal")
-    private String codePostal = null;
+    private Double latitude;
+
+    private Double longitude;
+
+    public String getAddress(){
+        String address = "";
+
+        if(getName()!=null){
+            address= address+getName()+" ";
+}
+
+        if (getLine1()!=null) {
+            address= address+getLine1()+" ";
+        }
+        if (getLine2()!=null) {
+            address= address+getLine2()+" ";
+        }
+        if (getLine3()!=null) {
+            address= address+getLine3()+" ";
+        }
+        return  address+getPostalCode() +" "+getTown();
+    }
+
 }

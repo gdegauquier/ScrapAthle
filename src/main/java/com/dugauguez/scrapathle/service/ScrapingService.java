@@ -185,19 +185,13 @@ public class ScrapingService {
         tests = scrapingRepository.getTests(doc);
 
 
-        Map<String, String> organisationAdress = scrapingRepository.getOrganisationAdress(doc);
+        Map<String, String> organisationAdress = scrapingRepository.getOrganisationAddress(doc);
         if (organisationAdress != null) {
             Address address = mapper.convertValue(organisationAdress, Address.class);
             addressRepository.save(address);
         }
 
 
-        //handle contacts
-        Map<String, String> contacts = scrapingRepository.getContacts(doc);
-        Map<String, String> staff = scrapingRepository.getStaff(doc);
-
-        return mapper.convertValue(collectMap, Event.class);
-    }
 
         Event event = mapper.convertValue(collectMap, Event.class);
         eventRepository.save(event);
