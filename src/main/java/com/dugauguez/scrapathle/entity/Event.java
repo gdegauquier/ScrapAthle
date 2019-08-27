@@ -1,7 +1,8 @@
 package com.dugauguez.scrapathle.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -10,129 +11,97 @@ import java.time.format.DateTimeFormatter;
 @Data
 @Entity
 @Table(name = "event")
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(exclude = {"stadiumAddress"})
+@ToString(exclude = {"stadiumAddress"})
 public class Event {
+
+    private String fileId = null;
+
+    private String code = null;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("id")
     private Integer id;
 
-    @JsonProperty("file_id")
-    private String fileId = null;
+    private String title;
 
-    @JsonProperty("Téléphone 1")
-    private String telephone1 = null;
+    private String league;
 
-    @JsonProperty("Téléphone 2")
-    private String telephone2 = null;
+    private String type;
 
-    @JsonProperty("Résultats chargés par")
-    private String resultatsChargesPar = null;
+    private String department = null;
 
-    @JsonProperty("Puis contrôlés par")
-    private String puisControlesPar = null;
+    private String phoneNumber1 = null;
 
-    @JsonProperty("Inscrite au calendrier par")
-    private String inscriteAuCalendrierPar = null;
+    private String phoneNumber2 = null;
 
-    @JsonProperty("Adresse")
-    private String adresse = null;
+    private String eventSubmittedBy = null;
 
-    @JsonProperty("Ville")
-    private String ville = null;
+    private String resultsGivenBy = null;
 
-    @JsonProperty("Code Postal")
+    private String resultsControledBy = null;
+
     private String codePostal = null;
 
-    @JsonProperty("Organisation")
     private String organisation = null;
 
-    @JsonProperty("Récompenses")
     private String recompenses = null;
 
-    @JsonProperty("Conditions")
     private String conditions = null;
 
-    @JsonProperty("Avis Technique et Sécurité")
     private String avisTechniqueEtSecurite = null;
 
-    @JsonProperty("Mèl")
     private String email = null;
 
-    @JsonProperty("Organisateur")
     private String organisateur = null;
 
-    @JsonProperty("Stade")
-    private String stade = null;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_stadium_address")
+    private Address stadiumAddress = null;
 
-    @JsonProperty("Montant Inscription")
     private String montantInscription = null;
 
-    @JsonProperty("Contact Presse")
     private String contactPresse = null;
 
-    @JsonProperty("Site Web")
     private String siteWeb = null;
 
-    @JsonProperty("Fax")
     private String fax = null;
 
-    @JsonProperty("Vainqueur")
     private String vainqueur = null;
 
-    @JsonProperty("Certificat de mesurage")
     private String certificatDeMesurage = null;
 
-    @JsonProperty("Contact Engagement")
     private String contactEngagement = null;
 
-    @JsonProperty("Engagement en ligne")
     private String engagementEnLigne = null;
 
-    @JsonProperty("Autres Infos")
     private String autresInfos = null;
 
-    @JsonProperty("Année Précédente")
     private String anneePrecedente = null;
 
-    @JsonProperty("Officiel (Juge arbitre)")
     private String officiel = null;
 
-    @JsonProperty("Infos Epreuve")
     private String infosEpreuve = null;
 
-    @JsonProperty("Challenge")
     private String challenge = null;
 
-    @JsonProperty("Contact Technique")
     private String contactTechnique = null;
 
-    @JsonProperty("Epreuves")
     private String epreuves = null;
 
-    @JsonProperty("Services")
     private String services = null;
 
-//    @JsonProperty("type")
-//    private String type = null;
-
-    @JsonProperty("Date de Début")
     private LocalDate dateDeDebut = null;
 
-//    @JsonProperty("date_de_fin")
-//    private String dateDeFin = null;
+    private String dateDeFin = null;
 
-    @JsonProperty("Niveau")
     private String niveau = null;
 
-//    @JsonProperty("code")
-//    private String code = null;
-
-
-    @JsonProperty("Arrivée")
     private String arrivee = null;
 
-    @JsonProperty("Départ")
     private String depart = null;
 
     public void setDateDeDebut(String date) {
