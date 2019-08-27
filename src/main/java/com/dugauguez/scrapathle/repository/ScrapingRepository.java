@@ -105,7 +105,7 @@ public class ScrapingRepository {
         return getPropertyViaParentNode(els, "Niveau");
     }
 
-    private Map<String, String> parseAdressElements(Elements els, String begin, String end, String type) {
+    private Map<String, String> parseAddressElements(Elements els, String begin, String end, String type) {
 
         if (els.size() == 0 || els.get(0).parentNode().childNodes().size() == 0) {
             return null;
@@ -240,15 +240,15 @@ public class ScrapingRepository {
         return getPropertiesViaParentNode(els, " par");
     }
 
-    public Map<String, String> getStadiumAdress(Document doc) {
+    public Map<String, String> getStadiumAddress(Document doc) {
 
         String end = "padding:10px;text-align:left;width:100%";
 
         Elements els = doc.select("td[style=" + end + "]");
-        return parseAdressElements(els, null, end, "STD");
+        return parseAddressElements(els, null, end, "STD");
     }
 
-    public Map<String, String> getOrganisationAdress(Document doc) {
+    public Map<String, String> getOrganisationAddress(Document doc) {
 
         String begin = "padding:10px;text-align:left;width:100%";
         String end = "padding:5px;text-align:left;width:100%";
@@ -256,7 +256,7 @@ public class ScrapingRepository {
         Elements elsBegin = doc.select("td[style=" + begin + "]");
         Elements els = doc.select("td[style=" + end + "]");
 
-        return parseAdressElements(els, elsBegin.size() == 0 ? null : begin, end, "ORG");
+        return parseAddressElements(els, elsBegin.size() == 0 ? null : begin, end, "ORG");
     }
 
     public String getType(Document doc) {

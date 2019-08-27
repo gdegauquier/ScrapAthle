@@ -156,23 +156,23 @@ public class ScrapingService {
 
         collectMap.put("technicalAdvice", scrapingRepository.getTechnicalAdvice(doc));
 
-        // handle adresses
-        Map<String, Map<String, String>> adresses = new HashMap<>();
-        adresses.put("stadiumAdress", scrapingRepository.getStadiumAdress(doc));
-        adresses.put("organisationAdress", scrapingRepository.getOrganisationAdress(doc));
+        // handle addresses
+        Map<String, Map<String, String>> addresses = new HashMap<>();
+        addresses.put("stadiumAddress", scrapingRepository.getStadiumAddress(doc));
+        addresses.put("organisationAddress", scrapingRepository.getOrganisationAddress(doc));
 
         final ObjectMapper mapper = new ObjectMapper(); // jackson's object mapper to change with orika or mapstruct
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        Map<String, String> stadiumAdress = scrapingRepository.getStadiumAdress(doc);
-        if (stadiumAdress != null) {
-            Address address = mapper.convertValue(stadiumAdress, Address.class);
+        Map<String, String> stadiumAddress = scrapingRepository.getStadiumAddress(doc);
+        if (stadiumAddress != null) {
+            Address address = mapper.convertValue(stadiumAddress, Address.class);
             addressRepository.save(address);
         }
 
-        Map<String, String> organisationAdress = scrapingRepository.getOrganisationAdress(doc);
-        if (organisationAdress != null) {
-            Address address = mapper.convertValue(organisationAdress, Address.class);
+        Map<String, String> organisationAddress = scrapingRepository.getOrganisationAddress(doc);
+        if (organisationAddress != null) {
+            Address address = mapper.convertValue(organisationAddress, Address.class);
             addressRepository.save(address);
         }
 
