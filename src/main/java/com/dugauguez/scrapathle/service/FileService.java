@@ -17,8 +17,6 @@ import java.util.List;
 @Service
 public class FileService {
 
-    @Autowired
-    DepartmentService departmentService;
     @Value("${bases.athle.uri.base}")
     private String host;
     @Value("${bases.athle.uri.list}")
@@ -26,7 +24,11 @@ public class FileService {
     @Value("${bases.athle.uri.detail}")
     private String hostArgsById;
 
-    private RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    RestTemplate restTemplate;
+
+    @Autowired
+    DepartmentService departmentService;
 
     @Async
     public void getAllByYear(int year) {

@@ -1,5 +1,6 @@
 package com.dugauguez.scrapathle.service;
 
+import com.dugauguez.scrapathle.utils.OpenStreetMapUtils;
 import com.dugauguez.scrapathle.entity.Address;
 import com.dugauguez.scrapathle.entity.Event;
 import com.dugauguez.scrapathle.repository.AddressRepository;
@@ -27,6 +28,9 @@ import java.util.*;
 @Slf4j
 @Service
 public class ScrapingService {
+
+    @Autowired
+    OpenStreetMapUtils openStreetMapUtils;
 
     public static final int OLDER_THAN_TWO_DAYS = 2;
     @Autowired
@@ -56,12 +60,12 @@ public class ScrapingService {
         List<Event> all = new ArrayList<>();
 
         Arrays.stream(listOfFiles)
-                .parallel()
-                .filter(file -> isValidFile(year, file.getAbsolutePath()))
-                .forEach(file -> {
-                    List<Event> eventList = scrapEvents(file);
-                    all.addAll(eventList);
-                });
+              .parallel()
+              .filter(file -> isValidFile(year, file.getAbsolutePath()))
+              .forEach(file -> {
+                  List<Event> eventList = scrapEvents(file);
+                  all.addAll(eventList);
+              });
 
         eventRepository.saveAll(all);
 
@@ -167,6 +171,12 @@ public class ScrapingService {
         Map<String, String> stadiumAddress = scrapingRepository.getStadiumAddress(doc);
         if (stadiumAddress != null) {
             Address address = mapper.convertValue(stadiumAddress, Address.class);
+            // this is working  but we don't need  look for data every time
+//            Map<String, Double> coords = openStreetMapUtils.getCoordinates(address.getAddress());
+//            if (!coords.isEmpty()) {
+//                address.setLongitude(coords.get("lon"));
+//                address.setLatitude(coords.get("lat"));
+//            }
             addressRepository.save(address);
         }
 
