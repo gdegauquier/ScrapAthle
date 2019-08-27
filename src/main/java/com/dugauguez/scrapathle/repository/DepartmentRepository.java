@@ -30,7 +30,7 @@ public class DepartmentRepository {
 
         // parse file
         File file = getDepartmentsFile();
-        Document doc = JsoupUtils.INSTANCE.getDocument(file);
+        Document doc = JsoupUtils.instance.getDocument(file);
         if (doc == null) {
             return listDepartments;
         }
