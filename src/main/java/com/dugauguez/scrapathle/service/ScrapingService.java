@@ -1,9 +1,12 @@
 package com.dugauguez.scrapathle.service;
 
+import com.dugauguez.scrapathle.entity.Address;
 import com.dugauguez.scrapathle.entity.Event;
+import com.dugauguez.scrapathle.repository.AddressRepository;
 import com.dugauguez.scrapathle.repository.EventRepository;
+import com.dugauguez.scrapathle.repository.ScrapingRepository;
 import com.dugauguez.scrapathle.utils.JsoupUtils;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
@@ -19,10 +22,6 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toMap;
 
 
 @Slf4j
@@ -35,6 +34,12 @@ public class ScrapingService {
 
     @Autowired
     EventRepository eventRepository;
+
+    @Autowired
+    AddressRepository addressRepository;
+
+    @Autowired
+    ScrapingRepository scrapingRepository;
 
     @Async
     public void getAllByYear(int year) {
@@ -51,12 +56,12 @@ public class ScrapingService {
         List<Event> all = new ArrayList<>();
 
         Arrays.stream(listOfFiles)
-              .parallel()
-              .filter(file -> isValidFile(year, file.getAbsolutePath()))
-              .forEach(file -> {
-                  List<Event> eventList = scrapEvents(file);
-                  all.addAll(eventList);
-              });
+                .parallel()
+                .filter(file -> isValidFile(year, file.getAbsolutePath()))
+                .forEach(file -> {
+                    List<Event> eventList = scrapEvents(file);
+                    all.addAll(eventList);
+                });
 
         eventRepository.saveAll(all);
 
@@ -99,7 +104,7 @@ public class ScrapingService {
         int year = Integer.parseInt(file.getParentFile().getName());
         String department = file.getName().split(".html")[0];
 
-        Document doc = JsoupUtils.INSTANCE.getDocument(file);
+        Document doc = JsoupUtils.instance.getDocument(file);
 
         Elements elements = doc.getElementsByAttribute("href");
 
@@ -119,85 +124,69 @@ public class ScrapingService {
         return enventList;
     }
 
-
-    private List<String> getColumnNames() {
-        /**
-         *  Retrieve the values of the annotation @JsonProperty which exits in the class Event.
-         *  This values are exactly the same in the html file
-         */
-        return Stream.of(Event.class.getDeclaredFields()).map(field -> field.getDeclaredAnnotation(JsonProperty.class).value()).collect(Collectors.toList());
-    }
-
     private Event parseEvent(int year, String department, String id) {
+
+        //  department = "021";
+        //  id = "903849522846443840174834256852468837";
 
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
-        Document doc = JsoupUtils.INSTANCE.getDocument(new File(file));
+        Document doc = JsoupUtils.instance.getDocument(new File(file));
         if (doc == null) {
             log.error("Could not parse file {}", file);
             return null;
         }
 
-        Elements styles = doc.getElementsByTag("td");
+        Map<String, String> collectMap = new HashMap<>();
 
-        List<String> strr = new ArrayList<>();
+        collectMap.put("fileId", id);
+        collectMap.put("code", scrapingRepository.getCode(doc));
 
-        styles.stream()
-              .parallel()
-              .forEach(element -> {
-                  String text = element.text();
+        collectMap.put("beginDate", scrapingRepository.getBeginDate(doc));
+        collectMap.put("endDate", scrapingRepository.getEndDate(doc));
 
-                  boolean canParseColumn = text.contains(":") && text.length() > 5 &&
-                          !text.contains(":00") &&
-                          text.indexOf(":") != 2 &&
-                          text.indexOf(":") != 4 &&
-                          text.indexOf(":") != 5;
+        collectMap.put("title", scrapingRepository.getTitle(doc));
+        collectMap.put("town", scrapingRepository.getTown(doc));
 
-                  if (!canParseColumn) {
-                      return;
-                  }
+        collectMap.put("league", scrapingRepository.getLeague(doc));
+        collectMap.put("department", scrapingRepository.getDepartment(doc));
 
-                  for (String key : getColumnNames()) {
-                      text = addSplitDelemiter(text, key);
-                  }
+        collectMap.put("type", scrapingRepository.getType(doc));
+        collectMap.put("level", scrapingRepository.getLevel(doc));
 
-                  String[] splitString = text.split("\n");
+        collectMap.put("technicalAdvice", scrapingRepository.getTechnicalAdvice(doc));
 
-                  Stream.of(splitString)
-                        .parallel()
-                        .filter(e -> e != null)
-                        .filter(e -> e != "")
-                        .filter(e -> e.contains(":"))
-                        .forEach(e -> strr.add(e));
+        // handle addresses
+        Map<String, Map<String, String>> addresses = new HashMap<>();
+        addresses.put("stadiumAddress", scrapingRepository.getStadiumAddress(doc));
+        addresses.put("organisationAddress", scrapingRepository.getOrganisationAddress(doc));
 
-              });
+        final ObjectMapper mapper = new ObjectMapper(); // jackson's object mapper to change with orika or mapstruct
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
+        Map<String, String> stadiumAddress = scrapingRepository.getStadiumAddress(doc);
+        if (stadiumAddress != null) {
+            Address address = mapper.convertValue(stadiumAddress, Address.class);
+            addressRepository.save(address);
+        }
 
-        List<String> keys = getColumnNames();
-        strr.removeAll(Collections.singleton(null));
+        Map<String, String> organisationAddress = scrapingRepository.getOrganisationAddress(doc);
+        if (organisationAddress != null) {
+            Address address = mapper.convertValue(organisationAddress, Address.class);
+            addressRepository.save(address);
+        }
 
-        Map<String, String> collectMap = strr.stream()
-                                             .parallel()
-                                             .filter(str -> str.contains(" : "))
-                                             .map(str -> str.split(" : ", 2))
-                                             .filter(str -> keys.contains(str[0].trim()))
-                                             .filter(str -> str[1].length() < 254)
-                                             .collect(toMap(str -> str[0].trim(),
-                                                            str -> (str[0].equals("Téléphone 2") || str[0].equals("Téléphone 1")) ? str[1].replaceAll("\\s+", "").replaceAll("\\.", "").trim() : str[1].trim(),
-                                                            (v1, v2) -> v1
-                                             ));
+        //handle contacts
+        Map<String, String> contacts = scrapingRepository.getContacts(doc);
+        Map<String, String> staff = scrapingRepository.getStaff(doc);
 
+        // parse tests (epreuves)
+        Map<String, Map<String, String>> tests = new HashMap<>();
+        tests = scrapingRepository.getTests(doc);
 
-        final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
         Event event = mapper.convertValue(collectMap, Event.class);
-        event.setFileId(id);
-
+        eventRepository.save(event);
         return event;
     }
-
-    private String addSplitDelemiter(String text, String marker) {
-        return text.replace(marker + " :", "\n" + marker + " :");
-    }
-
 
 }
