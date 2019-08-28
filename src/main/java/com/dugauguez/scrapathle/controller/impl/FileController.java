@@ -13,7 +13,7 @@ public class FileController implements FileApi {
     @Autowired
     private FileService fileService;
 
-    public ResponseEntity<String> getProducts(@PathVariable("year") int year) {
+    public ResponseEntity<String> getFiles(@PathVariable("year") int year) {
 
         fileService.getAllByYear(year);
 
