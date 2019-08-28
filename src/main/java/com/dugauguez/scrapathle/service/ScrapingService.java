@@ -138,8 +138,8 @@ public class ScrapingService {
 
     private Event parseEvent(int year, String department, String id) {
 
-        //  department = "021";
-        //  id = "903849522846443840174834256852468837";
+        // department = "021";
+        // id = "903849522846443840174834256852468837";
 
         // department = "069";
         // id = "764849668846493828149846125855762849";
@@ -229,11 +229,11 @@ public class ScrapingService {
         List<Address> stade = addressRepository.findByTypeAndPostalCodeStartsWith("Stade", postalCode.toString());
 
         stade.stream().parallel()
-             .forEach(sta -> {
-                 Map<String, Double> coordinates = openStreetMapUtils.getCoordinates(sta.getAddress());
-                 sta.setLatitude(coordinates.get("lat"));
-                 sta.setLongitude(coordinates.get("lon"));
-             });
+                .forEach(sta -> {
+                    Map<String, Double> coordinates = openStreetMapUtils.getCoordinates(sta.getAddress());
+                    sta.setLatitude(coordinates.get("lat"));
+                    sta.setLongitude(coordinates.get("lon"));
+                });
 
         addressRepository.saveAll(stade);
 

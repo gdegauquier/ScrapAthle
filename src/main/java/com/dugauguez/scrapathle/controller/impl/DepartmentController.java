@@ -17,7 +17,7 @@ public class DepartmentController implements DepartmentApi {
     private DepartmentService departmentService;
 
 
-    public ResponseEntity<List<String>> getProducts() throws IOException {
+    public ResponseEntity<List<String>> getDepartmentsCodes() throws IOException {
 
         List<String> departments = departmentService.getAll();
 

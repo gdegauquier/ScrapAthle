@@ -1,6 +1,6 @@
 package com.dugauguez.scrapathle.configuration;
 
-import com.dugauguez.scrapathle.GoEndpoints;
+import com.dugauguez.scrapathle.Endpoints;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -27,7 +27,7 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage(GoEndpoints.class.getPackage().getName()))
+                .apis(RequestHandlerSelectors.basePackage(Endpoints.class.getPackage().getName()))
                 .build()
                 .apiInfo(apiInfo());
     }

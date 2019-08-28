@@ -17,7 +17,7 @@ public class ScrapingController implements ScrapingApi {
     @Autowired
     private ScrapingService scrapingService;
 
-    public ResponseEntity<String> getProducts(@PathVariable("year") int year) {
+    public ResponseEntity<String> scrapDetails(@PathVariable("year") int year) {
 
         scrapingService.getAllByYear(year);
 
