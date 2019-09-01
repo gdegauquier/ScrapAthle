@@ -2,8 +2,10 @@ package com.dugauguez.scrapathle.service;
 
 import com.dugauguez.scrapathle.entity.Address;
 import com.dugauguez.scrapathle.entity.Event;
+import com.dugauguez.scrapathle.entity.Organizer;
 import com.dugauguez.scrapathle.repository.AddressRepository;
 import com.dugauguez.scrapathle.repository.EventRepository;
+import com.dugauguez.scrapathle.repository.OrganizerRepository;
 import com.dugauguez.scrapathle.repository.ScrapingRepository;
 import com.dugauguez.scrapathle.utils.JsoupUtils;
 import com.dugauguez.scrapathle.utils.OpenStreetMapUtils;
@@ -42,6 +44,9 @@ public class ScrapingService {
 
     @Autowired
     AddressRepository addressRepository;
+
+    @Autowired
+    OrganizerRepository organizerRepository;
 
     @Autowired
     ScrapingRepository scrapingRepository;
@@ -196,12 +201,17 @@ public class ScrapingService {
             }
         }
 
-//        Map<String, String> organisationAddress = scrapingRepository.getOrganisationAddress(doc);
-//        if (organisationAddress != null) {
-//            Address address = mapper.convertValue(organisationAddress, Address.class);
-////            addressRepository.save(address);
-//            event.setOrganisationAddress(address);
-//        }
+        Map<String, String> organisationAddress = scrapingRepository.getOrganisationAddress(doc);
+        if (organisationAddress != null) {
+            Organizer organizer = mapper.convertValue(organisationAddress, Organizer.class);
+            Organizer foundOrganizerContact = organizerRepository.findByOrganisationAndTownAndPostalCode(organizer.getOrganisation(), organizer.getTown(), organizer.getPostalCode());
+            if (foundOrganizerContact == null) {
+                organizerRepository.save(organizer);
+                event.setOrganizerContact(organizer);
+            } else {
+                event.setOrganizerContact(foundOrganizerContact);
+            }
+        }
 
         return event;
     }
