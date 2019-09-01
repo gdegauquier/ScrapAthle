@@ -70,7 +70,7 @@ public class Address {
     }
 
     public void setTown(String town) {
-        this.town = town.trim();
+        this.town = town.trim().toUpperCase();
     }
 
     public void setPostalCode(String postalCode) {

@@ -24,38 +24,25 @@
             <column name="certificat_de_mesurage" type="VARCHAR(255)"/>
             <column name="challenge" type="VARCHAR(255)"/>
             <column name="code" type="VARCHAR(255)"/>
-            <column name="code_postal" type="VARCHAR(255)"/>
             <column name="conditions" type="VARCHAR(255)"/>
-            <column name="contact_engagement" type="VARCHAR(255)"/>
-            <column name="contact_presse" type="VARCHAR(255)"/>
             <column name="contact_technique" type="VARCHAR(255)"/>
             <column name="date_de_debut" type="date"/>
             <column name="date_de_fin" type="VARCHAR(255)"/>
             <column name="depart" type="VARCHAR(255)"/>
             <column name="department" type="VARCHAR(255)"/>
-            <column name="email" type="VARCHAR(255)"/>
-            <column name="engagement_en_ligne" type="VARCHAR(255)"/>
             <column name="epreuves" type="VARCHAR(255)"/>
-            <column name="event_submitted_by" type="VARCHAR(255)"/>
-            <column name="fax" type="VARCHAR(255)"/>
             <column name="file_id" type="VARCHAR(255)"/>
             <column name="infos_epreuve" type="VARCHAR(255)"/>
             <column name="league" type="VARCHAR(255)"/>
             <column name="montant_inscription" type="VARCHAR(255)"/>
             <column name="niveau" type="VARCHAR(255)"/>
             <column name="officiel" type="VARCHAR(255)"/>
-            <column name="organisateur" type="VARCHAR(255)"/>
-            <column name="organisation" type="VARCHAR(255)"/>
-            <column name="phone_number1" type="VARCHAR(255)"/>
-            <column name="phone_number2" type="VARCHAR(255)"/>
             <column name="recompenses" type="VARCHAR(255)"/>
-            <column name="results_controled_by" type="VARCHAR(255)"/>
-            <column name="results_given_by" type="VARCHAR(255)"/>
             <column name="services" type="VARCHAR(255)"/>
-            <column name="site_web" type="VARCHAR(255)"/>
             <column name="title" type="VARCHAR(255)"/>
             <column name="type" type="VARCHAR(255)"/>
             <column name="vainqueur" type="VARCHAR(255)"/>
+            <column name="fk_organizer_contact" type="INTEGER"/>
             <column name="fk_stadium_address" type="INTEGER"/>
         </createTable>
     </changeSet>

@@ -7,6 +7,7 @@
     <!-- Tables -->
     <include file="/db/changelog/tables/db.changelog-t_event.xml"/>
     <include file="/db/changelog/tables/db.changelog-address.xml"/>
+    <include file="/db/changelog/tables/db.changelog-organizer.xml"/>
 
 
 </databaseChangeLog>

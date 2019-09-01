@@ -1,0 +1,38 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+
+    <changeSet author="Abderraouf MAKHLOUF" id="create the second resource table : organizer">
+        <preConditions onFail="CONTINUE">
+            <not>
+                <tableExists tableName="organizer"/>
+            </not>
+        </preConditions>
+        <createTable tableName="organizer">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="organizer_pkey"/>
+            </column>
+            <column name="contact_engagement" type="VARCHAR(255)"/>
+            <column name="contact_presse" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="engagement_en_ligne" type="VARCHAR(255)"/>
+            <column name="event_submitted_by" type="VARCHAR(255)"/>
+            <column name="results_controled_by" type="VARCHAR(255)"/>
+            <column name="results_given_by" type="VARCHAR(255)"/>
+            <column name="site_web" type="VARCHAR(255)"/>
+            <column name="organisation" type="VARCHAR(255)"/>
+            <column name="line1" type="VARCHAR(255)"/>
+            <column name="line2" type="VARCHAR(255)"/>
+            <column name="line3" type="VARCHAR(255)"/>
+            <column name="fax" type="VARCHAR(255)"/>
+            <column name="phone_number1" type="VARCHAR(255)"/>
+            <column name="phone_number2" type="VARCHAR(255)"/>
+            <column name="postal_code" type="VARCHAR(255)"/>
+            <column name="town" type="VARCHAR(255)"/>
+            <column name="type" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

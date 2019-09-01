@@ -1,7 +1,6 @@
 package com.dugauguez.scrapathle.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;
@@ -13,17 +12,17 @@ import java.time.format.DateTimeFormatter;
 @Table(name = "event")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"stadiumAddress"})
-@ToString(exclude = {"stadiumAddress"})
+@EqualsAndHashCode(exclude = {"stadiumAddress","organizerContact"})
+@ToString(exclude = {"stadiumAddress","organizerContact"})
 public class Event {
-
-    private String fileId = null;
-
-    private String code = null;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    private String fileId = null;
+
+    private String code = null;
 
     private String title;
 
@@ -33,50 +32,17 @@ public class Event {
 
     private String department = null;
 
-    private String phoneNumber1 = null;
-
-    private String phoneNumber2 = null;
-
-    private String eventSubmittedBy = null;
-
-    private String resultsGivenBy = null;
-
-    private String resultsControledBy = null;
-
-    private String codePostal = null;
-
-    private String organisation = null;
-
     private String recompenses = null;
 
     private String conditions = null;
 
     private String avisTechniqueEtSecurite = null;
 
-    private String email = null;
-
-    private String organisateur = null;
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_stadium_address")
-    private Address stadiumAddress = null;
-
     private String montantInscription = null;
-
-    private String contactPresse = null;
-
-    private String siteWeb = null;
-
-    private String fax = null;
 
     private String vainqueur = null;
 
     private String certificatDeMesurage = null;
-
-    private String contactEngagement = null;
-
-    private String engagementEnLigne = null;
 
     private String autresInfos = null;
 
@@ -109,4 +75,13 @@ public class Event {
         this.dateDeDebut = LocalDate.parse(date.trim(), formatter);
     }
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_organizer_contact")
+    private Organizer organizerContact = null;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_stadium_address")
+    private Address stadiumAddress = null;
 }
