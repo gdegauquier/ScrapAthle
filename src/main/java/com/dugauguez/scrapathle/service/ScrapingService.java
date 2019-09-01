@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -118,21 +117,20 @@ public class ScrapingService {
 
         Document doc = JsoupUtils.instance.getDocument(file);
 
-        Elements elements = doc.getElementsByAttribute("href");
+        List<String> ids = doc.getElementsByAttribute("href")
+                              .parallelStream()
+                              .filter(element -> element.attr("href").contains("bddThrowCompet"))
+                              .map(element -> element.attr("href").split("'")[1])
+                              .collect(Collectors.toList());
 
-        List<Event> enventList = new ArrayList<>();
+        ids.parallelStream()
+           .filter(id -> hasDetailFileToBeRetrieved(year, department, id))
+           .forEach(id -> fileService.getById(year, department, id));
 
-        elements
-                .stream()
-                .filter(element -> element.attr("href").contains("bddThrowCompet"))
-                .forEach(element -> {
-                    String id = element.attr("href").split("'")[1];
-                    if (hasDetailFileToBeRetrieved(year, department, id)) {
-                        fileService.getById(year, department, id);
-                    }
-                    enventList.add(parseEvent(year, department, id));
-                });
-        return enventList;
+        return ids.stream()
+                  .map(id -> parseEvent(year, department, id))
+                  .collect(Collectors.toList());
+
     }
 
     private Event parseEvent(int year, String department, String id) {
@@ -152,9 +150,6 @@ public class ScrapingService {
 
         collectMap.put("fileId", id);
         collectMap.put("code", scrapingRepository.getCode(doc));
-
-        collectMap.put("beginDate", scrapingRepository.getBeginDate(doc));
-        collectMap.put("endDate", scrapingRepository.getEndDate(doc));
 
         collectMap.put("title", scrapingRepository.getTitle(doc));
         collectMap.put("town", scrapingRepository.getTown(doc));
@@ -212,6 +207,9 @@ public class ScrapingService {
                 event.setOrganizerContact(foundOrganizerContact);
             }
         }
+
+        event.setDateDeDebut(scrapingRepository.getBeginDate(doc));
+        event.setDateDeFin(scrapingRepository.getEndDate(doc));
 
         return event;
     }

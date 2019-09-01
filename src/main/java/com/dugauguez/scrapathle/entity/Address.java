@@ -43,30 +43,33 @@ public class Address {
     @JsonProperty("Type")
     private String type = null;
 
+    private Double latitude;
+
+    private Double longitude;
 
     public void setId(Integer id) {
         this.id = id;
     }
 
+    private String cleanAddress(String address) {
+        String data = address.trim().toLowerCase();
+        return (Arrays.asList("*", ",", "-", ".", "/", "?", "x", "_").contains(data)) ? null : data;
+    }
+
     public void setName(String name) {
-        String data = name.trim().toLowerCase();
-        this.name = (Arrays.asList("*", ",", "-", ".", "/", "?", "x", "_").contains(data)) ? null : data;
+        this.name = cleanAddress(name);
     }
 
     public void setLine1(String line1) {
-
-        String data = line1.trim().toLowerCase();
-        this.line1 = (Arrays.asList("*", ",", "-", ".", "/", "?", "x", "_").contains(data)) ? null : data;
+        this.line1 = cleanAddress(line1);
     }
 
     public void setLine2(String line2) {
-        String data = line2.trim().toLowerCase();
-        this.line2 = (Arrays.asList("*", ",", "-", ".", "/", "?", "x", "_").contains(data)) ? null : data;
+        this.line2 = cleanAddress(line2);
     }
 
     public void setLine3(String line3) {
-        String data = line3.trim().toLowerCase();
-        this.line3 = (Arrays.asList("*", ",", "-", ".", "/", "?", "x", "_").contains(data)) ? null : data;
+        this.line3 = cleanAddress(line3);
     }
 
     public void setTown(String town) {
@@ -88,10 +91,6 @@ public class Address {
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
-
-    private Double latitude;
-
-    private Double longitude;
 
     public String getAddress() {
         String address = "";

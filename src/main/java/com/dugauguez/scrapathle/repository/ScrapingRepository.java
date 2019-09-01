@@ -41,13 +41,13 @@ public class ScrapingRepository {
             if (el.parentNode().outerHtml().contains(textToFind) && el.text().contains(textToFind)) {
                 Node node = el.parentNode();
 
-               if( node.childNodes().size() <3 ){
-                   props.put(el.text(), "");
-               }
-                Node node1 = node.childNode(2);
-                if( node1.childNodes().isEmpty() ){
+                if (node.childNodes().size() < 3) {
                     props.put(el.text(), "");
-                }else{
+                }
+                Node node1 = node.childNode(2);
+                if (node1.childNodes().isEmpty()) {
+                    props.put(el.text(), "");
+                } else {
                     String string = node1.childNode(0).toString();
                     props.put(el.text(), string);
                 }
@@ -108,7 +108,7 @@ public class ScrapingRepository {
 
     private Map<String, String> parseAddressElements(Elements els, String begin, String end, String type) {
 
-        if (els.size() == 0 || els.get(0).parentNode().childNodes().size() == 0) {
+        if (els.isEmpty() || els.get(0).parentNode().childNodes().isEmpty()) {
             return null;
         }
 
@@ -145,18 +145,18 @@ public class ScrapingRepository {
             Node rawNode = node.childNodes().get(0).childNodes().get(0);
             Node rawNodeValue = node.childNodes().get(2).childNodes().get(0);
             address.put(getAddressColumnName(rawNode.toString(), nbLines),
-                    getAddressColumnValue(rawNodeValue));
+                        getAddressColumnValue(rawNodeValue));
         }
 
         if (address.containsKey("stName")) {
-            address.put("Type","Stade");
-            address.put("name",address.get("stName"));
+            address.put("Type", "Stade");
+            address.put("name", address.get("stName"));
             address.remove("stName");
         }
 
         if (address.containsKey("orgName")) {
-            address.put("Type","Organisateur-Organisation");
-            address.put("name",address.get("orgName"));
+            address.put("Type", "Organisateur-Organisation");
+            address.put("name", address.get("orgName"));
             address.remove("orgName");
         }
 
@@ -166,17 +166,17 @@ public class ScrapingRepository {
 
     private String getAddressColumnName(String rawColumn, AtomicInteger nbLines) {
 
-        if ( rawColumn.equals("Stade") ) {
-            rawColumn = "stName" ;
+        if (rawColumn.equals("Stade")) {
+            rawColumn = "stName";
             return rawColumn;
         }
 
-        if (rawColumn.equals("Organisateur") ||rawColumn.equals("Organisation")  ) {
-            rawColumn = "orgName" ;
+        if (rawColumn.equals("Organisateur") || rawColumn.equals("Organisation")) {
+            rawColumn = "orgName";
             return rawColumn;
         }
 
-        if (rawColumn.equals("&nbsp;") || rawColumn.equals("Adresse") ) {
+        if (rawColumn.equals("&nbsp;") || rawColumn.equals("Adresse")) {
             rawColumn = "Line" + nbLines;
             nbLines.incrementAndGet();
             return rawColumn;
@@ -241,7 +241,7 @@ public class ScrapingRepository {
             test.put("description", nodes.get(1).childNodes().get(0).childNode(0).toString());
             // TODO improve
             test.put("categories", nodes.get(3).childNodes().get(0).toString());
-            test.put("distance", nodes.get(4).childNodes().size() > 0 ? nodes.get(4).childNodes().get(0).toString() : "");
+            test.put("distance", !nodes.get(4).childNodes().isEmpty() ? nodes.get(4).childNodes().get(0).toString() : "");
             tests.put("test" + index, test);
 
             index++;
@@ -250,6 +250,7 @@ public class ScrapingRepository {
         return tests;
 
     }
+
     public Map<String, String> getStaff(Document doc) {
         Elements els = doc.select("td[style*=font-weight:bolder]");
         return getPropertiesViaParentNode(els, " par");
@@ -271,7 +272,7 @@ public class ScrapingRepository {
         Elements elsBegin = doc.select("td[style=" + begin + "]");
         Elements els = doc.select("td[style=" + end + "]");
 
-        return parseAddressElements(els, elsBegin.size() == 0 ? null : begin, end, "ORG");
+        return parseAddressElements(els, elsBegin.isEmpty() ? null : begin, end, "ORG");
     }
 
     public String getType(Document doc) {
