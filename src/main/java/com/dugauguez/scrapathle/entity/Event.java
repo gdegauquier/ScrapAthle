@@ -12,8 +12,8 @@ import java.time.format.DateTimeFormatter;
 @Table(name = "event")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"stadiumAddress","organizerContact"})
-@ToString(exclude = {"stadiumAddress","organizerContact"})
+@EqualsAndHashCode(exclude = {"stadiumAddress", "organizerContact"})
+@ToString(exclude = {"stadiumAddress", "organizerContact"})
 public class Event {
 
     @Id
@@ -60,19 +60,27 @@ public class Event {
 
     private String services = null;
 
-    private LocalDate dateDeDebut = null;
-
-    private String dateDeFin = null;
-
     private String niveau = null;
 
     private String arrivee = null;
 
     private String depart = null;
 
-    public void setDateDeDebut(String date) {
+    private LocalDate dateDeDebut = null;
+
+    private LocalDate dateDeFin = null;
+
+    private LocalDate fromStringToDate(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
-        this.dateDeDebut = LocalDate.parse(date.trim(), formatter);
+        return date == null ? null : LocalDate.parse(date.trim(), formatter);
+    }
+
+    public void setDateDeDebut(String date) {
+        this.dateDeDebut = fromStringToDate(date);
+    }
+
+    public void setDateDeFin(String date) {
+        this.dateDeFin = fromStringToDate(date);
     }
 
     @JsonIgnore

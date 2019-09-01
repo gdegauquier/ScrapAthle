@@ -4,6 +4,7 @@ package com.dugauguez.scrapathle.repository;
 import com.dugauguez.scrapathle.utils.JsoupUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -48,7 +49,7 @@ public class DepartmentRepository {
         // loop on values && add them to the response
         List<String> listDepartments = elements.parallelStream()
                                                .filter(e -> !StringUtils.isEmpty(e.text()) && e.text().length() < 5)
-                                               .map(e -> e.text())
+                                               .map(Element::text)
                                                .collect(Collectors.toList());
         log.info("[extractDepartments] Elapsed time : {} ms", System.currentTimeMillis() - startProcessing);
 
