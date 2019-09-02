@@ -34,6 +34,9 @@ public class ScrapingService {
     @Autowired
     OpenStreetMapUtils openStreetMapUtils;
 
+    @Autowired
+    JsoupUtils jsoupUtils;
+
     public static final int OLDER_THAN_TWO_DAYS = 2;
     @Autowired
     FileService fileService;
@@ -115,7 +118,7 @@ public class ScrapingService {
         int year = Integer.parseInt(file.getParentFile().getName());
         String department = file.getName().split(".html")[0];
 
-        Document doc = JsoupUtils.instance.getDocument(file);
+        Document doc = jsoupUtils.getDocument(file);
 
         List<String> ids = doc.getElementsByAttribute("href")
                               .parallelStream()
@@ -140,7 +143,7 @@ public class ScrapingService {
 
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
-        Document doc = JsoupUtils.instance.getDocument(new File(file));
+        Document doc = jsoupUtils.getDocument(new File(file));
         if (doc == null) {
             log.error("Could not parse file {}", file);
             return null;
