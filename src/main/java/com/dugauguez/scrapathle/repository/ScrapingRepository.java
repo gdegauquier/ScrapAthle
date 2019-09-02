@@ -149,13 +149,13 @@ public class ScrapingRepository {
         }
 
         if (address.containsKey("stName")) {
-            address.put("Type", "Stade");
+            address.put("Type", "STD");
             address.put("name", address.get("stName"));
             address.remove("stName");
         }
 
         if (address.containsKey("orgName")) {
-            address.put("Type", "Organisateur-Organisation");
+            address.put("Type", "ORG");
             address.put("name", address.get("orgName"));
             address.remove("orgName");
         }
@@ -171,7 +171,7 @@ public class ScrapingRepository {
             return rawColumn;
         }
 
-        if (rawColumn.equals("Organisateur") || rawColumn.equals("Organisation")) {
+        if (rawColumn.contains("Org")) {
             rawColumn = "orgName";
             return rawColumn;
         }

@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -20,20 +20,16 @@ import java.util.stream.Collectors;
 @Repository
 public class DepartmentRepository {
 
-
-    @Value("${bases.athle.uri.base}")
-    private String host;
+    @Autowired
+    JsoupUtils jsoupUtils;
 
     public List<String> getAll() {
 
-        // prepare result list
-        List<String> listDepartments = new ArrayList<>();
-
         // parse file
         File file = getDepartmentsFile();
-        Document doc = JsoupUtils.instance.getDocument(file);
+        Document doc = jsoupUtils.getDocument(file);
         if (doc == null) {
-            return listDepartments;
+            return new ArrayList<>();
         }
 
         return extractDepartments(doc);
