@@ -5,6 +5,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,44 +19,42 @@ public class OpenStreetMapUtils {
     @Autowired
     RestTemplate restTemplate;
 
+    @Value("${openstreetmap.uri.base}")
+    private String host;
 
-    private String getRequest(String url) {
+    private String callWs(String url) {
         return restTemplate.getForObject(url, String.class);
     }
 
-    public Map<String, Double> getCoordinates(String address) {
-        Map<String, Double> res;
-        StringBuffer query;
-        String[] split = address.split(" ");
-        String queryResult = null;
+    private String buildHttpQuery(String[] addressFields) {
 
-        query = new StringBuffer();
-        res = new HashMap<>();
+        StringBuffer query = new StringBuffer();
+        query.append(host).append("/search?q=");
 
-        query.append("https://nominatim.openstreetmap.org/search?q=");
-
-        if (split.length == 0) {
-            return null;
-        }
-
-        for (int i = 0; i < split.length; i++) {
-            query.append(split[i]);
-            if (i < (split.length - 1)) {
+        for (int i = 0; i < addressFields.length; i++) {
+            query.append(addressFields[i]);
+            if (i < (addressFields.length - 1)) {
                 query.append("+");
             }
         }
         query.append("&format=json&addressdetails=1");
 
-        log.debug("Query:" + query);
+        log.debug("Query : {}", query);
 
-        queryResult = getRequest(query.toString());
+        return query.toString();
+
+    }
+
+    private Map<String, Double> buildHttpResponse(String queryResult) {
 
         if (queryResult == null) {
             return null;
         }
 
+        Map<String, Double> res = new HashMap<>();
+
         Object obj = JSONValue.parse(queryResult);
-        log.debug("obj=" + obj);
+        log.debug("obj = {}", obj);
 
         if (obj instanceof JSONArray) {
             JSONArray array = (JSONArray) obj;
@@ -64,8 +63,8 @@ public class OpenStreetMapUtils {
 
                 String lon = (String) jsonObject.get("lon");
                 String lat = (String) jsonObject.get("lat");
-                log.debug("lon=" + lon);
-                log.debug("lat=" + lat);
+                log.debug("lon = {}", lon);
+                log.debug("lat = {}", lat);
                 res.put("lon", Double.parseDouble(lon));
                 res.put("lat", Double.parseDouble(lat));
 
@@ -73,5 +72,17 @@ public class OpenStreetMapUtils {
         }
 
         return res;
+
+    }
+
+    public Map<String, Double> getCoordinates(String address) {
+
+        String[] split = address.split(" ");
+
+        if (split.length == 0) {
+            return null;
+        }
+
+        return buildHttpResponse(callWs(buildHttpQuery(split)));
     }
 }

@@ -237,9 +237,8 @@ public class ScrapingRepository {
             Map<String, String> test = new HashMap<>();
 
             test.put("time", nodes.get(1).childNodes().get(0).childNode(0).toString());
-            // TODO description
-            test.put("description", nodes.get(1).childNodes().get(0).childNode(0).toString());
-            // TODO improve
+            test.put("description", buildTestDescription(nodes));
+            // TODO split with " / "
             test.put("categories", nodes.get(3).childNodes().get(0).toString());
             test.put("distance", !nodes.get(4).childNodes().isEmpty() ? nodes.get(4).childNodes().get(0).toString() : "");
             tests.put("test" + index, test);
@@ -251,6 +250,17 @@ public class ScrapingRepository {
 
     }
 
+    private String buildTestDescription(List<Node> nodes) {
+
+        String desc = nodes.get(2).childNodes().get(0).childNodes().get(0).toString();
+
+        if (nodes.get(2).childNodes().size() > 2) {
+            desc += " - " + nodes.get(2).childNodes().get(2).childNodes().get(0).toString();
+        }
+
+        return desc;
+
+    }
     public Map<String, String> getStaff(Document doc) {
         Elements els = doc.select("td[style*=font-weight:bolder]");
         return getPropertiesViaParentNode(els, " par");
