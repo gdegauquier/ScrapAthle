@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -17,7 +16,7 @@ public class DepartmentController implements DepartmentApi {
     private DepartmentService departmentService;
 
 
-    public ResponseEntity<List<String>> getProducts() throws IOException {
+    public ResponseEntity<List<String>> getDepartmentsCodes() {
 
         List<String> departments = departmentService.getAll();
 
