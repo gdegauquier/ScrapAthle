@@ -141,6 +141,9 @@ public class ScrapingService {
         //  department = "021";
         //  id = "903849522846443840174834256852468837";
 
+        // department = "069";
+        // id = "764849668846493828149846125855762849";
+
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
         Document doc = jsoupUtils.getDocument(new File(file));
@@ -160,7 +163,11 @@ public class ScrapingService {
         collectMap.put("league", scrapingRepository.getLeague(doc));
         collectMap.put("department", scrapingRepository.getDepartment(doc));
 
-        collectMap.put("type", scrapingRepository.getType(doc));
+        // types
+        String type = scrapingRepository.getType(doc);
+        collectMap.put("type", type.split(" / ")[0]);
+        String[] subTypes = type.split(" / ")[1].split(" - ");
+
         collectMap.put("level", scrapingRepository.getLevel(doc));
 
         collectMap.put("technicalAdvice", scrapingRepository.getTechnicalAdvice(doc));
