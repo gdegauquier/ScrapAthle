@@ -65,17 +65,17 @@ public class ScrapingService {
         File folder = new File(dir);
 
         List<Event> all = Arrays.stream(folder.listFiles())
-                                .filter(file -> isValidFile(year, file.getAbsolutePath()))
-                                .map(file -> scrapEvents(file))
-                                .flatMap(List::stream)
-                                .collect(Collectors.toList());
+                .filter(file -> isValidFile(year, file.getAbsolutePath()))
+                .map(file -> scrapEvents(file))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
 
 
         List<Event> allDistinctEvent = new ArrayList<>(all.stream()
-                                                          .parallel()
-                                                          .filter(e -> e.getCode() != null)
-                                                          .collect(Collectors.toMap(Event::getCode, p -> p, (p, q) -> p))
-                                                          .values());
+                .parallel()
+                .filter(e -> e.getCode() != null)
+                .collect(Collectors.toMap(Event::getCode, p -> p, (p, q) -> p))
+                .values());
 
         eventRepository.saveAll(allDistinctEvent);
 
@@ -121,18 +121,18 @@ public class ScrapingService {
         Document doc = jsoupUtils.getDocument(file);
 
         List<String> ids = doc.getElementsByAttribute("href")
-                              .parallelStream()
-                              .filter(element -> element.attr("href").contains("bddThrowCompet"))
-                              .map(element -> element.attr("href").split("'")[1])
-                              .collect(Collectors.toList());
+                .parallelStream()
+                .filter(element -> element.attr("href").contains("bddThrowCompet"))
+                .map(element -> element.attr("href").split("'")[1])
+                .collect(Collectors.toList());
 
         ids.parallelStream()
-           .filter(id -> hasDetailFileToBeRetrieved(year, department, id))
-           .forEach(id -> fileService.getById(year, department, id));
+                .filter(id -> hasDetailFileToBeRetrieved(year, department, id))
+                .forEach(id -> fileService.getById(year, department, id));
 
         return ids.stream()
-                  .map(id -> parseEvent(year, department, id))
-                  .collect(Collectors.toList());
+                .map(id -> parseEvent(year, department, id))
+                .collect(Collectors.toList());
 
     }
 
@@ -141,8 +141,8 @@ public class ScrapingService {
         // department = "021";
         // id = "903849522846443840174834256852468837";
 
-        // department = "069";
-        // id = "764849668846493828149846125855762849";
+        department = "069";
+        id = "764849668846493828149846125855762849";
 
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
@@ -162,17 +162,21 @@ public class ScrapingService {
 
         collectMap.put("league", scrapingRepository.getLeague(doc));
         collectMap.put("department", scrapingRepository.getDepartment(doc));
+        collectMap.put("labeledEvent", scrapingRepository.isLabeledEvent(doc) + "");
 
         // types
         String type = scrapingRepository.getType(doc);
+        List<String> subTypes = new ArrayList<>();
 
-        if (type!= null) {
+        if (type != null) {
             collectMap.put("type", type.split(" / ")[0]);
-            String[] subTypes = type.split(" / ")[1].split(" - ");
+            subTypes = Arrays.asList(type.split(" / ")[1].split(" - "));
         }
 
-        collectMap.put("level", scrapingRepository.getLevel(doc));
+        // services
+        List<String> services = scrapingRepository.getServices(doc);
 
+        collectMap.put("level", scrapingRepository.getLevel(doc));
         collectMap.put("technicalAdvice", scrapingRepository.getTechnicalAdvice(doc));
 
         // handle addresses

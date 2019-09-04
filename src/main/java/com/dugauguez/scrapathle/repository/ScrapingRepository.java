@@ -7,6 +7,7 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,7 +146,7 @@ public class ScrapingRepository {
             Node rawNode = node.childNodes().get(0).childNodes().get(0);
             Node rawNodeValue = node.childNodes().get(2).childNodes().get(0);
             address.put(getAddressColumnName(rawNode.toString(), nbLines),
-                        getAddressColumnValue(rawNodeValue));
+                    getAddressColumnValue(rawNodeValue));
         }
 
         if (address.containsKey("stName")) {
@@ -237,9 +238,8 @@ public class ScrapingRepository {
             Map<String, String> test = new HashMap<>();
 
             test.put("time", nodes.get(1).childNodes().get(0).childNode(0).toString());
-            test.put("description", buildTestDescription(nodes));
-            // TODO split with " / "
-            test.put("categories", nodes.get(3).childNodes().get(0).toString());
+            buildTestDescriptions(test, nodes);
+            buildTestCategories(test, nodes);
             test.put("distance", !nodes.get(4).childNodes().isEmpty() ? nodes.get(4).childNodes().get(0).toString() : "");
             tests.put("test" + index, test);
 
@@ -250,20 +250,57 @@ public class ScrapingRepository {
 
     }
 
-    private String buildTestDescription(List<Node> nodes) {
+    private void buildTestCategories(Map<String, String> mapToUpdate, List<Node> nodes) {
+
+        String cats = nodes.get(3).childNodes().get(0).toString();
+
+        int index = 1;
+        for (String cat : cats.split(" / ")) {
+            mapToUpdate.put("category" + index, cat);
+            index++;
+        }
+
+    }
+
+    public boolean isLabeledEvent(Document doc){
+        Elements els = doc.select("b");
+        return getPropertyViaParentNode(els, "Epreuves à label") != null;
+    }
+
+
+    private void buildTestDescriptions(Map<String, String> mapToUpdate, List<Node> nodes) {
 
         String desc = nodes.get(2).childNodes().get(0).childNodes().get(0).toString();
 
-        if (nodes.get(2).childNodes().size() > 2) {
-            desc += " - " + nodes.get(2).childNodes().get(2).childNodes().get(0).toString();
+        if (desc.contains("<b>")) {
+            desc = nodes.get(2).childNodes().get(0).childNodes().get(0).childNode(0).toString();
         }
 
-        return desc;
+        mapToUpdate.put("description1", desc);
+
+        if (nodes.get(2).childNodes().size() > 2) {
+            desc = nodes.get(2).childNodes().get(2).childNodes().get(0).toString();
+            mapToUpdate.put("description2", desc);
+        }
 
     }
+
     public Map<String, String> getStaff(Document doc) {
         Elements els = doc.select("td[style*=font-weight:bolder]");
         return getPropertiesViaParentNode(els, " par");
+    }
+
+    public List<String> getServices(Document doc) {
+
+        Elements els = doc.select("img[style=margin:0px 5px]");
+
+        List<String> services = new ArrayList<>();
+
+        for (Element el : els) {
+            services.add(el.attr("alt"));
+        }
+        return services;
+
     }
 
     public Map<String, String> getStadiumAddress(Document doc) {
