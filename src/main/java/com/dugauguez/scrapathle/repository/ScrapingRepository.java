@@ -49,14 +49,27 @@ public class ScrapingRepository {
                 if (node1.childNodes().isEmpty()) {
                     props.put(el.text(), "");
                 } else {
-                    String string = node1.childNode(0).toString();
+                    String string = removeEndMatch(node1.childNode(0).toString().trim(), " -");
                     props.put(el.text(), string);
+
+                    if (node1.childNodes().size() > 1){
+                        props.put(el.text() + " mail", node1.childNode(1).childNodes().get(0).toString());
+                    }
+
                 }
             }
         }
 
         return props;
     }
+
+    private String removeEndMatch(String str, String strToRemove){
+        if (!str.endsWith(strToRemove)){
+            return str;
+        }
+        return str.split(strToRemove)[0];
+    }
+
 
     public String getTitle(Document doc) {
         Element first = doc.select("div.titles").first();
