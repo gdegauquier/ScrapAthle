@@ -9,7 +9,6 @@ import com.dugauguez.scrapathle.utils.JsoupUtils;
 import com.dugauguez.scrapathle.utils.OpenStreetMapUtils;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -201,6 +200,11 @@ public class ScrapingService {
             if (address.getName() != null && address.getTown() != null && address.getPostalCode() != null) {
                 Address foundAddress = addressRepository.findByNameAndTownAndPostalCode(address.getName(), address.getTown(), address.getPostalCode());
                 if (foundAddress == null) {
+
+                    Map<String, Double> coordinates = openStreetMapUtils.getCoordinates(address.getAddress());
+                    address.setLatitude(coordinates.get("lat"));
+                    address.setLongitude(coordinates.get("lon"));
+
                     addressRepository.save(address);
                     event.setStadiumAddress(address);
                 } else {
@@ -229,22 +233,12 @@ public class ScrapingService {
 
 
     public List<Address> StadiumInTown(Integer postalCode) {
-        List<Address> stade = addressRepository.findByTypeAndPostalCodeStartsWith("STD", postalCode.toString());
-        stade.stream().parallel()
-             .forEach(sta -> {
-                 Map<String, Double> coordinates = openStreetMapUtils.getCoordinates(sta.getAddress());
-                 sta.setLatitude(coordinates.get("lat"));
-                 sta.setLongitude(coordinates.get("lon"));
-             });
-
-        addressRepository.saveAll(stade);
-
-        log.info("StadiumInTown : " + stade.size());
-        return stade;
+        String code = postalCode.toString();
+        return addressRepository.findByTypeAndPostalCodeStartsWith("STD", code.length() == 1 ? "0" + code : code);
     }
 
 
     public List<Region> getRegionList() {
-        return  regionRepository.findAllByOrderByTownAsc();
+        return regionRepository.findAllByOrderByTownAsc();
     }
 }
