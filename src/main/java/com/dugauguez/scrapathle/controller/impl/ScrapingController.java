@@ -2,6 +2,7 @@ package com.dugauguez.scrapathle.controller.impl;
 
 import com.dugauguez.scrapathle.controller.ScrapingApi;
 import com.dugauguez.scrapathle.entity.Address;
+import com.dugauguez.scrapathle.entity.Region;
 import com.dugauguez.scrapathle.service.ScrapingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,5 +30,10 @@ public class ScrapingController implements ScrapingApi {
     public ResponseEntity<List<Address>> getStadiumInTown(@PathVariable("regionPostalCode") int regionPostalCode) {
         List<Address> addresses = scrapingService.StadiumInTown(regionPostalCode);
         return ResponseEntity.status(HttpStatus.OK).body(addresses);
+    }
+
+    public ResponseEntity<List<Region>> getRegionList() {
+        List<Region> regionList = scrapingService.getRegionList();
+        return ResponseEntity.status(HttpStatus.OK).body(regionList);
     }
 }

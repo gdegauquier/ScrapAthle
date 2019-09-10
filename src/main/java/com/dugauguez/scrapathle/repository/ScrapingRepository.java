@@ -261,6 +261,7 @@ public class ScrapingRepository {
         return desc;
 
     }
+
     public Map<String, String> getStaff(Document doc) {
         Elements els = doc.select("td[style*=font-weight:bolder]");
         return getPropertiesViaParentNode(els, " par");

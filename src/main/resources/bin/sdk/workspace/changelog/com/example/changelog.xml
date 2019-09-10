@@ -7,7 +7,7 @@
         <createTable tableName="debug_info">
             <column name="message" type="varchar(255)"/>
             <column name="date_ran" type="datetime">
-                    <constraints nullable="false"/>
+                <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
@@ -22,7 +22,8 @@
 
     <changeSet id="2" author="chuck">
         <insert tableName="debug_info">
-            <column name="message" value="Database is ${database.databaseProductName} (${database.typeName}) version ${database.databaseMajorVersion}.${database.databaseMinorVersion}"/>
+            <column name="message"
+                    value="Database is ${database.databaseProductName} (${database.typeName}) version ${database.databaseMajorVersion}.${database.databaseMinorVersion}"/>
             <column name="date_ran" valueComputed="current_datetime"/>
         </insert>
         <rollback>delete from debug_info</rollback>
