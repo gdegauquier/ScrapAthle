@@ -69,6 +69,14 @@ public class Event {
     private LocalDate dateDeDebut = null;
 
     private LocalDate dateDeFin = null;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_organizer_contact")
+    private Organizer organizerContact = null;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_stadium_address")
+    private Address stadiumAddress = null;
 
     private LocalDate fromStringToDate(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
@@ -82,14 +90,4 @@ public class Event {
     public void setDateDeFin(String date) {
         this.dateDeFin = fromStringToDate(date);
     }
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_organizer_contact")
-    private Organizer organizerContact = null;
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_stadium_address")
-    private Address stadiumAddress = null;
 }

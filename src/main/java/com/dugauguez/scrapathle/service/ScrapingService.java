@@ -3,14 +3,13 @@ package com.dugauguez.scrapathle.service;
 import com.dugauguez.scrapathle.entity.Address;
 import com.dugauguez.scrapathle.entity.Event;
 import com.dugauguez.scrapathle.entity.Organizer;
-import com.dugauguez.scrapathle.repository.AddressRepository;
-import com.dugauguez.scrapathle.repository.EventRepository;
-import com.dugauguez.scrapathle.repository.OrganizerRepository;
-import com.dugauguez.scrapathle.repository.ScrapingRepository;
+import com.dugauguez.scrapathle.entity.Region;
+import com.dugauguez.scrapathle.repository.*;
 import com.dugauguez.scrapathle.utils.JsoupUtils;
 import com.dugauguez.scrapathle.utils.OpenStreetMapUtils;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +30,11 @@ import java.util.stream.Collectors;
 @Service
 public class ScrapingService {
 
+    public static final int OLDER_THAN_TWO_DAYS = 2;
     @Autowired
     OpenStreetMapUtils openStreetMapUtils;
-
     @Autowired
     JsoupUtils jsoupUtils;
-
-    public static final int OLDER_THAN_TWO_DAYS = 2;
     @Autowired
     FileService fileService;
 
@@ -46,6 +43,9 @@ public class ScrapingService {
 
     @Autowired
     AddressRepository addressRepository;
+
+    @Autowired
+    RegionRepository regionRepository;
 
     @Autowired
     OrganizerRepository organizerRepository;
@@ -166,9 +166,9 @@ public class ScrapingService {
         // types
         String type = scrapingRepository.getType(doc);
 
-        if (type!= null) {
+        if (type != null) {
             collectMap.put("type", type.split(" / ")[0]);
-            String[] subTypes = type.split(" / ")[1].split(" - ");
+            String[] subTypes = type.split(" / ")[1].split(";");
         }
 
         collectMap.put("level", scrapingRepository.getLevel(doc));
@@ -230,13 +230,12 @@ public class ScrapingService {
 
     public List<Address> StadiumInTown(Integer postalCode) {
         List<Address> stade = addressRepository.findByTypeAndPostalCodeStartsWith("STD", postalCode.toString());
-
         stade.stream().parallel()
-                .forEach(sta -> {
-                    Map<String, Double> coordinates = openStreetMapUtils.getCoordinates(sta.getAddress());
-                    sta.setLatitude(coordinates.get("lat"));
-                    sta.setLongitude(coordinates.get("lon"));
-                });
+             .forEach(sta -> {
+                 Map<String, Double> coordinates = openStreetMapUtils.getCoordinates(sta.getAddress());
+                 sta.setLatitude(coordinates.get("lat"));
+                 sta.setLongitude(coordinates.get("lon"));
+             });
 
         addressRepository.saveAll(stade);
 
@@ -244,4 +243,8 @@ public class ScrapingService {
         return stade;
     }
 
+
+    public List<Region> getRegionList() {
+        return  regionRepository.findAllByOrderByTownAsc();
+    }
 }

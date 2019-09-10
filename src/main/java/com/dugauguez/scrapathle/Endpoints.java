@@ -13,6 +13,7 @@ public abstract class Endpoints {
     public static final String FILES_YEAR = "/files/general/{year}";
     public static final String SCRAPINGS_YEAR = "/scrapings/{year}";
     public static final String STADIUM_TOWN = "/stadiums/{regionPostalCode}";
+    public static final String REGION_LIST = "/regions";
 
 
 }
