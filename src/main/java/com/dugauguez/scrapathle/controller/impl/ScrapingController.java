@@ -27,7 +27,7 @@ public class ScrapingController implements ScrapingApi {
 
 
     public ResponseEntity<List<Address>> getStadiumInTown(@PathVariable("regionPostalCode") int regionPostalCode) {
-        List<Address> addresses = scrapingService.StadiumInTown(regionPostalCode);
+        List<Address> addresses = scrapingService.stadiumInTown(regionPostalCode);
         return ResponseEntity.status(HttpStatus.OK).body(addresses);
     }
 }

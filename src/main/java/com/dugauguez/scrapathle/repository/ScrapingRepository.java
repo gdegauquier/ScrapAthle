@@ -21,6 +21,16 @@ public class ScrapingRepository {
         return getPropertyViaParentNode(els, textToFind, false);
     }
 
+    private Element getNodeViaParentNode(Elements els, String textToFind) {
+        for (Element el : els) {
+            if (el.parentNode().outerHtml().contains(textToFind)) {
+
+                return el;
+            }
+        }
+        return null;
+    }
+
     private String getPropertyViaParentNode(Elements els, String textToFind, boolean valueAfterDots) {
         for (Element el : els) {
             if (el.parentNode().outerHtml().contains(textToFind)) {
@@ -52,8 +62,17 @@ public class ScrapingRepository {
                     String string = removeEndMatch(node1.childNode(0).toString().trim(), " -");
                     props.put(el.text(), string);
 
-                    if (node1.childNodes().size() > 1){
-                        props.put(el.text() + " mail", node1.childNode(1).childNodes().get(0).toString());
+                    if (node1.childNodes().size() > 1) {
+
+                        String mail = node1.childNode(1).childNodes().get(0).toString();
+                        if (!mail.contains("@")) {
+                            mail = node1.childNode(1).attr("href");
+                            int posBegin = mail.indexOf("mailto:") + "mailto:".length();
+                            int posEnd = mail.indexOf('?');
+                            mail = mail.substring(posBegin, posEnd);
+                        }
+
+                        props.put(el.text() + " / mail", mail);
                     }
 
                 }
@@ -63,8 +82,8 @@ public class ScrapingRepository {
         return props;
     }
 
-    private String removeEndMatch(String str, String strToRemove){
-        if (!str.endsWith(strToRemove)){
+    private String removeEndMatch(String str, String strToRemove) {
+        if (!str.endsWith(strToRemove)) {
             return str;
         }
         return str.split(strToRemove)[0];
@@ -231,6 +250,44 @@ public class ScrapingRepository {
         return getPropertiesViaParentNode(els, "Contact ");
     }
 
+    public Map<String, String> getConditions(Document doc) {
+
+        Map<String, String> conditions = new HashMap<>();
+        Elements els = doc.select("b");
+        Element el = getNodeViaParentNode(els, "ÉPREUVES / CONDITIONS");
+
+        if (el == null) {
+            return conditions;
+        }
+
+        List<Node> nodes = el.parentNode().parentNode().childNodes();
+
+        Node condTable = findNodeAfterAnotherWhichContains("ÉPREUVES / CONDITIONS", nodes);
+
+        return conditions;
+
+    }
+
+    private Node findNodeAfterAnotherWhichContains(String text, List<Node> nodes) {
+
+        boolean textFound = false;
+
+        for (Node node : nodes) {
+
+            if (textFound &&
+                    node.toString().contains("tbody")) {
+                return node;
+            }
+
+            if (node.toString().contains(text) && !textFound) {
+                textFound = true;
+            }
+
+        }
+
+        return null;
+    }
+
     public Map<String, Map<String, String>> getTests(Document doc) {
 
         Map<String, Map<String, String>> tests = new HashMap<>();
@@ -250,11 +307,30 @@ public class ScrapingRepository {
 
             Map<String, String> test = new HashMap<>();
 
+            //
+
+            boolean hasSubInfos = nodes.get(0).toString().contains("plus.gif");
+
+            if (hasSubInfos) {
+                Element elsSubInfos = els.get(0).parent().parent().parent().getElementsByTag("tbody").get(index);
+
+                for (Node elSubInfos : elsSubInfos.childNodes()) {
+
+                    String key = elSubInfos.childNodes().get(0).childNode(0).toString();
+                    String value = elSubInfos.childNodes().get(2).childNode(0).toString();
+                    test.put(key, value);
+
+                }
+
+            }
+
             test.put("time", nodes.get(1).childNodes().get(0).childNode(0).toString());
             buildTestDescriptions(test, nodes);
             buildTestCategories(test, nodes);
             test.put("distance", !nodes.get(4).childNodes().isEmpty() ? nodes.get(4).childNodes().get(0).toString() : "");
             tests.put("test" + index, test);
+
+            // add other info
 
             index++;
         }
@@ -275,7 +351,7 @@ public class ScrapingRepository {
 
     }
 
-    public boolean isLabeledEvent(Document doc){
+    public boolean isLabeledEvent(Document doc) {
         Elements els = doc.select("b");
         return getPropertyViaParentNode(els, "Epreuves à label") != null;
     }

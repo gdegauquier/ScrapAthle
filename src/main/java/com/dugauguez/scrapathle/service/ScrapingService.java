@@ -184,13 +184,16 @@ public class ScrapingService {
         addresses.put("stadiumAddress", scrapingRepository.getStadiumAddress(doc));
         addresses.put("organisationAddress", scrapingRepository.getOrganisationAddress(doc));
 
-        //handle contacts
+        //handle contacts with mails
         Map<String, String> contacts = scrapingRepository.getContacts(doc);
         Map<String, String> staff = scrapingRepository.getStaff(doc);
 
         // parse tests (epreuves)
-        Map<String, Map<String, String>> tests = new HashMap<>();
-        tests = scrapingRepository.getTests(doc);
+        Map<String, Map<String, String>> tests = scrapingRepository.getTests(doc);
+
+        // parse conditions
+        Map<String, String> conditions = scrapingRepository.getConditions(doc);
+
 
 
         final ObjectMapper mapper = new ObjectMapper(); // jackson's object mapper to change with orika or mapstruct
@@ -232,7 +235,7 @@ public class ScrapingService {
     }
 
 
-    public List<Address> StadiumInTown(Integer postalCode) {
+    public List<Address> stadiumInTown(Integer postalCode) {
         List<Address> stade = addressRepository.findByTypeAndPostalCodeStartsWith("STD", postalCode.toString());
 
         stade.stream().parallel()
@@ -244,8 +247,7 @@ public class ScrapingService {
 
         addressRepository.saveAll(stade);
 
-        log.info("StadiumInTown : " + stade.size());
+        log.info("stadiumInTown : " + stade.size());
         return stade;
     }
-
 }
