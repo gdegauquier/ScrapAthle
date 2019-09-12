@@ -263,6 +263,13 @@ public class ScrapingRepository {
         List<Node> nodes = el.parentNode().parentNode().childNodes();
 
         Node condTable = findNodeAfterAnotherWhichContains("ÉPREUVES / CONDITIONS", nodes);
+        if (condTable == null){
+            return conditions;
+        }
+        List<Node> condLines = condTable.childNodes().get(1).childNode(0).childNode(1).childNode(1).childNode(1).childNodes();
+
+        conditions.put(condLines.get(0).childNode(0).childNode(0).toString(),condLines.get(0).childNode(2).childNode(0).toString());
+        conditions.put(condLines.get(2).childNode(0).childNode(0).toString(),condLines.get(2).childNode(2).childNode(0).toString());
 
         return conditions;
 
