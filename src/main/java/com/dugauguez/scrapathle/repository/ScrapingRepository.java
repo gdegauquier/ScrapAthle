@@ -269,7 +269,10 @@ public class ScrapingRepository {
         List<Node> condLines = condTable.childNodes().get(1).childNode(0).childNode(1).childNode(1).childNode(1).childNodes();
 
         conditions.put(condLines.get(0).childNode(0).childNode(0).toString(),condLines.get(0).childNode(2).childNode(0).toString());
-        conditions.put(condLines.get(2).childNode(0).childNode(0).toString(),condLines.get(2).childNode(2).childNode(0).toString());
+
+        if (condLines.size() > 2){
+            conditions.put(condLines.get(2).childNode(0).childNode(0).toString(),condLines.get(2).childNode(2).childNode(0).toString());
+        }
 
         return conditions;
 
@@ -318,17 +321,22 @@ public class ScrapingRepository {
 
             boolean hasSubInfos = nodes.get(0).toString().contains("plus.gif");
 
-            if (hasSubInfos) {
-                Element elsSubInfos = els.get(0).parent().parent().parent().getElementsByTag("tbody").get(index);
+            // TODO: to improve
+            try {
+                if (hasSubInfos) {
+                    Element elsSubInfos = els.get(0).parent().parent().parent().getElementsByTag("tbody").get(index);
 
-                for (Node elSubInfos : elsSubInfos.childNodes()) {
+                    for (Node elSubInfos : elsSubInfos.childNodes()) {
 
-                    String key = elSubInfos.childNodes().get(0).childNode(0).toString();
-                    String value = elSubInfos.childNodes().get(2).childNode(0).toString();
-                    test.put(key, value);
+                        String key = elSubInfos.childNodes().get(0).childNode(0).toString();
+                        String value = elSubInfos.childNodes().get(2).childNode(0).toString();
+                        test.put(key, value);
+
+                    }
 
                 }
-
+            }catch(Exception e){
+                log.debug("Could not extract sub information");
             }
 
             test.put("time", nodes.get(1).childNodes().get(0).childNode(0).toString());

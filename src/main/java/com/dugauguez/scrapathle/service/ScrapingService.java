@@ -141,8 +141,8 @@ public class ScrapingService {
         // department = "021";
         // id = "903849522846443840174834256852468837";
 
-        department = "069";
-        id = "764849668846493828149846125855762849";
+        // department = "069";
+        // id = "764849668846493828149846125855762849";
 
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
@@ -251,3 +251,6 @@ public class ScrapingService {
         return stade;
     }
 }
+
+//TODO: improve epreuves conditions
+// improve conditions on tests part
