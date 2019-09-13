@@ -27,29 +27,42 @@ public class Organizer {
 
     @JsonProperty("Mèl")
     private String email = null;
+    private String contactPresse = null;
+    @JsonProperty("Site Web")
+    private String siteWeb = null;
+    private String contactEngagement = null;
+    @JsonProperty("Engagement en ligne")
+    private String engagementEnLigne = null;
+    @JsonProperty("Fax")
+    private String fax = null;
+    @JsonProperty("Téléphone 1")
+    private String phoneNumber1 = null;
+    @JsonProperty("Téléphone 2")
+    private String phoneNumber2 = null;
+    private String eventSubmittedBy = null;
+    @JsonProperty("Résultats chargés par")
+    private String resultsGivenBy = null;
+    @JsonProperty("Puis contrôlés par")
+    private String resultsControledBy = null;
+    @JsonIgnore
+    @OneToMany(mappedBy = "organizerContact")
+    private Set<Event> events;
+    @JsonProperty("Line1")
+    private String line1 = null;
+    @JsonProperty("Line2")
+    private String line2 = null;
+    @JsonProperty("Line3")
+    private String line3 = null;
+    @JsonProperty("Ville")
+    private String town = null;
+    @JsonProperty("Code Postal")
+    private String postalCode = null;
+    @JsonProperty("Type")
+    private String type = null;
 
     public void setEmail(String email) {
         this.email = email == null ? null : email.contains("@") ? email.trim() : null;
     }
-
-    private String contactPresse = null;
-
-    @JsonProperty("Site Web")
-    private String siteWeb = null;
-
-    private String contactEngagement = null;
-
-    @JsonProperty("Engagement en ligne")
-    private String engagementEnLigne = null;
-
-    @JsonProperty("Fax")
-    private String fax = null;
-
-    @JsonProperty("Téléphone 1")
-    private String phoneNumber1 = null;
-
-    @JsonProperty("Téléphone 2")
-    private String phoneNumber2 = null;
 
     public void setFax(String faxNumber) {
         this.fax = cleanNumber(faxNumber);
@@ -74,19 +87,6 @@ public class Organizer {
                                                        .replace("+006", "06");
     }
 
-
-    private String eventSubmittedBy = null;
-
-    @JsonProperty("Résultats chargés par")
-    private String resultsGivenBy = null;
-
-    @JsonProperty("Puis contrôlés par")
-    private String resultsControledBy = null;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "organizerContact")
-    private Set<Event> events;
-
     public Event addEvent(Event event) {
         if (getEvents() == null) {
             events = new HashSet<>();
@@ -101,26 +101,6 @@ public class Organizer {
         event.setOrganizerContact(null);
         return event;
     }
-
-
-    @JsonProperty("Line1")
-    private String line1 = null;
-
-    @JsonProperty("Line2")
-    private String line2 = null;
-
-    @JsonProperty("Line3")
-    private String line3 = null;
-
-    @JsonProperty("Ville")
-    private String town = null;
-
-    @JsonProperty("Code Postal")
-    private String postalCode = null;
-
-    @JsonProperty("Type")
-    private String type = null;
-
 
     private String cleanAddress(String organisation) {
         String data = organisation.trim().toLowerCase();

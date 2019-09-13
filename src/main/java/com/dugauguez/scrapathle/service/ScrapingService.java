@@ -3,10 +3,8 @@ package com.dugauguez.scrapathle.service;
 import com.dugauguez.scrapathle.entity.Address;
 import com.dugauguez.scrapathle.entity.Event;
 import com.dugauguez.scrapathle.entity.Organizer;
-import com.dugauguez.scrapathle.repository.AddressRepository;
-import com.dugauguez.scrapathle.repository.EventRepository;
-import com.dugauguez.scrapathle.repository.OrganizerRepository;
-import com.dugauguez.scrapathle.repository.ScrapingRepository;
+import com.dugauguez.scrapathle.entity.Region;
+import com.dugauguez.scrapathle.repository.*;
 import com.dugauguez.scrapathle.utils.JsoupUtils;
 import com.dugauguez.scrapathle.utils.OpenStreetMapUtils;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -31,13 +29,11 @@ import java.util.stream.Collectors;
 @Service
 public class ScrapingService {
 
+    public static final int OLDER_THAN_TWO_DAYS = 2;
     @Autowired
     OpenStreetMapUtils openStreetMapUtils;
-
     @Autowired
     JsoupUtils jsoupUtils;
-
-    public static final int OLDER_THAN_TWO_DAYS = 2;
     @Autowired
     FileService fileService;
 
@@ -46,6 +42,9 @@ public class ScrapingService {
 
     @Autowired
     AddressRepository addressRepository;
+
+    @Autowired
+    RegionRepository regionRepository;
 
     @Autowired
     OrganizerRepository organizerRepository;
@@ -141,8 +140,8 @@ public class ScrapingService {
         //department = "069";
         //id = "983849419846609831356831827828482855";
 
-         department = "069";
-         id = "739849383846615828605855103831189828";
+        department = "069";
+        id = "739849383846615828605855103831189828";
 
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
@@ -207,6 +206,11 @@ public class ScrapingService {
             if (address.getName() != null && address.getTown() != null && address.getPostalCode() != null) {
                 Address foundAddress = addressRepository.findByNameAndTownAndPostalCode(address.getName(), address.getTown(), address.getPostalCode());
                 if (foundAddress == null) {
+
+                    Map<String, Double> coordinates = openStreetMapUtils.getCoordinates(address.getAddress());
+                    address.setLatitude(coordinates.get("lat"));
+                    address.setLongitude(coordinates.get("lon"));
+
                     addressRepository.save(address);
                     event.setStadiumAddress(address);
                 } else {
@@ -244,12 +248,12 @@ public class ScrapingService {
                     sta.setLongitude(coordinates.get("lon"));
                 });
 
-        addressRepository.saveAll(stade);
-
         log.info("stadiumInTown : " + stade.size());
         return stade;
     }
-}
 
-//TODO: improve epreuves conditions
-// improve conditions on tests part
+
+    public List<Region> getRegionList() {
+        return regionRepository.findAllByOrderByTownAsc();
+    }
+}

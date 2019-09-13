@@ -46,6 +46,9 @@ public class Address {
     private Double latitude;
 
     private Double longitude;
+    @JsonIgnore
+    @OneToMany(mappedBy = "stadiumAddress")
+    private Set<Event> events;
 
     public void setId(Integer id) {
         this.id = id;
@@ -106,10 +109,6 @@ public class Address {
         }
         return address + getPostalCode() + " " + getTown();
     }
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "stadiumAddress")
-    private Set<Event> events;
 
     public Event addEvent(Event event) {
         if (getEvents() == null) {

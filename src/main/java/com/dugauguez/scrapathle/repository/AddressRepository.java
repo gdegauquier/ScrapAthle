@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface AddressRepository extends CrudRepository<Address, Integer> {
 
-    Address findByNameAndTownAndPostalCode(String name,String town,String postalCode);
+    Address findByNameAndTownAndPostalCode(String name, String town, String postalCode);
 
-   List<Address> findByTypeAndPostalCodeStartsWith(String type, String postalCode);
+    List<Address> findByTypeAndPostalCodeStartsWith(String type, String postalCode);
 }
