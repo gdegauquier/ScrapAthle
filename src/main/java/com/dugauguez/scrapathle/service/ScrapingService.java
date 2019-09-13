@@ -137,12 +137,6 @@ public class ScrapingService {
 
     private Event parseEvent(int year, String department, String id) {
 
-        //department = "069";
-        //id = "983849419846609831356831827828482855";
-
-        department = "069";
-        id = "739849383846615828605855103831189828";
-
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
         Document doc = jsoupUtils.getDocument(new File(file));

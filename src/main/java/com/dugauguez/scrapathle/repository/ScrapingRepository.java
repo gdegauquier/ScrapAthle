@@ -73,6 +73,13 @@ public class ScrapingRepository {
                         }
 
                         props.put(el.text() + " / mail", mail);
+
+                    }
+
+                    Node nodeTel = findNodeAfterContactKey(node, el.text());
+
+                    if (nodeTel != null && nodeTel.childNodes().size() == 3 && nodeTel.toString().trim().contains("&nbsp;")){
+                        props.put(el.text() + " / tel", nodeTel.childNode(2).childNode(0).toString());
                     }
 
                 }
@@ -80,6 +87,23 @@ public class ScrapingRepository {
         }
 
         return props;
+    }
+
+    private Node findNodeAfterContactKey(Node node, String key){
+
+        boolean nextIsOk = false;
+        for(Node nodeRet : node.parentNode().childNodes()){
+
+            if (nextIsOk && !nodeRet.toString().trim().isEmpty()){
+                return nodeRet;
+            }
+
+            if (nodeRet.toString().contains(key)){
+                nextIsOk = true;
+            }
+        }
+
+        return null;
     }
 
     private String removeEndMatch(String str, String strToRemove) {
@@ -393,7 +417,11 @@ public class ScrapingRepository {
 
     public Map<String, String> getStaff(Document doc) {
         Elements els = doc.select("td[style*=font-weight:bolder]");
-        return getPropertiesViaParentNode(els, " par");
+        Map<String, String> ret = new HashMap<>();
+        ret.putAll( getPropertiesViaParentNode(els, " par") );
+        ret.putAll( getPropertiesViaParentNode(els, "Juge arbitre") );
+        return ret;
+
     }
 
     public List<String> getServices(Document doc) {
