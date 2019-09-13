@@ -55,3 +55,6 @@ Pour documenter correctement les endpoints disponibles de l' API, ce qu'ils peuv
 Après avoir exécuté l'application, accédez à http://localhost:8080/go-api/swagger-ui.html
 
 ![img](src/main/resources/screen-shot/swagger.jpg "Title")
+
+### TO IMPROVE / TODO
+MCD / data save into a normalized db
