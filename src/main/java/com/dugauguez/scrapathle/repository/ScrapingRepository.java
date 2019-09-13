@@ -263,15 +263,28 @@ public class ScrapingRepository {
         List<Node> nodes = el.parentNode().parentNode().childNodes();
 
         Node condTable = findNodeAfterAnotherWhichContains("ÉPREUVES / CONDITIONS", nodes);
-        if (condTable == null){
+        if (condTable == null) {
             return conditions;
         }
         List<Node> condLines = condTable.childNodes().get(1).childNode(0).childNode(1).childNode(1).childNode(1).childNodes();
 
-        conditions.put(condLines.get(0).childNode(0).childNode(0).toString(),condLines.get(0).childNode(2).childNode(0).toString());
+        int condIndex = 1;
+        for (Node condEl : condLines.get(0).childNode(2).childNodes()) {
+            String content = !condEl.attr("href").isEmpty() ? condEl.childNode(0).toString().trim() : condEl.toString().trim();
+            String url = condEl.attr("href");
+            if (content.isEmpty() || content.equals("/")){
+                continue;
+            }
 
-        if (condLines.size() > 2){
-            conditions.put(condLines.get(2).childNode(0).childNode(0).toString(),condLines.get(2).childNode(2).childNode(0).toString());
+            conditions.put(condLines.get(0).childNode(0).childNode(0).toString() + "_text_" + condIndex, content);
+            if (!url.isEmpty()) {
+                conditions.put(condLines.get(0).childNode(0).childNode(0).toString() + "_url_" + condIndex, url);
+            }
+            condIndex++;
+        }
+
+        if (condLines.size() > 2) {
+            conditions.put(condLines.get(2).childNode(0).childNode(0).toString(), condLines.get(2).childNode(2).childNode(0).toString());
         }
 
         return conditions;
@@ -309,7 +322,7 @@ public class ScrapingRepository {
         }
 
         int index = 1;
-
+        int indexSubInfos = 1;
 
         for (Element el : els) {
 
@@ -317,26 +330,17 @@ public class ScrapingRepository {
 
             Map<String, String> test = new HashMap<>();
 
-            //
-
             boolean hasSubInfos = nodes.get(0).toString().contains("plus.gif");
 
-            // TODO: to improve
-            try {
-                if (hasSubInfos) {
-                    Element elsSubInfos = els.get(0).parent().parent().parent().getElementsByTag("tbody").get(index);
+            if (hasSubInfos) {
+                Element elsSubInfos = els.get(0).parent().parent().parent().getElementsByTag("tbody").get(indexSubInfos);
 
-                    for (Node elSubInfos : elsSubInfos.childNodes()) {
-
-                        String key = elSubInfos.childNodes().get(0).childNode(0).toString();
-                        String value = elSubInfos.childNodes().get(2).childNode(0).toString();
-                        test.put(key, value);
-
-                    }
-
+                for (Node elSubInfos : elsSubInfos.childNodes()) {
+                    String key = elSubInfos.childNodes().get(0).childNode(0).toString();
+                    String value = elSubInfos.childNodes().get(2).childNode(0).toString();
+                    test.put(key, value);
                 }
-            }catch(Exception e){
-                log.debug("Could not extract sub information");
+                indexSubInfos++;
             }
 
             test.put("time", nodes.get(1).childNodes().get(0).childNode(0).toString());
@@ -344,8 +348,6 @@ public class ScrapingRepository {
             buildTestCategories(test, nodes);
             test.put("distance", !nodes.get(4).childNodes().isEmpty() ? nodes.get(4).childNodes().get(0).toString() : "");
             tests.put("test" + index, test);
-
-            // add other info
 
             index++;
         }

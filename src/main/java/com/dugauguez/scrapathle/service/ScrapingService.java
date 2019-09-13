@@ -138,11 +138,11 @@ public class ScrapingService {
 
     private Event parseEvent(int year, String department, String id) {
 
-        // department = "021";
-        // id = "903849522846443840174834256852468837";
+        //department = "069";
+        //id = "983849419846609831356831827828482855";
 
-        // department = "069";
-        // id = "764849668846493828149846125855762849";
+         department = "069";
+         id = "739849383846615828605855103831189828";
 
         String file = getClass().getResource("/data/" + year + "/" + department + "/" + id + ".html").getFile();
 
@@ -193,7 +193,6 @@ public class ScrapingService {
 
         // parse conditions
         Map<String, String> conditions = scrapingRepository.getConditions(doc);
-
 
 
         final ObjectMapper mapper = new ObjectMapper(); // jackson's object mapper to change with orika or mapstruct
