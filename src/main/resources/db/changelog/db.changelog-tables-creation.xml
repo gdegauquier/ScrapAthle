@@ -12,5 +12,6 @@
     <!-- Database update -->
     <include file="/db/changelog/tables/20190924.db.changelog-tables-before-init.xml"/>
     <include file="/db/changelog/tables/20190924.db.changelog-tables-init.xml"/>
+    <include file="/db/changelog/tables/20190924.2.db.changelog-tables-before-init.xml"/>
 
 </databaseChangeLog>
