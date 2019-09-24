@@ -33,6 +33,9 @@ Pour extraire  un changeSet d'une table existante, jouez les commandes suivantes
 ```sh
 cd src/main/resources/bin
 
+# facultative command, if you don't have the permissions on liquidbase
+chmod 777 liquibase
+
 
 ./liquibase  --driver=org.postgresql.Driver   --classpath=./postgresql-42.2.6.jar    --url=$(cat ../application.properties | grep "spring.datasource.url" | cut -d'=' -f2)    --username=$(cat ../application.properties | grep "spring.datasource.username" |
 cut -d'=' -f2)    --password=$(cat ../application.properties | grep "spring.datasource.password" | cut -d'=' -f2)     --changeLogFile=../../../../target/generated-sources/actual_database_schema.xml     generateChangeLog

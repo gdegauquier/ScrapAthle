@@ -1,0 +1,240 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:appdba="http://www.datical.net/xml/ns/appdba" xmlns:datical="http://www.datical.net/xml/ns/datical" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-1">
+
+        <createTable tableName="address">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="address_pkey"/>
+            </column>
+            <column name="line_1" type="VARCHAR"/>
+            <column name="line_2" type="VARCHAR"/>
+            <column name="line_3" type="VARCHAR"/>
+            <column name="town_id" type="INTEGER"/>
+            <column name="address_type_id" type="INTEGER"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-2">
+        <createTable tableName="address_type">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="address_type_pkey"/>
+            </column>
+            <column name="code" type="VARCHAR"/>
+            <column name="label" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-3">
+        <createTable tableName="contact">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="contact_pkey"/>
+            </column>
+            <column name="firstname" type="VARCHAR"/>
+            <column name="lastname" type="VARCHAR"/>
+            <column name="name" type="VARCHAR"/>
+            <column name="telephone_1" type="VARCHAR"/>
+            <column name="telephone_2" type="VARCHAR"/>
+            <column name="email" type="VARCHAR"/>
+            <column name="contact_type_id" type="INTEGER"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-4">
+        <createTable tableName="contact_type">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="contact_type_pkey"/>
+            </column>
+            <column name="code" type="VARCHAR"/>
+            <column name="label" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-5">
+        <createTable tableName="department">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="department_pkey"/>
+            </column>
+            <column name="code" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-6">
+        <createTable tableName="event">
+            <column name="id" type="VARCHAR">
+                <constraints primaryKey="true" primaryKeyName="event_pkey"/>
+            </column>
+            <column name="code" type="VARCHAR"/>
+            <column name="name" type="VARCHAR"/>
+            <column name="is_labeled" type="BOOLEAN"/>
+            <column name="is_technically_adviced" type="BOOLEAN"/>
+            <column name="date_begin" type="date"/>
+            <column name="date_end" type="date"/>
+            <column name="conditions" type="VARCHAR"/>
+            <column name="other_info" type="VARCHAR"/>
+            <column name="town_id" type="INTEGER"/>
+            <column name="league_id" type="INTEGER"/>
+            <column name="level_id" type="INTEGER"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-7">
+        <createTable tableName="event_type">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="event_type_pkey"/>
+            </column>
+            <column name="code" type="VARCHAR"/>
+            <column name="label" type="VARCHAR"/>
+            <column name="is_sub_type" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-8">
+        <createTable tableName="league">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="league_pkey"/>
+            </column>
+            <column name="code" type="VARCHAR"/>
+            <column name="label" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-9">
+        <createTable tableName="level">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="level_pkey"/>
+            </column>
+            <column name="code" type="VARCHAR"/>
+            <column name="label" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-10">
+        <createTable tableName="rel_event_address">
+            <column name="event_id" type="VARCHAR"/>
+            <column name="address_id" type="INTEGER"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-11">
+        <createTable tableName="rel_event_contact">
+            <column name="contact_id" type="INTEGER"/>
+            <column name="event_id" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-12">
+        <createTable tableName="rel_event_service">
+            <column name="service_id" type="INTEGER"/>
+            <column name="event_id" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-13">
+        <createTable tableName="rel_event_test">
+            <column name="test_id" type="INTEGER"/>
+            <column name="event_id" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-14">
+        <createTable tableName="rel_event_type">
+            <column name="event_id" type="VARCHAR"/>
+            <column name="event_type_id" type="INTEGER"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-15">
+        <createTable tableName="rel_test_test_category">
+            <column name="test_id" type="INTEGER"/>
+            <column name="test_category_id" type="INTEGER"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-16">
+        <createTable tableName="service">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="service_pkey"/>
+            </column>
+            <column name="code" type="VARCHAR"/>
+            <column name="label" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-17">
+        <createTable tableName="test">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="test_pkey"/>
+            </column>
+            <column name="date_test" type="date"/>
+            <column name="time_test" type="TIME WITHOUT TIME ZONE"/>
+            <column name="distance" type="VARCHAR"/>
+            <column name="label" type="VARCHAR"/>
+            <column name="description" type="VARCHAR"/>
+            <column name="amount" type="VARCHAR"/>
+            <column name="conditions" type="VARCHAR"/>
+            <column name="former_year" type="VARCHAR"/>
+            <column name="rewards" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-18">
+        <createTable tableName="test_category">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="test_category_pkey"/>
+            </column>
+            <column name="code" type="VARCHAR"/>
+            <column name="label" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-19">
+        <createTable tableName="town">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="town_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR"/>
+            <column name="zipcode" type="VARCHAR"/>
+            <column name="inseecode" type="VARCHAR"/>
+            <column name="department_id" type="INTEGER"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-20">
+        <addForeignKeyConstraint baseColumnNames="address_type_id" baseTableName="address" constraintName="address_address_type_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="address_type" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-21">
+        <addForeignKeyConstraint baseColumnNames="town_id" baseTableName="address" constraintName="address_town_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="town" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-22">
+        <addForeignKeyConstraint baseColumnNames="contact_type_id" baseTableName="contact" constraintName="contact_contact_type_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="contact_type" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-23">
+        <addForeignKeyConstraint baseColumnNames="league_id" baseTableName="event" constraintName="event_league_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="league" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-24">
+        <addForeignKeyConstraint baseColumnNames="level_id" baseTableName="event" constraintName="event_level_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="level" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-25">
+        <addForeignKeyConstraint baseColumnNames="town_id" baseTableName="event" constraintName="event_town_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="town" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-26">
+        <addForeignKeyConstraint baseColumnNames="address_id" baseTableName="rel_event_address" constraintName="rel_event_address_address_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="address" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-27">
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="rel_event_address" constraintName="rel_event_address_event_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="event" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-28">
+        <addForeignKeyConstraint baseColumnNames="contact_id" baseTableName="rel_event_contact" constraintName="rel_event_contact_contact_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="contact" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-29">
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="rel_event_contact" constraintName="rel_event_contact_event_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="event" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-30">
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="rel_event_service" constraintName="rel_event_service_event_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="event" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-31">
+        <addForeignKeyConstraint baseColumnNames="service_id" baseTableName="rel_event_service" constraintName="rel_event_service_service_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="service" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-32">
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="rel_event_test" constraintName="rel_event_test_event_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="event" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-33">
+        <addForeignKeyConstraint baseColumnNames="test_id" baseTableName="rel_event_test" constraintName="rel_event_test_test_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="test" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-34">
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="rel_event_type" constraintName="rel_event_type_event_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="event" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-35">
+        <addForeignKeyConstraint baseColumnNames="event_type_id" baseTableName="rel_event_type" constraintName="rel_event_type_event_type_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="event_type" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-36">
+        <addForeignKeyConstraint baseColumnNames="test_category_id" baseTableName="rel_test_test_category" constraintName="rel_test_test_category_test_category_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="test_category" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-37">
+        <addForeignKeyConstraint baseColumnNames="test_id" baseTableName="rel_test_test_category" constraintName="rel_test_test_category_test_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="test" validate="true"/>
+    </changeSet>
+    <changeSet author="georgesxavierdeg (generated)" id="1569314268420-38">
+        <addForeignKeyConstraint baseColumnNames="department_id" baseTableName="town" constraintName="town_department_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="department" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

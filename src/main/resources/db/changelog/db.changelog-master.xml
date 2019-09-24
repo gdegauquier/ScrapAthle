@@ -7,7 +7,7 @@
 
     <include file="/db/changelog/db.changelog-init-data.xml" context="init"/>
     <include file="/db/changelog/db.changelog-tables-creation.xml"/>
-    <!--<include file="/db/changelog/db.changelog-views-creation.xml"/>-->
+
 
 
 </databaseChangeLog>

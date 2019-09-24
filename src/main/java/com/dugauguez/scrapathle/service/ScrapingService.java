@@ -187,7 +187,6 @@ public class ScrapingService {
         // parse conditions
         Map<String, String> conditions = scrapingRepository.getConditions(doc);
 
-
         final ObjectMapper mapper = new ObjectMapper(); // jackson's object mapper to change with orika or mapstruct
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
