@@ -3,7 +3,7 @@
     <changeSet author="georgesxavierdeg (generated)" id="1569314268420-1">
 
         <createTable tableName="address">
-            <column name="id" type="INTEGER">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="address_pkey"/>
             </column>
             <column name="line_1" type="VARCHAR"/>
@@ -15,7 +15,7 @@
     </changeSet>
     <changeSet author="georgesxavierdeg (generated)" id="1569314268420-2">
         <createTable tableName="address_type">
-            <column name="id" type="INTEGER">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="address_type_pkey"/>
             </column>
             <column name="code" type="VARCHAR"/>
@@ -24,7 +24,7 @@
     </changeSet>
     <changeSet author="georgesxavierdeg (generated)" id="1569314268420-3">
         <createTable tableName="contact">
-            <column name="id" type="INTEGER">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="contact_pkey"/>
             </column>
             <column name="firstname" type="VARCHAR"/>
@@ -38,7 +38,7 @@
     </changeSet>
     <changeSet author="georgesxavierdeg (generated)" id="1569314268420-4">
         <createTable tableName="contact_type">
-            <column name="id" type="INTEGER">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="contact_type_pkey"/>
             </column>
             <column name="code" type="VARCHAR"/>
@@ -47,7 +47,7 @@
     </changeSet>
     <changeSet author="georgesxavierdeg (generated)" id="1569314268420-5">
         <createTable tableName="department">
-            <column name="id" type="INTEGER">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="department_pkey"/>
             </column>
             <column name="code" type="VARCHAR"/>
@@ -73,7 +73,7 @@
     </changeSet>
     <changeSet author="georgesxavierdeg (generated)" id="1569314268420-7">
         <createTable tableName="event_type">
-            <column name="id" type="INTEGER">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="event_type_pkey"/>
             </column>
             <column name="code" type="VARCHAR"/>
@@ -83,7 +83,7 @@
     </changeSet>
     <changeSet author="georgesxavierdeg (generated)" id="1569314268420-8">
         <createTable tableName="league">
-            <column name="id" type="INTEGER">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="league_pkey"/>
             </column>
             <column name="code" type="VARCHAR"/>
@@ -92,7 +92,7 @@
     </changeSet>
     <changeSet author="georgesxavierdeg (generated)" id="1569314268420-9">
         <createTable tableName="level">
-            <column name="id" type="INTEGER">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="level_pkey"/>
             </column>
             <column name="code" type="VARCHAR"/>
@@ -137,7 +137,7 @@
     </changeSet>
     <changeSet author="georgesxavierdeg (generated)" id="1569314268420-16">
         <createTable tableName="service">
-            <column name="id" type="INTEGER">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="service_pkey"/>
             </column>
             <column name="code" type="VARCHAR"/>
@@ -146,7 +146,7 @@
     </changeSet>
     <changeSet author="georgesxavierdeg (generated)" id="1569314268420-17">
         <createTable tableName="test">
-            <column name="id" type="INTEGER">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="test_pkey"/>
             </column>
             <column name="date_test" type="date"/>
@@ -162,7 +162,7 @@
     </changeSet>
     <changeSet author="georgesxavierdeg (generated)" id="1569314268420-18">
         <createTable tableName="test_category">
-            <column name="id" type="INTEGER">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="test_category_pkey"/>
             </column>
             <column name="code" type="VARCHAR"/>
@@ -171,7 +171,7 @@
     </changeSet>
     <changeSet author="georgesxavierdeg (generated)" id="1569314268420-19">
         <createTable tableName="town">
-            <column name="id" type="INTEGER">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="town_pkey"/>
             </column>
             <column name="name" type="VARCHAR"/>

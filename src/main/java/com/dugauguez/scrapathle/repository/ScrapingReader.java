@@ -6,16 +6,14 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Repository
-public class ScrapingRepository {
+public class ScrapingReader {
 
     private String getPropertyViaParentNode(Elements els, String textToFind) {
         return getPropertyViaParentNode(els, textToFind, false);
@@ -78,7 +76,7 @@ public class ScrapingRepository {
 
                     Node nodeTel = findNodeAfterContactKey(node, el.text());
 
-                    if (nodeTel != null && nodeTel.childNodes().size() == 3 && nodeTel.toString().trim().contains("&nbsp;")){
+                    if (nodeTel != null && nodeTel.childNodes().size() == 3 && nodeTel.toString().trim().contains("&nbsp;")) {
                         props.put(el.text() + " / tel", nodeTel.childNode(2).childNode(0).toString());
                     }
 
@@ -89,16 +87,16 @@ public class ScrapingRepository {
         return props;
     }
 
-    private Node findNodeAfterContactKey(Node node, String key){
+    private Node findNodeAfterContactKey(Node node, String key) {
 
         boolean nextIsOk = false;
-        for(Node nodeRet : node.parentNode().childNodes()){
+        for (Node nodeRet : node.parentNode().childNodes()) {
 
-            if (nextIsOk && !nodeRet.toString().trim().isEmpty()){
+            if (nextIsOk && !nodeRet.toString().trim().isEmpty()) {
                 return nodeRet;
             }
 
-            if (nodeRet.toString().contains(key)){
+            if (nodeRet.toString().contains(key)) {
                 nextIsOk = true;
             }
         }
@@ -114,7 +112,7 @@ public class ScrapingRepository {
     }
 
 
-    public String getTitle(Document doc) {
+    public String getName(Document doc) {
         Element first = doc.select("div.titles").first();
         if (first == null) {
 
@@ -143,14 +141,26 @@ public class ScrapingRepository {
     }
 
 
-    public String getBeginDate(Document doc) {
-        Elements els = doc.select("b");
-        return getPropertyViaParentNode(els, "Date de Début");
+    private Date parseDate(String date) {
+
+        if (StringUtils.isEmpty(date)) {
+            return null;
+        }
+
+        return new Date(Integer.valueOf(date.split("/")[2]) - 1900,
+                Integer.valueOf(date.split("/")[1]) - 1,
+                Integer.valueOf(date.split("/")[0]));
+
     }
 
-    public String getEndDate(Document doc) {
+    public Date getBeginDate(Document doc) {
         Elements els = doc.select("b");
-        return getPropertyViaParentNode(els, "Date de Fin");
+        return parseDate(getPropertyViaParentNode(els, "Date de Début"));
+    }
+
+    public Date getEndDate(Document doc) {
+        Elements els = doc.select("b");
+        return parseDate(getPropertyViaParentNode(els, "Date de Fin"));
     }
 
     public String getCode(Document doc) {
@@ -264,9 +274,13 @@ public class ScrapingRepository {
 
     }
 
-    public String getTechnicalAdvice(Document doc) {
+    public boolean getTechnicalAdvice(Document doc) {
         Elements els = doc.select("td[style*=font-weight:bolder]");
-        return getPropertyViaParentNode(els, "Avis Technique et Sécurité", true);
+
+        String value = getPropertyViaParentNode(els, "Avis Technique et Sécurité", true);
+
+        return !StringUtils.isEmpty(value)
+                && value.equalsIgnoreCase("Avis Favorable");
     }
 
     public Map<String, String> getContacts(Document doc) {
@@ -296,7 +310,7 @@ public class ScrapingRepository {
         for (Node condEl : condLines.get(0).childNode(2).childNodes()) {
             String content = !condEl.attr("href").isEmpty() ? condEl.childNode(0).toString().trim() : condEl.toString().trim();
             String url = condEl.attr("href");
-            if (content.isEmpty() || content.equals("/")){
+            if (content.isEmpty() || content.equals("/")) {
                 continue;
             }
 
@@ -418,8 +432,8 @@ public class ScrapingRepository {
     public Map<String, String> getStaff(Document doc) {
         Elements els = doc.select("td[style*=font-weight:bolder]");
         Map<String, String> ret = new HashMap<>();
-        ret.putAll( getPropertiesViaParentNode(els, " par") );
-        ret.putAll( getPropertiesViaParentNode(els, "Juge arbitre") );
+        ret.putAll(getPropertiesViaParentNode(els, " par"));
+        ret.putAll(getPropertiesViaParentNode(els, "Juge arbitre"));
         return ret;
 
     }

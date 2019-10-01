@@ -1,6 +1,6 @@
 package com.dugauguez.scrapathle.service;
 
-import com.dugauguez.scrapathle.repository.DepartmentRepository;
+import com.dugauguez.scrapathle.repository.DepartmentReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,11 +10,11 @@ import java.util.List;
 public class DepartmentService {
 
     @Autowired
-    DepartmentRepository departmentRepository;
+    DepartmentReader departmentReader;
 
     public List<String> getAll() {
 
-        return departmentRepository.getAll();
+        return departmentReader.getAll();
 
     }
 
